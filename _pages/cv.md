@@ -11,9 +11,9 @@ redirect_from:
 
 Education
 ======
-* Ph.D in Version Control Theory, GitHub University, 2018 (expected)
-* M.S. in Jekyll, GitHub University, 2014
-* B.S. in GitHub, GitHub University, 2012
+* Ph.D in Health Economics & Outcomes Research, University of Washington, 2027
+* M.S. in Health Economics, National Institutes of Public Health, 2015
+* B.S. in Biomedical Engineering , National Polytechnic Institute, 2011
 
 Work experience
 ======
