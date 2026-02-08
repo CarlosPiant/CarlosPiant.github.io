@@ -61,7 +61,7 @@ Full list: see the teaching entries in `_teaching/`.
 
 - Email: cpinedaa@uw.edu
 - GitHub: http://github.com/CarlosPiant
-- LinkedIn: https://www.linkedin.com/carlos-piant
+- LinkedIn: https://www.linkedin.com/in/carlos-piant/
 - Google Scholar: https://scholar.google.com/citations?user=yO3sVGYAAAAJ&hl=en
 
 ## Site Structure
