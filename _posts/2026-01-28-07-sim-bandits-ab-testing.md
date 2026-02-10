@@ -1,6 +1,7 @@
 ---
 title: "Bandits & A/B Testing: Teaching Your Model to Experiment"
 date: 2026-01-28
+link: /tutorials/07-sim-bandits-ab-testing.html
 categories: [tutorials, codes]
 ---
 

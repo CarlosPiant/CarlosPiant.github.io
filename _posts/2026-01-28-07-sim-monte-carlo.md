@@ -1,6 +1,7 @@
 ---
 title: "Monte Carlo Simulation: Asking \"What If?\" 10,000 Times"
 date: 2026-01-28
+link: /tutorials/07-sim-monte-carlo.html
 categories: [tutorials, codes]
 ---
 

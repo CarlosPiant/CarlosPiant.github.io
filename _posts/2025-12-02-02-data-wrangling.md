@@ -1,6 +1,7 @@
 ---
 title: "Data Wrangling with dplyr"
 date: 2025-12-02
+link: /tutorials/02-data-wrangling.html
 categories: [tutorials, codes]
 ---
 

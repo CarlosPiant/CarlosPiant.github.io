@@ -1,6 +1,7 @@
 ---
 title: "Logistic Regression in R: Predicting Binary Outcomes"
 date: 2025-12-02
+link: /tutorials/03-ml-logistic-regression.html
 categories: [tutorials, codes]
 ---
 

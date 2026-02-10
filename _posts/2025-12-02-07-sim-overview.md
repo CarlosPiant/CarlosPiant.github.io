@@ -1,6 +1,7 @@
 ---
 title: "Simulation Models: Overview"
 date: 2025-12-02
+link: /tutorials/07-sim-overview.html
 categories: [tutorials, codes]
 ---
 

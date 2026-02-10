@@ -1,6 +1,7 @@
 ---
 title: "Regularization (Ridge, Lasso, Elastic Net): Placeholder"
 date: 2025-12-02
+link: /tutorials/03-ml-regularization.html
 categories: [tutorials, codes]
 ---
 

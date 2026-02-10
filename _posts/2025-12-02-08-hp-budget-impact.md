@@ -1,6 +1,7 @@
 ---
 title: "Budget Impact and Resource Allocation"
 date: 2025-12-02
+link: /tutorials/08-hp-budget-impact.html
 categories: [tutorials, codes]
 ---
 

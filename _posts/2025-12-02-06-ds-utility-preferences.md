@@ -1,6 +1,7 @@
 ---
 title: "Utilities and Preferences"
 date: 2025-12-02
+link: /tutorials/06-ds-utility-preferences.html
 categories: [tutorials, codes]
 ---
 

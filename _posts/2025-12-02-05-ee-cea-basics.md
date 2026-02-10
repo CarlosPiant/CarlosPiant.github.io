@@ -1,6 +1,7 @@
 ---
 title: "Cost-Effectiveness Analysis (CEA): Basics"
 date: 2025-12-02
+link: /tutorials/05-ee-cea-basics.html
 categories: [tutorials, codes]
 ---
 

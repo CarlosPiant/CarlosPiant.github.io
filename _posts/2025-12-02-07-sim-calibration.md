@@ -1,6 +1,7 @@
 ---
 title: "Model Calibration"
 date: 2025-12-02
+link: /tutorials/07-sim-calibration.html
 categories: [tutorials, codes]
 ---
 

@@ -1,6 +1,7 @@
 ---
 title: "Statistics and Uncertainty: Overview"
 date: 2025-12-02
+link: /tutorials/09-stat-overview.html
 categories: [tutorials, codes]
 ---
 

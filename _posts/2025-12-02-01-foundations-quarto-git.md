@@ -1,6 +1,7 @@
 ---
 title: "Quarto, Version Control, and GitHub"
 date: 2025-12-02
+link: /tutorials/01-foundations-quarto-git.html
 categories: [tutorials, codes]
 ---
 

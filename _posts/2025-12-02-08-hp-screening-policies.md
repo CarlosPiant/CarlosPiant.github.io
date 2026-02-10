@@ -1,6 +1,7 @@
 ---
 title: "Screening and Prevention Policies"
 date: 2025-12-02
+link: /tutorials/08-hp-screening-policies.html
 categories: [tutorials, codes]
 ---
 

@@ -1,6 +1,7 @@
 ---
 title: "Setting Up R, RStudio, and Projects"
 date: 2025-12-02
+link: /tutorials/01-foundations-r-setup.html
 categories: [tutorials, codes]
 ---
 

@@ -1,6 +1,7 @@
 ---
 title: "Event-Study Designs in R: Watching Policy Effects Over Time"
 date: 2025-12-14
+link: /tutorials/04-ci-event-study.html
 categories: [tutorials, codes]
 ---
 

@@ -1,6 +1,7 @@
 ---
 title: "Working with Survey Data"
 date: 2025-12-02
+link: /tutorials/02-data-survey-data.html
 categories: [tutorials, codes]
 ---
 

@@ -1,6 +1,7 @@
 ---
 title: "Ridge vs Lasso: Shrink, Select, or Both?"
 date: 2025-12-18
+link: /tutorials/03-ml-ridge-vs-lasso.html
 categories: [tutorials, codes]
 ---
 

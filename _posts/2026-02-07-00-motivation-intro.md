@@ -1,6 +1,7 @@
 ---
 title: "Motivation and Introduction"
 date: 2026-02-07
+link: /tutorials/00-Motivation-Intro.html
 categories: [tutorials, codes]
 ---
 

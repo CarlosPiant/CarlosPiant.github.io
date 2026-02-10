@@ -1,0 +1,892 @@
+[
+  {
+    "objectID": "07-sim-monte-carlo.html",
+    "href": "07-sim-monte-carlo.html",
+    "title": "Monte Carlo Simulation: Asking “What If?” 10,000 Times",
+    "section": "",
+    "text": "1. Introduction: when your model is allergic to closed-form solutions\nIn a perfect world, every model would be solved with a neat little formula:\nIn the real world (especially in HEOR), your model often looks like this:\nEnter Monte Carlo simulation, which basically says:\nInstead of one deterministic answer, you get:",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>36</span>  <span class='chapter-title'>Monte Carlo Simulation: Asking \"What If?\" 10,000 Times</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-monte-carlo.html#the-core-idea",
+    "href": "07-sim-monte-carlo.html#the-core-idea",
+    "title": "Monte Carlo Simulation: Asking “What If?” 10,000 Times",
+    "section": "2.1. The core idea",
+    "text": "2.1. The core idea\nSuppose you care about some outcome \\(Y\\) that depends on uncertain inputs \\(\\theta\\):\n\\[\nY = f(\\theta),\n\\]\nwhere \\(\\theta\\) itself is random (e.g., parameters with uncertainty). You want:\n\n\\(E[Y]\\) (expected outcome),\nAnd maybe the full distribution of \\(Y\\).\n\nIf \\(f\\) is complicated and \\(\\theta\\) has a non-trivial distribution, analytic solutions may be impossible.\nMonte Carlo says:\n\nSample \\(\\theta^{(1)}, \\theta^{(2)}, \\dots, \\theta^{(N)}\\) from the distribution of \\(\\theta\\).\nCompute \\(Y^{(k)} = f(\\theta^{(k)})\\) for each draw.\nApproximate:\n\n\\(E[Y] \\approx \\frac{1}{N} \\sum_{k=1}^N Y^{(k)}\\),\nDistribution of \\(Y\\) via the empirical distribution of \\(\\{Y^{(k)}\\}\\).\n\n\nAs \\(N\\) gets large, these approximations converge (by the Law of Large Numbers).",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>36</span>  <span class='chapter-title'>Monte Carlo Simulation: Asking \"What If?\" 10,000 Times</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-monte-carlo.html#steps-in-a-monte-carlo-simulation",
+    "href": "07-sim-monte-carlo.html#steps-in-a-monte-carlo-simulation",
+    "title": "Monte Carlo Simulation: Asking “What If?” 10,000 Times",
+    "section": "2.2. Steps in a Monte Carlo simulation",
+    "text": "2.2. Steps in a Monte Carlo simulation\nTypical steps:\n\nDefine the model \\(f(\\cdot)\\) (e.g., cost-effectiveness model, risk model).\nSpecify distributions for uncertain inputs (e.g., beta, gamma, normal).\nDraw random samples for each parameter.\nCompute outputs (costs, QALYs, net benefit, etc.).\nSummarize results (means, quantiles, probabilities).\n\nThis general structure appears in:\n\nProbabilistic sensitivity analysis (PSA),\nRisk analysis,\nValue-of-information analysis,\nComplex simulation models (microsimulation, DES, etc.).",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>36</span>  <span class='chapter-title'>Monte Carlo Simulation: Asking \"What If?\" 10,000 Times</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-monte-carlo.html#summarizing-the-monte-carlo-output",
+    "href": "07-sim-monte-carlo.html#summarizing-the-monte-carlo-output",
+    "title": "Monte Carlo Simulation: Asking “What If?” 10,000 Times",
+    "section": "3.1. Summarizing the Monte Carlo output",
+    "text": "3.1. Summarizing the Monte Carlo output\n\n\nCode\nmc_summary &lt;- function(x) {\n  c(\n    mean   = mean(x),\n    sd     = sd(x),\n    q025   = quantile(x, 0.025),\n    q500   = quantile(x, 0.5),\n    q975   = quantile(x, 0.975)\n  )\n}\n\ndC_summary  &lt;- mc_summary(dC)\ndE_summary  &lt;- mc_summary(dE)\ninb_summary &lt;- mc_summary(inb)\n\ndC_summary\n\n\n      mean         sd  q025.2.5%   q500.50% q975.97.5% \n  5975.243   4597.546  -2962.920   5923.559  15041.286 \n\n\nCode\ndE_summary\n\n\n      mean         sd  q025.2.5%   q500.50% q975.97.5% \n 0.4002174  0.6458570 -0.8507235  0.4018326  1.6914098 \n\n\nCode\ninb_summary\n\n\n      mean         sd  q025.2.5%   q500.50% q975.97.5% \n  34046.50   64682.31  -91337.61   34272.09  162712.13",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>36</span>  <span class='chapter-title'>Monte Carlo Simulation: Asking \"What If?\" 10,000 Times</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-monte-carlo.html#probability-cost-effective",
+    "href": "07-sim-monte-carlo.html#probability-cost-effective",
+    "title": "Monte Carlo Simulation: Asking “What If?” 10,000 Times",
+    "section": "3.2. Probability cost-effective",
+    "text": "3.2. Probability cost-effective\nThe probability that B is cost-effective at $ $ is:\n\\[\nP(\\text{INB} &gt; 0) \\approx \\frac{1}{N} \\sum_{k=1}^N \\mathbf{1}\\{ \\text{INB}^{(k)} &gt; 0 \\}.\n\\]\n\n\nCode\np_ce &lt;- mean(inb &gt; 0)\np_ce\n\n\n[1] 0.701",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>36</span>  <span class='chapter-title'>Monte Carlo Simulation: Asking \"What If?\" 10,000 Times</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-monte-carlo.html#visualizing-the-distribution-of-inb",
+    "href": "07-sim-monte-carlo.html#visualizing-the-distribution-of-inb",
+    "title": "Monte Carlo Simulation: Asking “What If?” 10,000 Times",
+    "section": "3.3. Visualizing the distribution of INB",
+    "text": "3.3. Visualizing the distribution of INB\n\n\nCode\nlibrary(ggplot2)\n\ninb_df &lt;- data.frame(inb = inb)\n\nggplot(inb_df, aes(x = inb)) +\n  geom_histogram(bins = 50, color = \"white\") +\n  geom_vline(xintercept = 0, linetype = \"dashed\") +\n  labs(\n    title = \"Monte Carlo Distribution of Incremental Net Benefit\",\n    x = \"INB\",\n    y = \"Frequency\"\n  )\n\n\n\n\n\nDistribution of incremental net benefit (INB) from Monte Carlo simulation.\n\n\n\n\nThis tiny example mirrors what full-blown PSA does in complex health decision models.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>36</span>  <span class='chapter-title'>Monte Carlo Simulation: Asking \"What If?\" 10,000 Times</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-markov-chains.html",
+    "href": "07-sim-markov-chains.html",
+    "title": "Markov Chains: When Tomorrow Depends Only on Today",
+    "section": "",
+    "text": "1. Introduction: memoryless, but in a useful way\nImagine a patient whose health state evolves over time:\nIf we want to model this as a stochastic process, one simple (and surprisingly powerful) idea is:\nThis is the Markov property, and processes that satisfy it are called Markov chains.\nA Markov chain is like a short-attention-span model of the world:\nIn this tutorial we’ll:",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>37</span>  <span class='chapter-title'>Markov Chains: When Tomorrow Depends Only on Today</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-markov-chains.html#states-and-transition-probabilities",
+    "href": "07-sim-markov-chains.html#states-and-transition-probabilities",
+    "title": "Markov Chains: When Tomorrow Depends Only on Today",
+    "section": "2.1. States and transition probabilities",
+    "text": "2.1. States and transition probabilities\nA Markov chain is defined by:\n\nA set of states \\(S = \\{1, 2, \\dots, K\\}\\),\nA transition matrix \\(P\\) of size \\(K \\times K\\) where:\n\n\\[\nP_{ij} = P(X_{t+1} = j \\mid X_t = i),\n\\]\n\nRows sum to 1,\n\\(P_{ij} \\ge 0\\) for all \\(i, j\\).\n\nThe evolution is simple:\n\nStart in some initial distribution over states,\nAt each time step, move according to the probabilities in \\(P\\).",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>37</span>  <span class='chapter-title'>Markov Chains: When Tomorrow Depends Only on Today</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-markov-chains.html#the-markov-property",
+    "href": "07-sim-markov-chains.html#the-markov-property",
+    "title": "Markov Chains: When Tomorrow Depends Only on Today",
+    "section": "2.2. The Markov property",
+    "text": "2.2. The Markov property\nThe Markov property says:\n\\[\nP(X_{t+1} = j \\mid X_t = i, X_{t-1}, \\dots, X_0) = P(X_{t+1} = j \\mid X_t = i).\n\\]\nIn words: the future depends only on the present, not on the full past.\nThis is a strong assumption — but often a useful approximation in modeling.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>37</span>  <span class='chapter-title'>Markov Chains: When Tomorrow Depends Only on Today</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-markov-chains.html#state-distribution-over-time",
+    "href": "07-sim-markov-chains.html#state-distribution-over-time",
+    "title": "Markov Chains: When Tomorrow Depends Only on Today",
+    "section": "2.3. State distribution over time",
+    "text": "2.3. State distribution over time\nIf \\(\\pi_t\\) is a row vector of probabilities over states at time \\(t\\):\n\n\\(\\pi_0\\) is the initial distribution,\nThen \\(\\pi_1 = \\pi_0 P\\),\n\\(\\pi_2 = \\pi_1 P = \\pi_0 P^2\\),\nIn general, \\(\\pi_t = \\pi_0 P^t\\).\n\nThis matrix algebra is the basis of cohort-based Markov models in HEOR.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>37</span>  <span class='chapter-title'>Markov Chains: When Tomorrow Depends Only on Today</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-markov-chains.html#simulating-individual-trajectories",
+    "href": "07-sim-markov-chains.html#simulating-individual-trajectories",
+    "title": "Markov Chains: When Tomorrow Depends Only on Today",
+    "section": "3.1. Simulating individual trajectories",
+    "text": "3.1. Simulating individual trajectories\nWe simulate many individuals over multiple cycles, tracking their states over time.\n\n\nCode\nset.seed(123)\n\nn_ind  &lt;- 1000  # number of individuals\nn_cycle &lt;- 20   # number of cycles\n\n# Encode states as indices: 1 = Healthy, 2 = Sick, 3 = Dead\nstate_index &lt;- setNames(1:3, states)\n\n# Initialize everyone in Healthy at time 0\nstate_mat &lt;- matrix(NA_integer_, nrow = n_ind, ncol = n_cycle + 1)\nstate_mat[, 1] &lt;- state_index[\"Healthy\"]\n\nfor (t in 1:n_cycle) {\n  for (i in 1:n_ind) {\n    current_state &lt;- state_mat[i, t]\n    # Sample next state according to corresponding row in P\n    state_mat[i, t + 1] &lt;- sample(\n      x = 1:3,\n      size = 1,\n      prob = P[current_state, ]\n    )\n  }\n}\n\nhead(state_mat[, 1:5])\n\n\n     [,1] [,2] [,3] [,4] [,5]\n[1,]    1    1    1    1    1\n[2,]    1    1    1    1    2\n[3,]    1    1    1    1    1\n[4,]    1    2    1    1    1\n[5,]    1    2    3    3    3\n[6,]    1    1    1    1    1",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>37</span>  <span class='chapter-title'>Markov Chains: When Tomorrow Depends Only on Today</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-markov-chains.html#state-occupancy-over-time",
+    "href": "07-sim-markov-chains.html#state-occupancy-over-time",
+    "title": "Markov Chains: When Tomorrow Depends Only on Today",
+    "section": "3.2. State occupancy over time",
+    "text": "3.2. State occupancy over time\nWe compute the proportion of individuals in each state at each cycle.\n\n\nCode\noccupancy &lt;- matrix(0, nrow = n_cycle + 1, ncol = 3)\ncolnames(occupancy) &lt;- states\n\nfor (t in 0:n_cycle) {\n  for (s in 1:3) {\n    occupancy[t + 1, s] &lt;- mean(state_mat[, t + 1] == s)\n  }\n}\n\noccupancy_df &lt;- data.frame(\n  cycle = 0:n_cycle,\n  Healthy = occupancy[, \"Healthy\"],\n  Sick    = occupancy[, \"Sick\"],\n  Dead    = occupancy[, \"Dead\"]\n)\n\nhead(occupancy_df)\n\n\n  cycle Healthy  Sick  Dead\n1     0   1.000 0.000 0.000\n2     1   0.853 0.094 0.053\n3     2   0.746 0.141 0.113\n4     3   0.677 0.158 0.165\n5     4   0.588 0.179 0.233\n6     5   0.541 0.177 0.282",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>37</span>  <span class='chapter-title'>Markov Chains: When Tomorrow Depends Only on Today</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-markov-chains.html#plotting-state-occupancy-over-time",
+    "href": "07-sim-markov-chains.html#plotting-state-occupancy-over-time",
+    "title": "Markov Chains: When Tomorrow Depends Only on Today",
+    "section": "3.3. Plotting state occupancy over time",
+    "text": "3.3. Plotting state occupancy over time\n\n\nCode\nlibrary(ggplot2)\nlibrary(tidyr)\n\noccupancy_long &lt;- occupancy_df %&gt;%\n  pivot_longer(cols = -cycle, names_to = \"state\", values_to = \"prob\")\n\nggplot(occupancy_long, aes(x = cycle, y = prob, color = state)) +\n  geom_line(size = 1) +\n  labs(\n    title = \"Markov Chain State Occupancy Over Time\",\n    x = \"Cycle\",\n    y = \"Proportion of individuals\"\n  ) +\n  ylim(0, 1)\n\n\n\n\n\nSimulated Markov chain: proportion of individuals in each state over time.\n\n\n\n\nThis illustrates how:\n\nThe Healthy proportion declines,\nSick fluctuates,\nDead gradually accumulates toward 1.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>37</span>  <span class='chapter-title'>Markov Chains: When Tomorrow Depends Only on Today</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-markov-health-models.html",
+    "href": "07-sim-markov-health-models.html",
+    "title": "Markov Health Decision Models: Following Patients Through Health States",
+    "section": "",
+    "text": "1. Introduction: turning Markov chains into decision tools\nIn the previous tutorial, we met Markov chains as a way to model how patients move between states like Healthy, Sick, and Dead over time.\nNow we ask a very HEOR-flavored question:\nThat’s exactly what Markov health decision models do:\nIn this tutorial we’ll:",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>38</span>  <span class='chapter-title'>Markov Health Decision Models: Following Patients Through Health States</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-markov-health-models.html#states-transitions-and-cycles",
+    "href": "07-sim-markov-health-models.html#states-transitions-and-cycles",
+    "title": "Markov Health Decision Models: Following Patients Through Health States",
+    "section": "2.1. States, transitions, and cycles",
+    "text": "2.1. States, transitions, and cycles\nA typical health decision Markov model has:\n\nA finite set of health states (e.g., Healthy, Disease, Dead),\nA cycle length (e.g., 1 year),\nA transition probability matrix for each strategy,\nAn initial distribution over states (e.g., 100% Healthy at baseline).\n\nOver each cycle:\n\nPatients transition between states according to the matrix,\nCosts and QALYs accrue based on time spent in each state,\nWe (optionally) apply discounting to reflect time preference for costs and health.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>38</span>  <span class='chapter-title'>Markov Health Decision Models: Following Patients Through Health States</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-markov-health-models.html#cohort-vs-microsimulation",
+    "href": "07-sim-markov-health-models.html#cohort-vs-microsimulation",
+    "title": "Markov Health Decision Models: Following Patients Through Health States",
+    "section": "2.2. Cohort vs microsimulation",
+    "text": "2.2. Cohort vs microsimulation\nHere we focus on a cohort Markov model:\n\nWe track proportions of a hypothetical cohort in each state over time,\nUse matrix multiplication: \\(\\pi_{t+1} = \\pi_t P\\),\nMultiply state occupancy by costs and utilities to get expected totals.\n\nMicrosimulation (individual-level state transitions) is similar but simulates individuals instead of cohorts — often using the same transition probabilities.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>38</span>  <span class='chapter-title'>Markov Health Decision Models: Following Patients Through Health States</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-markov-health-models.html#discounting",
+    "href": "07-sim-markov-health-models.html#discounting",
+    "title": "Markov Health Decision Models: Following Patients Through Health States",
+    "section": "2.3. Discounting",
+    "text": "2.3. Discounting\nFor annual cycles and discount rate \\(r\\):\n\nDiscount factor in year \\(t\\) (starting at \\(t = 0\\)):\n\n\\[\nd_t = \\frac{1}{(1 + r)^t}.\n\\]\nWe apply discounting to both costs and QALYs (commonly).",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>38</span>  <span class='chapter-title'>Markov Health Decision Models: Following Patients Through Health States</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-markov-health-models.html#model-setup",
+    "href": "07-sim-markov-health-models.html#model-setup",
+    "title": "Markov Health Decision Models: Following Patients Through Health States",
+    "section": "3.1. Model setup",
+    "text": "3.1. Model setup\n\n\nCode\nstates &lt;- c(\"Healthy\", \"Sick\", \"Dead\")\nn_states &lt;- length(states)\nn_cycle  &lt;- 20      # 20-year horizon\ndiscount_rate &lt;- 0.03\n\n# Discount factors per cycle (start at t = 0)\ncycles &lt;- 0:n_cycle\ndisc_factors &lt;- 1 / (1 + discount_rate)^cycles\n\ndisc_factors\n\n\n [1] 1.0000000 0.9708738 0.9425959 0.9151417 0.8884870 0.8626088 0.8374843\n [8] 0.8130915 0.7894092 0.7664167 0.7440939 0.7224213 0.7013799 0.6809513\n[15] 0.6611178 0.6418619 0.6231669 0.6050164 0.5873946 0.5702860 0.5536758",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>38</span>  <span class='chapter-title'>Markov Health Decision Models: Following Patients Through Health States</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-markov-health-models.html#transition-matrices",
+    "href": "07-sim-markov-health-models.html#transition-matrices",
+    "title": "Markov Health Decision Models: Following Patients Through Health States",
+    "section": "3.2. Transition matrices",
+    "text": "3.2. Transition matrices\nWe define separate transition matrices for Standard and New strategies.\n\nStandard care: higher risk of moving from Healthy → Sick and Sick → Dead.\nNew treatment: slightly reduces progression and mortality.\n\n\n\nCode\n# Rows: from state, Columns: to state\nP_standard &lt;- matrix(\n  c(\n    0.88, 0.08, 0.04,  # from Healthy\n    0.10, 0.75, 0.15,  # from Sick\n    0.00, 0.00, 1.00   # from Dead\n  ),\n  nrow = 3,\n  byrow = TRUE\n)\ncolnames(P_standard) &lt;- states\nrownames(P_standard) &lt;- states\n\nP_new &lt;- matrix(\n  c(\n    0.90, 0.07, 0.03,  # from Healthy (slightly lower progression and death)\n    0.12, 0.78, 0.10,  # from Sick (slightly better survival)\n    0.00, 0.00, 1.00\n  ),\n  nrow = 3,\n  byrow = TRUE\n)\ncolnames(P_new) &lt;- states\nrownames(P_new) &lt;- states\n\nP_standard\n\n\n        Healthy Sick Dead\nHealthy    0.88 0.08 0.04\nSick       0.10 0.75 0.15\nDead       0.00 0.00 1.00\n\n\nCode\nP_new\n\n\n        Healthy Sick Dead\nHealthy    0.90 0.07 0.03\nSick       0.12 0.78 0.10\nDead       0.00 0.00 1.00",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>38</span>  <span class='chapter-title'>Markov Health Decision Models: Following Patients Through Health States</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-markov-health-models.html#state-costs-and-utilities",
+    "href": "07-sim-markov-health-models.html#state-costs-and-utilities",
+    "title": "Markov Health Decision Models: Following Patients Through Health States",
+    "section": "3.3. State costs and utilities",
+    "text": "3.3. State costs and utilities\nWe assign annual cost and utility (QALY weight) to each state, per strategy.\nFor simplicity:\n\nState costs same across strategies, but New has an additional treatment cost while alive.\n\n\n\nCode\n# Base state costs (per year)\ncost_H &lt;- 500    # Healthy\ncost_S &lt;- 4000   # Sick\ncost_D &lt;- 0      # Dead\n\n# Utilities (QALY weights)\nutil_H &lt;- 0.9\nutil_S &lt;- 0.6\nutil_D &lt;- 0.0\n\n# Strategy-specific extra costs per year (e.g., treatment cost)\nextra_cost_standard &lt;- 0\nextra_cost_new      &lt;- 1500  # extra cost while alive (H or S)\n\nstate_costs_standard &lt;- c(cost_H, cost_S, cost_D)\nstate_costs_new      &lt;- c(cost_H + extra_cost_new,\n                          cost_S + extra_cost_new,\n                          cost_D)\n\nstate_utils &lt;- c(util_H, util_S, util_D)\n\nstate_costs_standard\n\n\n[1]  500 4000    0\n\n\nCode\nstate_costs_new\n\n\n[1] 2000 5500    0\n\n\nCode\nstate_utils\n\n\n[1] 0.9 0.6 0.0",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>38</span>  <span class='chapter-title'>Markov Health Decision Models: Following Patients Through Health States</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-markov-health-models.html#cohort-markov-model-function",
+    "href": "07-sim-markov-health-models.html#cohort-markov-model-function",
+    "title": "Markov Health Decision Models: Following Patients Through Health States",
+    "section": "3.4. Cohort Markov model function",
+    "text": "3.4. Cohort Markov model function\nWe write a small helper function to run the cohort model for a given strategy.\n\n\nCode\nrun_markov_cohort &lt;- function(P, state_costs, state_utils,\n                              n_cycle, disc_rate = 0.03) {\n  states &lt;- length(state_costs)\n  cycles &lt;- 0:n_cycle\n  disc_factors &lt;- 1 / (1 + disc_rate)^cycles\n  \n  # Initial distribution: all Healthy at t = 0\n  dist_mat &lt;- matrix(0, nrow = n_cycle + 1, ncol = states)\n  colnames(dist_mat) &lt;- c(\"Healthy\", \"Sick\", \"Dead\")\n  dist_mat[1, \"Healthy\"] &lt;- 1.0\n  \n  # Evolve the cohort\n  for (t in 1:n_cycle) {\n    dist_mat[t + 1, ] &lt;- dist_mat[t, ] %*% P\n  }\n  \n  # Costs and QALYs per cycle (undiscounted)\n  cost_per_cycle &lt;- dist_mat %*% state_costs\n  qaly_per_cycle &lt;- dist_mat %*% state_utils\n  \n  # Apply discounting\n  disc_costs &lt;- as.numeric(cost_per_cycle) * disc_factors\n  disc_qalys &lt;- as.numeric(qaly_per_cycle) * disc_factors\n  \n  list(\n    dist_mat         = dist_mat,\n    cost_per_cycle   = as.numeric(cost_per_cycle),\n    qaly_per_cycle   = as.numeric(qaly_per_cycle),\n    disc_costs       = disc_costs,\n    disc_qalys       = disc_qalys,\n    total_cost       = sum(disc_costs),\n    total_qaly       = sum(disc_qalys)\n  )\n}",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>38</span>  <span class='chapter-title'>Markov Health Decision Models: Following Patients Through Health States</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-markov-health-models.html#running-the-model-for-both-strategies",
+    "href": "07-sim-markov-health-models.html#running-the-model-for-both-strategies",
+    "title": "Markov Health Decision Models: Following Patients Through Health States",
+    "section": "3.5. Running the model for both strategies",
+    "text": "3.5. Running the model for both strategies\n\n\nCode\nres_standard &lt;- run_markov_cohort(\n  P = P_standard,\n  state_costs = state_costs_standard,\n  state_utils = state_utils,\n  n_cycle = n_cycle,\n  disc_rate = discount_rate\n)\n\nres_new &lt;- run_markov_cohort(\n  P = P_new,\n  state_costs = state_costs_new,\n  state_utils = state_utils,\n  n_cycle = n_cycle,\n  disc_rate = discount_rate\n)\n\nc(Standard_total_cost = res_standard$total_cost,\n  New_total_cost       = res_new$total_cost)\n\n\nStandard_total_cost      New_total_cost \n           12010.32            30158.75 \n\n\nCode\nc(Standard_total_qaly = res_standard$total_qaly,\n  New_total_qaly       = res_new$total_qaly)\n\n\nStandard_total_qaly      New_total_qaly \n           8.115045            9.350440 \n\n\nWe can compute incremental outcomes:\n\n\nCode\ndC &lt;- res_new$total_cost - res_standard$total_cost\ndE &lt;- res_new$total_qaly - res_standard$total_qaly\n\nICER &lt;- dC / dE\n\nc(Incremental_cost = dC,\n  Incremental_qaly = dE,\n  ICER             = ICER)\n\n\nIncremental_cost Incremental_qaly             ICER \n    18148.434857         1.235395     14690.389659",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>38</span>  <span class='chapter-title'>Markov Health Decision Models: Following Patients Through Health States</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-markov-health-models.html#visualizing-state-occupancy",
+    "href": "07-sim-markov-health-models.html#visualizing-state-occupancy",
+    "title": "Markov Health Decision Models: Following Patients Through Health States",
+    "section": "3.6. Visualizing state occupancy",
+    "text": "3.6. Visualizing state occupancy\n\n\nCode\nlibrary(ggplot2)\nlibrary(tidyr)\nlibrary(dplyr)\n\ndf_std &lt;- as.data.frame(res_standard$dist_mat)\ndf_std$cycle &lt;- 0:n_cycle\ndf_std$strategy &lt;- \"Standard\"\n\ndf_new &lt;- as.data.frame(res_new$dist_mat)\ndf_new$cycle &lt;- 0:n_cycle\ndf_new$strategy &lt;- \"New\"\n\nocc_all &lt;- bind_rows(df_std, df_new) %&gt;%\n  pivot_longer(cols = c(\"Healthy\", \"Sick\", \"Dead\"),\n               names_to = \"state\", values_to = \"prob\")\n\nggplot(occ_all, aes(x = cycle, y = prob, color = state, linetype = strategy)) +\n  geom_line(size = 1) +\n  labs(\n    title = \"State Occupancy Over Time by Strategy\",\n    x = \"Cycle\",\n    y = \"Proportion of cohort\"\n  ) +\n  ylim(0, 1)\n\n\n\n\n\nCohort Markov model: state occupancy over time for Standard vs New.\n\n\n\n\nThis simple model gives:\n\nLifetime discounted costs and QALYs for each strategy,\nState occupancy trajectories,\nAn ICER for decision making.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>38</span>  <span class='chapter-title'>Markov Health Decision Models: Following Patients Through Health States</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-bandits-ab-testing.html",
+    "href": "07-sim-bandits-ab-testing.html",
+    "title": "Bandits & A/B Testing: Teaching Your Model to Experiment",
+    "section": "",
+    "text": "1. Introduction: when your model has commitment issues\nIn a lot of applications (including HEOR and health policy), we face a recurring question:\nThree related approaches show up a lot:\nYou can think of it as:\nIn this tutorial we’ll:\nThis will be a bit longer than other tutorials because we’re packing three methods into one.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>39</span>  <span class='chapter-title'>Bandits & A/B Testing: Teaching Your Model to Experiment</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-bandits-ab-testing.html#what-is-a-multi-armed-bandit",
+    "href": "07-sim-bandits-ab-testing.html#what-is-a-multi-armed-bandit",
+    "title": "Bandits & A/B Testing: Teaching Your Model to Experiment",
+    "section": "2.1. What is a multi-armed bandit?",
+    "text": "2.1. What is a multi-armed bandit?\nThe classic mental picture:\n\nYou walk into a casino with several slot machines (“arms”),\nEach arm pays out with an unknown probability,\nYou want to maximize total reward over time.\n\nAt each time \\(t\\):\n\nYou choose an arm \\(A_t\\),\nYou observe a reward \\(R_t\\) (e.g., 1 for success, 0 for failure),\nYou update your beliefs/policy and move on.\n\nThe exploration–exploitation tradeoff:\n\nExplore: try different arms to learn their payoffs,\nExploit: choose the arm that currently looks best.\n\nIf you only exploit:\n\nYou may get stuck on a suboptimal arm because early random luck favored it.\n\nIf you only explore:\n\nYou waste time pulling obviously bad arms.\n\nMulti-armed bandit algorithms are strategies to balance exploration and exploitation.\nWe’ll illustrate with a simple ε-greedy algorithm.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>39</span>  <span class='chapter-title'>Bandits & A/B Testing: Teaching Your Model to Experiment</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-bandits-ab-testing.html#synthetic-example-3-arm-bernoulli-bandit-with-ε-greedy",
+    "href": "07-sim-bandits-ab-testing.html#synthetic-example-3-arm-bernoulli-bandit-with-ε-greedy",
+    "title": "Bandits & A/B Testing: Teaching Your Model to Experiment",
+    "section": "2.2. Synthetic example: 3-arm Bernoulli bandit with ε-greedy",
+    "text": "2.2. Synthetic example: 3-arm Bernoulli bandit with ε-greedy\nImagine three treatments (arms):\n\nArm 1: true success probability \\(p_1 = 0.30\\),\nArm 2: true success probability \\(p_2 = 0.50\\),\nArm 3: true success probability \\(p_3 = 0.60\\) (the best).\n\nWe don’t know these probabilities. We just see successes/failures.\nThe ε-greedy policy:\n\nWith probability \\(\\epsilon\\) (e.g., 0.1): explore (choose a random arm),\nWith probability \\(1 - \\epsilon\\): exploit (choose the arm with highest estimated success rate so far).\n\n\n\nCode\nset.seed(123)\n\n# True success probabilities for the 3 arms\ntrue_p &lt;- c(0.30, 0.50, 0.60)\nk &lt;- length(true_p)\nn_rounds &lt;- 1000\nepsilon &lt;- 0.1\n\n# Storage\narm_counts   &lt;- rep(0, k)   # how many times each arm was pulled\narm_success  &lt;- rep(0, k)   # how many successes for each arm\nchosen_arm   &lt;- integer(n_rounds)\nreward       &lt;- numeric(n_rounds)\noptimal_arm  &lt;- which.max(true_p)\nregret       &lt;- numeric(n_rounds) # instantaneous regret\n\n\nNow we simulate:\n\n\nCode\nfor (t in 1:n_rounds) {\n  # Decide whether to explore or exploit\n  if (runif(1) &lt; epsilon || sum(arm_counts) == 0) {\n    # Explore: choose an arm at random\n    a_t &lt;- sample(1:k, 1)\n  } else {\n    # Exploit: choose arm with highest empirical success rate\n    emp_rate &lt;- ifelse(arm_counts &gt; 0, arm_success / arm_counts, 0)\n    a_t &lt;- which.max(emp_rate)\n  }\n\n  # Generate reward from the true Bernoulli distribution\n  r_t &lt;- rbinom(1, size = 1, prob = true_p[a_t])\n\n  # Update\n  arm_counts[a_t]  &lt;- arm_counts[a_t] + 1\n  arm_success[a_t] &lt;- arm_success[a_t] + r_t\n\n  chosen_arm[t] &lt;- a_t\n  reward[t]     &lt;- r_t\n\n  # Regret: difference between best possible expected reward and chosen arm's expected reward\n  regret[t] &lt;- max(true_p) - true_p[a_t]\n}\n\n# Cumulative reward and regret\ncum_reward &lt;- cumsum(reward)\ncum_regret &lt;- cumsum(regret)\n\n\n\n2.3. Visualizing learning and regret\n\n\nCode\nlibrary(ggplot2)\nlibrary(tidyr)\nlibrary(dplyr)\n\ndf_bandit &lt;- data.frame(\n  round = 1:n_rounds,\n  cum_reward = cum_reward,\n  cum_regret = cum_regret\n)\n\ndf_bandit_long &lt;- df_bandit %&gt;%\n  pivot_longer(cols = c(\"cum_reward\", \"cum_regret\"),\n               names_to = \"metric\", values_to = \"value\")\n\nggplot(df_bandit_long, aes(x = round, y = value, color = metric)) +\n  geom_line() +\n  labs(\n    title = \"Epsilon-Greedy Bandit Performance\",\n    x = \"Round\",\n    y = \"Value\",\n    color = \"Metric\"\n  )\n\n\n\n\n\nEpsilon-greedy bandit: cumulative reward and regret over time.\n\n\n\n\nWe can also see how often each arm was chosen:\n\n\nCode\ntable(chosen_arm)\n\n\nchosen_arm\n  1   2   3 \n 74 349 577 \n\n\nCode\narm_counts\n\n\n[1]  74 349 577\n\n\nOver time, the algorithm should:\n\nPull the best arm (Arm 3) more often,\nAccumulate relatively low regret,\nStill occasionally explore other arms.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>39</span>  <span class='chapter-title'>Bandits & A/B Testing: Teaching Your Model to Experiment</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-bandits-ab-testing.html#multi-armed-bandit-pros-and-cons",
+    "href": "07-sim-bandits-ab-testing.html#multi-armed-bandit-pros-and-cons",
+    "title": "Bandits & A/B Testing: Teaching Your Model to Experiment",
+    "section": "2.4. Multi-armed bandit: pros and cons",
+    "text": "2.4. Multi-armed bandit: pros and cons\nPros\n\nAdaptive learning\nLearns while acting: arms with better observed performance get more weight, potentially improving average outcomes during the learning phase.\nEfficient use of data\nObservations are concentrated on better-performing arms over time, which can be more efficient than fixed designs in some settings.\nNatural framework for online decision-making\nIdeal when decisions are sequential and you can update as new data arrive.\nMultiple algorithms available\nε-greedy, UCB, Thompson sampling, etc., with different theoretical guarantees and practical behavior.\n\nCons\n\nComplexity vs classic trials\nMore complex to design, analyze, and explain compared to simple A/B tests or RCTs.\nBias in estimation\nBecause assignment probabilities depend on past outcomes, naive estimators for treatment effects can be biased.\nEthical / operational constraints\nIn healthcare, continuously changing assignment probabilities may raise ethical, operational, or regulatory questions.\nContext ignored (in basic MAB)\nStandard multi-armed bandits treat all users/patients as exchangeable, ignoring covariates — which can be a big limitation in health settings.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>39</span>  <span class='chapter-title'>Bandits & A/B Testing: Teaching Your Model to Experiment</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-bandits-ab-testing.html#what-is-a-contextual-bandit",
+    "href": "07-sim-bandits-ab-testing.html#what-is-a-contextual-bandit",
+    "title": "Bandits & A/B Testing: Teaching Your Model to Experiment",
+    "section": "3.1. What is a contextual bandit?",
+    "text": "3.1. What is a contextual bandit?\nA contextual bandit extends multi-armed bandits by including features of the current situation (context):\n\nPatient-level covariates (age, comorbidities, risk scores),\nTime-varying characteristics (season, clinic, etc.).\n\nAt each step:\n\nObserve context \\(x_t\\),\nChoose an action (arm) \\(A_t\\),\nObserve reward \\(R_t\\),\nUpdate a context-dependent policy (e.g., a model for reward given context and arm).\n\nThe goal is still to maximize cumulative reward, but:\n\nThe best arm depends on the context.\n\nThis is like “personalized bandits” or “online contextual policy learning.”",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>39</span>  <span class='chapter-title'>Bandits & A/B Testing: Teaching Your Model to Experiment</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-bandits-ab-testing.html#synthetic-example-simple-contextual-ε-greedy-with-two-patient-types",
+    "href": "07-sim-bandits-ab-testing.html#synthetic-example-simple-contextual-ε-greedy-with-two-patient-types",
+    "title": "Bandits & A/B Testing: Teaching Your Model to Experiment",
+    "section": "3.2. Synthetic example: simple contextual ε-greedy with two patient types",
+    "text": "3.2. Synthetic example: simple contextual ε-greedy with two patient types\nTo keep things simple, suppose:\n\n2 arms: Treatment A and Treatment B,\nPatients have a binary context: high_risk vs low_risk,\nTrue success probabilities:\n\nFor low-risk patients:\n\nA: 0.8\nB: 0.6\n\nFor high-risk patients:\n\nA: 0.4\nB: 0.7\n\n\n\nSo:\n\nLow-risk patients do better with A,\nHigh-risk patients do better with B.\n\nWe’ll use a very simple contextual policy:\n\nFor each arm and context, estimate success rate separately,\nUse ε-greedy within context.\n\n\n\nCode\nset.seed(123)\n\nn_rounds &lt;- 2000\nepsilon  &lt;- 0.1\n\n# Context: high_risk (1) or low_risk (0)\n# We'll simulate a mix of 60% low-risk, 40% high-risk\ncontext &lt;- rbinom(n_rounds, size = 1, prob = 0.4)  # 1 = high risk\n\n# True success probabilities as a function of context and arm\ntrue_p_context &lt;- function(ctx, arm) {\n  if (ctx == 0) { # low-risk\n    if (arm == 1) return(0.8) else return(0.6)\n  } else {        # high-risk\n    if (arm == 1) return(0.4) else return(0.7)\n  }\n}\n\nk &lt;- 2  # two arms\n\n# Track counts and successes by context and arm\n# rows: context (0,1), cols: arm (1,2)\ncounts &lt;- matrix(0, nrow = 2, ncol = k)\nsuccess &lt;- matrix(0, nrow = 2, ncol = k)\n\nchosen_arm &lt;- integer(n_rounds)\nreward     &lt;- numeric(n_rounds)\noptimal    &lt;- integer(n_rounds)\nregret     &lt;- numeric(n_rounds)\n\n\nSimulation:\n\n\nCode\nfor (t in 1:n_rounds) {\n  ctx &lt;- context[t]       # 0 or 1\n  row_idx &lt;- ctx + 1      # map 0-&gt;1, 1-&gt;2 for matrix indexing\n\n  # Epsilon-greedy within context\n  if (runif(1) &lt; epsilon || sum(counts[row_idx, ]) == 0) {\n    a_t &lt;- sample(1:k, 1)\n  } else {\n    emp_rate &lt;- ifelse(counts[row_idx, ] &gt; 0,\n                       success[row_idx, ] / counts[row_idx, ],\n                       0)\n    a_t &lt;- which.max(emp_rate)\n  }\n\n  # Generate reward\n  p_true &lt;- true_p_context(ctx, a_t)\n  r_t &lt;- rbinom(1, size = 1, prob = p_true)\n\n  # Update\n  counts[row_idx, a_t]  &lt;- counts[row_idx, a_t] + 1\n  success[row_idx, a_t] &lt;- success[row_idx, a_t] + r_t\n\n  chosen_arm[t] &lt;- a_t\n  reward[t]     &lt;- r_t\n\n  # Optimal arm for this context\n  p_arm1 &lt;- true_p_context(ctx, 1)\n  p_arm2 &lt;- true_p_context(ctx, 2)\n  best_p &lt;- max(p_arm1, p_arm2)\n  regret[t] &lt;- best_p - p_true\n}\n\ncum_reward_cb &lt;- cumsum(reward)\ncum_regret_cb &lt;- cumsum(regret)\n\n\n\n3.3. Comparing contextual vs non-contextual policies (sketch)\nFor brevity, we won’t fully simulate a non-contextual bandit here, but conceptually:\n\nA non-contextual bandit would try to find one best arm for everyone,\nBut in our setup, the best arm depends on patient type,\nA contextual bandit can adapt treatment choices to context and achieve higher overall reward (success rate) and lower regret.\n\nYou could implement a non-contextual ε-greedy policy on the same data and compare cumulative regret across the two policies.\n\n\n3.4. Pros and cons of contextual bandits\nPros\n\nPersonalization\nCan tailor treatment/decisions to patient covariates, potentially improving overall outcomes compared to one-size-fits-all policies.\nMore realistic for health applications\nIn HEOR and policy, context (risk profile, comorbidities, clinic, time) is almost always important.\nBridges to supervised learning\nMany contextual bandit algorithms (e.g., linear models, generalized linear models, neural networks) look like supervised learning with an exploration component.\nData efficiency\nCan share information across similar contexts, improving learning speed in rich covariate spaces.\n\nCons\n\nMore complex modeling\nRequires modeling reward as a function of context and action, which can be statistically and computationally more demanding.\nRisk of model misspecification\nIf the reward model is wrong or too rigid, the policy may learn suboptimal treatment rules.\nFairness and subgroup issues\nIf not designed carefully, contextual bandits can reinforce disparities by under-exploring certain subgroups.\nImplementation burden\nRequires infrastructure to collect covariates in real time, run the policy, and log data — non-trivial in many health systems.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>39</span>  <span class='chapter-title'>Bandits & A/B Testing: Teaching Your Model to Experiment</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-bandits-ab-testing.html#what-is-ab-testing",
+    "href": "07-sim-bandits-ab-testing.html#what-is-ab-testing",
+    "title": "Bandits & A/B Testing: Teaching Your Model to Experiment",
+    "section": "4.1. What is A/B testing?",
+    "text": "4.1. What is A/B testing?\nA/B testing (or controlled trials with two arms) is the classic:\n\nRandomize individuals to A or B,\nCollect outcomes,\nRun a statistical test (e.g., difference in means/proportions),\nDecide which arm is better (if any).\n\nKey features:\n\nAssignment probabilities are usually fixed (e.g., 50/50),\nNo adaptation over time,\nAnalysis is usually done after data collection stops.\n\nThis is conceptually simple and aligns well with:\n\nClassical statistics,\nRegulatory standards,\nMany HEOR and clinical trial practices.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>39</span>  <span class='chapter-title'>Bandits & A/B Testing: Teaching Your Model to Experiment</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-bandits-ab-testing.html#synthetic-example-simple-ab-test-on-binary-outcomes",
+    "href": "07-sim-bandits-ab-testing.html#synthetic-example-simple-ab-test-on-binary-outcomes",
+    "title": "Bandits & A/B Testing: Teaching Your Model to Experiment",
+    "section": "4.2. Synthetic example: simple A/B test on binary outcomes",
+    "text": "4.2. Synthetic example: simple A/B test on binary outcomes\nWe’ll use a very similar setup as the bandit example:\n\nTreatment A: true success probability 0.5,\nTreatment B: true success probability 0.6.\n\nWe’ll:\n\nRandomize 1,000 patients 50/50 A vs B,\nObserve outcomes,\nPerform a simple proportion test.\n\n\n\nCode\nset.seed(123)\n\nn_total &lt;- 1000\np_A &lt;- 0.5\np_B &lt;- 0.6\n\n# Randomize 50/50\ntreatment &lt;- sample(c(\"A\", \"B\"), size = n_total, replace = TRUE)\n\n# Generate outcomes\noutcome &lt;- ifelse(\n  treatment == \"A\",\n  rbinom(n_total, size = 1, prob = p_A),\n  rbinom(n_total, size = 1, prob = p_B)\n)\n\ntable(treatment, outcome)\n\n\n         outcome\ntreatment   0   1\n        A 241 265\n        B 202 292\n\n\nWe can estimate success rates and run a simple test:\n\n\nCode\nprop_A &lt;- mean(outcome[treatment == \"A\"])\nprop_B &lt;- mean(outcome[treatment == \"B\"])\n\nc(\n  prop_A = prop_A,\n  prop_B = prop_B,\n  diff  = prop_B - prop_A\n)\n\n\n   prop_A    prop_B      diff \n0.5237154 0.5910931 0.0673777 \n\n\nCode\n# 2-sample proportion test (approximate)\ntab &lt;- table(treatment, outcome)\nprop.test(x = c(tab[\"A\", \"1\"], tab[\"B\", \"1\"]),\n          n = c(sum(treatment == \"A\"), sum(treatment == \"B\")))\n\n\n\n    2-sample test for equality of proportions with continuity correction\n\ndata:  c(tab[\"A\", \"1\"], tab[\"B\", \"1\"]) out of c(sum(treatment == \"A\"), sum(treatment == \"B\"))\nX-squared = 4.3299, df = 1, p-value = 0.03745\nalternative hypothesis: two.sided\n95 percent confidence interval:\n -0.13080449 -0.00395091\nsample estimates:\n   prop 1    prop 2 \n0.5237154 0.5910931 \n\n\nThe test tells us whether the difference is statistically significant at some alpha level.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>39</span>  <span class='chapter-title'>Bandits & A/B Testing: Teaching Your Model to Experiment</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-bandits-ab-testing.html#pros-and-cons-of-ab-testing",
+    "href": "07-sim-bandits-ab-testing.html#pros-and-cons-of-ab-testing",
+    "title": "Bandits & A/B Testing: Teaching Your Model to Experiment",
+    "section": "4.3. Pros and cons of A/B testing",
+    "text": "4.3. Pros and cons of A/B testing\nPros\n\nSimple and well-understood\nEasy to explain, design, and analyze. Aligns with classical statistics and clinical trial paradigms.\nUnbiased estimation\nFixed randomization and no adaptation make standard estimators for treatment effects unbiased under usual assumptions.\nRegulatory familiarity\nRegulators and ethics boards are very familiar with RCT-style A/B designs.\nClear stopping rule\nPre-defined sample size and analysis plan simplify interpretation and avoid multiple-testing pitfalls (if adhered to).\n\nCons\n\nNo adaptation during the trial\nPotentially many people receive suboptimal treatment while the trial continues.\nInefficient for long-running online settings\nIn ongoing systems (e.g., continuous patient inflows), repeated static A/B tests may be suboptimal compared to more adaptive learning strategies.\nDoes not naturally use covariates for decision-making\nAlthough you can stratify and adjust, standard A/B tests don’t adapt treatment by context during the experiment.\nWasteful if one arm is clearly inferior early on\nThe design doesn’t automatically reduce assignment to inferior arms as evidence accumulates.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>39</span>  <span class='chapter-title'>Bandits & A/B Testing: Teaching Your Model to Experiment</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-bandits-ab-testing.html#multi-armed-bandits",
+    "href": "07-sim-bandits-ab-testing.html#multi-armed-bandits",
+    "title": "Bandits & A/B Testing: Teaching Your Model to Experiment",
+    "section": "6.1. Multi-armed bandits",
+    "text": "6.1. Multi-armed bandits\nUse cases:\n\nAdaptive outreach strategies\nChoosing among multiple outreach methods (SMS, call, letter) to maximize screening uptake or adherence.\nChoosing among “good enough” options\nWhen all options are acceptable and we want to learn which works best in practice (e.g., behavioral nudges).\nResource allocation in pilots\nAllocating limited resources among several interventions while learning which yields higher returns.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>39</span>  <span class='chapter-title'>Bandits & A/B Testing: Teaching Your Model to Experiment</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-bandits-ab-testing.html#contextual-bandits",
+    "href": "07-sim-bandits-ab-testing.html#contextual-bandits",
+    "title": "Bandits & A/B Testing: Teaching Your Model to Experiment",
+    "section": "6.2. Contextual bandits",
+    "text": "6.2. Contextual bandits\nUse cases:\n\nPersonalized adherence interventions\nTailoring reminders or support intensity based on risk profile and past behavior.\nTargeted case management\nChoosing which patients receive high-touch vs low-touch care management.\nAdaptive clinical decision support (within constraints)\nSuggesting different options for low vs high-risk patients, updating over time as more data accumulate.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>39</span>  <span class='chapter-title'>Bandits & A/B Testing: Teaching Your Model to Experiment</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-bandits-ab-testing.html#ab-testing",
+    "href": "07-sim-bandits-ab-testing.html#ab-testing",
+    "title": "Bandits & A/B Testing: Teaching Your Model to Experiment",
+    "section": "6.3. A/B testing",
+    "text": "6.3. A/B testing\nUse cases:\n\nFormal evaluation of interventions\nClassic RCT-style questions: “Does this policy or program improve outcomes compared to usual care?”\nPricing, benefit design, or informational changes\nEvaluating different copay levels, benefit designs, or communications in controlled pilots.\nBaseline evidence before scaling\nRunning a clean A/B test before adopting a new program system-wide.\n\nA realistic HEOR toolkit will include all three:\n\nA/B tests for clear causal evidence,\nMulti-armed bandits for online optimization without context,\nContextual bandits for personalization when context matters.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>39</span>  <span class='chapter-title'>Bandits & A/B Testing: Teaching Your Model to Experiment</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-microsimulation.html",
+    "href": "07-sim-microsimulation.html",
+    "title": "Microsimulation Models",
+    "section": "",
+    "text": "Overview\nThis tutorial will cover microsimulation: - Individual-level state histories and transitions - Advantages and challenges compared to cohort models - Example use cases in screening and prevention",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>40</span>  <span class='chapter-title'>Microsimulation Models</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-des.html",
+    "href": "07-sim-des.html",
+    "title": "Discrete Event Simulation (DES)",
+    "section": "",
+    "text": "Overview\nThis tutorial will introduce DES: - Events, queues, and resources - Time-to-event modeling - Potential applications in health systems and resource planning",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>41</span>  <span class='chapter-title'>Discrete Event Simulation (DES)</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-calibration.html",
+    "href": "07-sim-calibration.html",
+    "title": "Model Calibration",
+    "section": "",
+    "text": "Overview\nThis tutorial will cover calibration concepts: - Calibration targets and goodness-of-fit measures - Objective functions and search strategies - Brief mentions of Bayesian calibration and emulators",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>42</span>  <span class='chapter-title'>Model Calibration</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-lhs-design.html",
+    "href": "07-sim-lhs-design.html",
+    "title": "Latin Hypercube Sampling (LHS) for Calibration and Emulators",
+    "section": "",
+    "text": "1. Introduction: when “random” needs to be a bit smarter\nWhen we say “let’s explore the parameter space,” we often start with:\nThat’s simple random sampling. It’s easy, but:\nEnter Latin Hypercube Sampling (LHS):\nrandom, but with manners.\nLHS is a way to:\nIn this tutorial, we’ll:",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>43</span>  <span class='chapter-title'>Latin Hypercube Sampling (LHS) for Calibration and Emulators</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-lhs-design.html#the-basic-idea",
+    "href": "07-sim-lhs-design.html#the-basic-idea",
+    "title": "Latin Hypercube Sampling (LHS) for Calibration and Emulators",
+    "section": "2.1. The basic idea",
+    "text": "2.1. The basic idea\nImagine you have one parameter, say a probability that can vary from 0 to 1.\n\nIf you take 10 random samples, they might all end up between 0.2 and 0.5.\nWith LHS, you force the samples to spread out.\n\nIn 1D, LHS:\n\nDivides the range (e.g., 0 to 1) into \\(N\\) equal intervals.\nIn each interval, it selects one value at random.\nThis gives you \\(N\\) samples, each in a different interval.\n\nResult: you don’t get 10 samples all in the same tiny region; you get coverage across the whole range.\nIn higher dimensions (multiple parameters), LHS generalizes this idea.\nTo be more concrete, let’s show how it works with a graphical example.\n\n\nCode\nlibrary(ggplot2)\nsource(\"R/theme-heor-book.R\") \ntheme_set(theme_heor_book())\n\nset.seed(123)\nn_samples &lt;- 100\n# Random sampling\nrandom_samples &lt;- runif(n_samples, min = 0, max = 1)\n# LHS sampling\nlhs_intervals &lt;- seq(0, 1, length.out = n_samples + 1)\nlhs_samples &lt;- lhs_intervals[-(n_samples + 1)] +\n  runif(n_samples, min = 0, max = 1 / n_samples)\ndf_lhs &lt;- data.frame(\n  Sample = c(random_samples, lhs_samples),\n  Method = rep(c(\"Random\", \"LHS\"), each = n_samples)\n)\nggplot(df_lhs, aes(x = Sample, y = Method)) +\n  geom_point(size = 2, alpha = 0.6) +\n  labs(\n    title = \"Comparison of Random Sampling vs Latin Hypercube Sampling (LHS)\",\n    x = \"Parameter Value\",\n    y = \"Sampling Method\"\n  ) +\n  theme_heor_book()",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>43</span>  <span class='chapter-title'>Latin Hypercube Sampling (LHS) for Calibration and Emulators</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-lhs-design.html#multiple-dimensions-the-latin-part",
+    "href": "07-sim-lhs-design.html#multiple-dimensions-the-latin-part",
+    "title": "Latin Hypercube Sampling (LHS) for Calibration and Emulators",
+    "section": "2.2. Multiple dimensions: the “Latin” part",
+    "text": "2.2. Multiple dimensions: the “Latin” part\nSuppose you have 3 parameters:\n\n\\(\\theta_1\\): transition probability,\n\\(\\theta_2\\): hazard ratio,\n\\(\\theta_3\\): cost multiplier.\n\nYou want \\(N\\) parameter sets (e.g., \\(N = 1000\\)).\nFor each parameter:\n\nDivide its range (or distribution) into \\(N\\) intervals of equal probability.\nSample one value from each interval.\n\nThen:\n\nFor \\(\\theta_1\\), you get 1000 values, each from a different interval.\nFor \\(\\theta_2\\), you also get 1000 values, one per interval.\nSame for \\(\\theta_3\\).\n\nNow you need to pair these values across parameters so that:\n\nEach of the 1000 parameter sets uses one value from each parameter’s list.\nNo interval is used twice in the same dimension.\n\nThis pairing is done in a way that each dimension is “filled” with one sample from each interval — like a Latin square generalization to multiple dimensions. That’s why it’s called Latin Hypercube.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>43</span>  <span class='chapter-title'>Latin Hypercube Sampling (LHS) for Calibration and Emulators</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-lhs-design.html#why-not-just-simple-random-sampling",
+    "href": "07-sim-lhs-design.html#why-not-just-simple-random-sampling",
+    "title": "Latin Hypercube Sampling (LHS) for Calibration and Emulators",
+    "section": "2.3. Why not just simple random sampling?",
+    "text": "2.3. Why not just simple random sampling?\nWith the same number of model runs, LHS tends to:\n\nCover the space more uniformly,\nReduce the chance of “holes”,\nGive better space-filling designs.\n\nThis is especially important when:\n\nEach model run is expensive (e.g., microsimulation, DES),\nYou want to explore wide parameter ranges,\nYou’re building emulators based on a limited number of runs.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>43</span>  <span class='chapter-title'>Latin Hypercube Sampling (LHS) for Calibration and Emulators</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-lhs-design.html#calibration-matching-the-model-to-reality",
+    "href": "07-sim-lhs-design.html#calibration-matching-the-model-to-reality",
+    "title": "Latin Hypercube Sampling (LHS) for Calibration and Emulators",
+    "section": "4.1. Calibration: matching the model to reality",
+    "text": "4.1. Calibration: matching the model to reality\nIn many HEOR and decision models (e.g., cancer screening, chronic disease progression), we don’t know some parameters precisely:\n\nTransition probabilities between states,\nIncidence or progression rates,\nRelative risks,\nAdherence or implementation parameters.\n\nWe often have:\n\nPriors or plausible ranges for parameters, and\nCalibration targets: observed data (e.g., incidence, prevalence, mortality) the model should reproduce.\n\nCalibration is the process of finding parameter sets that make the model’s outputs line up with these targets.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>43</span>  <span class='chapter-title'>Latin Hypercube Sampling (LHS) for Calibration and Emulators</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-lhs-design.html#why-lhs-is-useful-for-calibration",
+    "href": "07-sim-lhs-design.html#why-lhs-is-useful-for-calibration",
+    "title": "Latin Hypercube Sampling (LHS) for Calibration and Emulators",
+    "section": "4.2. Why LHS is useful for calibration",
+    "text": "4.2. Why LHS is useful for calibration\nTo calibrate, we typically:\n\nGenerate a large set of candidate parameter vectors.\nRun the model for each vector.\nCompare model outputs to calibration targets using some goodness-of-fit criterion.\nKeep, weight, or optimize toward the “best” parameter sets.\n\nLHS helps at step 1:\n\nInstead of naive random draws, we use LHS to efficiently explore the parameter space.\nThis reduces the risk that we miss regions where the model fits well.\nFor the same number of model runs, we get more informative coverage.\n\nTypical workflow:\n\nChoose ranges or distributions for each parameter (based on literature/expert opinion).\nUse LHS to sample, say, 1000–10,000 parameter sets.\nSimulate the model at each set.\nCompute a fit metric (e.g., sum of squared differences, likelihood).\nUse these to:\n\nSelect the best-fitting sets,\nOr feed into a more formal approximate Bayesian calibration.\n\n\nIn short: LHS turns your calibration search into a structured exploration rather than a random wander.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>43</span>  <span class='chapter-title'>Latin Hypercube Sampling (LHS) for Calibration and Emulators</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-lhs-design.html#why-emulators",
+    "href": "07-sim-lhs-design.html#why-emulators",
+    "title": "Latin Hypercube Sampling (LHS) for Calibration and Emulators",
+    "section": "5.1. Why emulators?",
+    "text": "5.1. Why emulators?\nMany HEOR models are:\n\nComputationally expensive to run (e.g., complex microsimulations),\nUsed for PSA, VOI, calibration, or scenario analysis that may need thousands or millions of evaluations.\n\nRunning the full model that many times can be impractical.\nEnter emulators (or surrogate models):\n\nStatistical or machine learning models (e.g., Gaussian processes, random forests, neural nets),\nTrained to approximate the outputs of the original model,\nMuch faster to evaluate once trained.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>43</span>  <span class='chapter-title'>Latin Hypercube Sampling (LHS) for Calibration and Emulators</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-lhs-design.html#lhs-as-a-design-for-training-emulators",
+    "href": "07-sim-lhs-design.html#lhs-as-a-design-for-training-emulators",
+    "title": "Latin Hypercube Sampling (LHS) for Calibration and Emulators",
+    "section": "5.2. LHS as a design for training emulators",
+    "text": "5.2. LHS as a design for training emulators\nTo build an emulator:\n\nChoose inputs (parameters, maybe some scenario variables).\nEvaluate the original model at a set of carefully chosen input points.\nFit the emulator to these input–output pairs.\nUse the emulator as a stand-in for the original model where speed is needed.\n\nLHS is a natural choice for step 2:\n\nYou generate an LHS design over the input space (the parameters you want the emulator to learn).\nRun the costly model at each LHS point.\nThe resulting dataset is a space-filling training set for the emulator.\n\nBenefits:\n\nThe emulator “sees” diverse combinations of inputs and learns how the outputs change across the space.\nLHS avoids wasting many training points in overlapping regions.\nFor a fixed number of model runs, you generally get better emulator accuracy than with naive random sampling.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>43</span>  <span class='chapter-title'>Latin Hypercube Sampling (LHS) for Calibration and Emulators</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-lhs-design.html#using-lhs-based-emulators-in-practice",
+    "href": "07-sim-lhs-design.html#using-lhs-based-emulators-in-practice",
+    "title": "Latin Hypercube Sampling (LHS) for Calibration and Emulators",
+    "section": "5.3. Using LHS-based emulators in practice",
+    "text": "5.3. Using LHS-based emulators in practice\nOnce you have an emulator trained on an LHS design:\n\nYou can perform PSA or VOI analyses using the emulator instead of the original model, dramatically cutting computation time.\nYou can embed the emulator inside calibration algorithms (e.g., MCMC) where repeated evaluations are needed.\nYou can explore sensitivity and scenario analyses interactively.\n\nIn other words, LHS is a quiet, behind-the-scenes hero of efficient emulator design.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>43</span>  <span class='chapter-title'>Latin Hypercube Sampling (LHS) for Calibration and Emulators</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-lhs-design.html#efficient-use-of-expensive-simulations",
+    "href": "07-sim-lhs-design.html#efficient-use-of-expensive-simulations",
+    "title": "Latin Hypercube Sampling (LHS) for Calibration and Emulators",
+    "section": "6.1. Efficient use of expensive simulations",
+    "text": "6.1. Efficient use of expensive simulations\nComplex decision-analytic and simulation models are not cheap to run:\n\nThey may simulate large virtual cohorts,\nTrack detailed histories,\nInclude stochastic elements.\n\nLHS helps you:\n\nGet more information per simulation run,\nAvoid redundant sampling,\nMake calibration and uncertainty analysis feasible under time and computing constraints.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>43</span>  <span class='chapter-title'>Latin Hypercube Sampling (LHS) for Calibration and Emulators</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-lhs-design.html#better-exploration-fewer-blind-spots",
+    "href": "07-sim-lhs-design.html#better-exploration-fewer-blind-spots",
+    "title": "Latin Hypercube Sampling (LHS) for Calibration and Emulators",
+    "section": "6.2. Better exploration, fewer blind spots",
+    "text": "6.2. Better exploration, fewer blind spots\nPolicy-relevant questions often depend on:\n\nExtreme but plausible parameter combinations,\nInteractions between parameters,\nTail behavior of outcomes (e.g., catastrophic costs, rare events).\n\nLHS improves coverage of these combinations, making it less likely that:\n\nA “good” region of parameter space is never sampled,\nYour conclusions rely on a poorly explored neighborhood of parameters.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>43</span>  <span class='chapter-title'>Latin Hypercube Sampling (LHS) for Calibration and Emulators</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-lhs-design.html#foundation-for-modern-workflows-calibration-emulators",
+    "href": "07-sim-lhs-design.html#foundation-for-modern-workflows-calibration-emulators",
+    "title": "Latin Hypercube Sampling (LHS) for Calibration and Emulators",
+    "section": "6.3. Foundation for modern workflows (calibration + emulators)",
+    "text": "6.3. Foundation for modern workflows (calibration + emulators)\nMany modern HEOR workflows implicitly rely on:\n\nCalibration based on large parameter sets,\nEmulator-based PSA and VOI,\nSequential or adaptive designs that start from an initial LHS design.\n\nUnderstanding LHS helps you:\n\nDesign better calibration studies,\nBuild more reliable emulators,\nCommunicate why your set of simulations is “enough” (or not) to stakeholders.",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>43</span>  <span class='chapter-title'>Latin Hypercube Sampling (LHS) for Calibration and Emulators</span>"
+    ]
+  },
+  {
+    "objectID": "08-hp-overview.html",
+    "href": "08-hp-overview.html",
+    "title": "Health Policy Applications: Overview",
+    "section": "",
+    "text": "Overview\nThis part connects methods to real-world health policy questions.\nExample topics: - Screening and prevention policies - Coverage decisions and reimbursement - Equity and distributional considerations",
+    "crumbs": [
+      "8. Health Policy",
+      "<span class='chapter-number'>44</span>  <span class='chapter-title'>Health Policy Applications: Overview</span>"
+    ]
+  },
+  {
+    "objectID": "08-hp-screening-policies.html",
+    "href": "08-hp-screening-policies.html",
+    "title": "Screening and Prevention Policies",
+    "section": "",
+    "text": "Overview\nThis tutorial will cover: - Evaluating alternative screening intervals and ages - Adherence and implementation issues - Interpreting model outputs for policy recommendations",
+    "crumbs": [
+      "8. Health Policy",
+      "<span class='chapter-number'>45</span>  <span class='chapter-title'>Screening and Prevention Policies</span>"
+    ]
+  },
+  {
+    "objectID": "08-hp-budget-impact.html",
+    "href": "08-hp-budget-impact.html",
+    "title": "Budget Impact and Resource Allocation",
+    "section": "",
+    "text": "Overview\nThis tutorial will introduce budget impact analysis: - Short-term vs long-term horizons - Implementation costs and capacity constraints - Differences between BIA and CEA",
+    "crumbs": [
+      "8. Health Policy",
+      "<span class='chapter-number'>46</span>  <span class='chapter-title'>Budget Impact and Resource Allocation</span>"
+    ]
+  },
+  {
+    "objectID": "08-hp-equity.html",
+    "href": "08-hp-equity.html",
+    "title": "Equity and Distributional Considerations",
+    "section": "",
+    "text": "Overview\nThis tutorial will discuss equity in economic evaluations: - Health inequality and social welfare perspectives - Distributional cost-effectiveness analysis (at a high level) - Reporting and communicating equity impacts",
+    "crumbs": [
+      "8. Health Policy",
+      "<span class='chapter-number'>47</span>  <span class='chapter-title'>Equity and Distributional Considerations</span>"
+    ]
+  },
+  {
+    "objectID": "09-stat-overview.html",
+    "href": "09-stat-overview.html",
+    "title": "Statistics and Uncertainty: Overview",
+    "section": "",
+    "text": "Overview\nThis part provides a refresher on key statistical concepts needed for the other tutorials.\nExample topics: - Probability distributions - Estimation and uncertainty - Frequentist and Bayesian views",
+    "crumbs": [
+      "9. Statistics",
+      "<span class='chapter-number'>48</span>  <span class='chapter-title'>Statistics and Uncertainty: Overview</span>"
+    ]
+  },
+  {
+    "objectID": "09-stat-probability-refresher.html",
+    "href": "09-stat-probability-refresher.html",
+    "title": "Probability: Refresher",
+    "section": "",
+    "text": "Overview\nThis tutorial will review probability basics: - Random variables, expectations, and variance - Common distributions used in health modeling - Law of large numbers and central limit theorem (high level)",
+    "crumbs": [
+      "9. Statistics",
+      "<span class='chapter-number'>49</span>  <span class='chapter-title'>Probability: Refresher</span>"
+    ]
+  },
+  {
+    "objectID": "09-stat-ci-hypothesis.html",
+    "href": "09-stat-ci-hypothesis.html",
+    "title": "Confidence Intervals and Hypothesis Testing",
+    "section": "",
+    "text": "Overview\nThis tutorial will cover: - Point estimates and standard errors - Confidence intervals and p-values - Common pitfalls in interpretation",
+    "crumbs": [
+      "9. Statistics",
+      "<span class='chapter-number'>50</span>  <span class='chapter-title'>Confidence Intervals and Hypothesis Testing</span>"
+    ]
+  },
+  {
+    "objectID": "09-stat-bayesian-intro.html",
+    "href": "09-stat-bayesian-intro.html",
+    "title": "Introduction to Bayesian Thinking",
+    "section": "",
+    "text": "Overview\nThis tutorial will introduce Bayesian ideas: - Bayes’ theorem in applied settings - Priors, likelihood, and posteriors - Posterior predictive checks (conceptual overview)",
+    "crumbs": [
+      "9. Statistics",
+      "<span class='chapter-number'>51</span>  <span class='chapter-title'>Introduction to Bayesian Thinking</span>"
+    ]
+  },
+  {
+    "objectID": "07-sim-bandits-ab-testing.html#successes-rewards-and-regret-quick-definitions",
+    "href": "07-sim-bandits-ab-testing.html#successes-rewards-and-regret-quick-definitions",
+    "title": "Bandits & A/B Testing: Teaching Your Model to Experiment",
+    "section": "Successes, rewards, and regret: quick definitions",
+    "text": "Successes, rewards, and regret: quick definitions\nBefore we dive too deep into algorithms, it helps to clarify three key quantities we keep tracking in bandit problems:\n\nSuccesses\nIn a bandit setup, a success is simply a “good” outcome for the chosen arm.\nExamples:\n\nA patient attends a screening appointment,\nA reminder improves adherence,\nA message leads to the desired action.\n\nIn code, we usually record successes as 1 and failures as 0, and we keep a running count of how many successes each arm has accumulated over time.\n\n\nRewards\nThe reward is the numerical payoff we assign to each outcome.\n\nIn simple examples, the reward is just the success indicator: 1 for success, 0 for failure.\nIn more general settings, the reward could be:\n\nA continuous outcome (e.g., cost savings),\nAn improvement in a risk score,\nQALYs gained.\n\n\nBandit algorithms are designed to maximize total reward (or its expectation) over time.\n\n\nRegret\nRegret measures how much better we could have done if we had always chosen the best possible arm at each step.\n\nInstantaneous regret at time \\(t\\):\n\\[\n\\text{regret}_t\n=\n\\text{expected reward of the best arm}\n-\n\\text{expected reward of the chosen arm}.\n\\]\nCumulative regret up to time \\(T\\):\n\\[\n\\text{Cumulative regret}(T)\n=\n\\sum_{t=1}^{T} \\text{regret}_t.\n\\]\n\nLow cumulative regret means the algorithm quickly learns to choose near-optimal actions. High cumulative regret means it spent a lot of time pulling suboptimal arms (for example, sticking too long with a weak intervention or over-exploring ones that don’t work very well).",
+    "crumbs": [
+      "7. Simulation Models",
+      "<span class='chapter-number'>39</span>  <span class='chapter-title'>Bandits & A/B Testing: Teaching Your Model to Experiment</span>"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Tutorials in Data Science, Machine Learning, and Decision Sciences in R",
+    "section": "",
+    "text": "#set up code chunk\n\nWelcome\nThis online book compiles a collection of R-based tutorials across several topic areas:\n\nFoundations (R, RStudio, Quarto, Git/GitHub)\nData science workflows\nMachine learning\nCausal inference\nEconomic evaluation and decision sciences\nSimulation models\nHealth policy applications\nStatistics and uncertainty\n\nEach topic area is a part of the book, and each tutorial is a separate Quarto file. This makes it easy to add, modify, or reuse individual tutorials.\nUse the sidebar to navigate by part and select a specific tutorial.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Tutorials in Data Science, Machine Learning, and Decision Sciences in R</span>"
+    ]
+  },
+  {
+    "objectID": "03-ml-logistic-regression.html",
+    "href": "03-ml-logistic-regression.html",
+    "title": "Logistic Regression in R: Predicting Binary Outcomes",
+    "section": "",
+    "text": "1. Introduction: when your outcome is just \"yes\" or \"no\"\nIf linear regression is the overachiever of statistics, logistic regression is its cousin who shows up whenever the question is basically:\nIn other words:\n- Did the patient have high blood pressure? (Yes/No)\n- Was the person readmitted within 30 days? (Yes/No)\n- Did the patient adhere to treatment? (Yes/No)\nLinear regression tries to predict a number on a continuous scale. Logistic regression is the one we call when the outcome is binary: 0/1, Yes/No, Success/Failure.\nYou could try to brute-force things by running a linear regression on 0/1 outcomes and pretending that the predicted values are probabilities. But:\nLogistic regression fixes this by:",
+    "crumbs": [
+      "3. Machine Learning",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Logistic Regression in R: Predicting Binary Outcomes</span>"
+    ]
+  },
+  {
+    "objectID": "03-ml-logistic-regression.html#binary-outcomes-and-probabilities",
+    "href": "03-ml-logistic-regression.html#binary-outcomes-and-probabilities",
+    "title": "Logistic Regression in R: Predicting Binary Outcomes",
+    "section": "2.1. Binary outcomes and probabilities",
+    "text": "2.1. Binary outcomes and probabilities\nWe will assume a binary outcome \\(Y\\) that takes values:\n\n\\(Y = 1\\) if the event happens (e.g., high blood pressure),\n\\(Y = 0\\) if it does not.\n\nFor each individual with predictor values \\(X\\) (e.g., age, BMI, gender), we are interested in:\n\\[\np(X) = P(Y = 1 \\mid X).\n\\]\nThis is a probability, so it must lie between 0 and 1.",
+    "crumbs": [
+      "3. Machine Learning",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Logistic Regression in R: Predicting Binary Outcomes</span>"
+    ]
+  },
+  {
+    "objectID": "03-ml-logistic-regression.html#why-not-just-use-linear-regression",
+    "href": "03-ml-logistic-regression.html#why-not-just-use-linear-regression",
+    "title": "Logistic Regression in R: Predicting Binary Outcomes",
+    "section": "2.2. Why not just use linear regression?",
+    "text": "2.2. Why not just use linear regression?\nIf we used a linear regression model like\n\\[\nY_i = \\beta_0 + \\beta_1 X_i + \\varepsilon_i,\n\\]\nwith \\(Y_i\\) in {0, 1}, we would run into problems:\n\nThe model can produce predicted values below 0 or above 1.\nThe error variance is not constant (it depends on \\(p(X)\\)).\nThe relationship between predictors and the probability is often curved, not straight.\n\nEnter logistic regression.",
+    "crumbs": [
+      "3. Machine Learning",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Logistic Regression in R: Predicting Binary Outcomes</span>"
+    ]
+  },
+  {
+    "objectID": "03-ml-logistic-regression.html#the-logistic-regression-model",
+    "href": "03-ml-logistic-regression.html#the-logistic-regression-model",
+    "title": "Logistic Regression in R: Predicting Binary Outcomes",
+    "section": "2.3. The logistic regression model",
+    "text": "2.3. The logistic regression model\nLogistic regression models the log-odds of the outcome instead of the probability directly.\nThe odds of the event are:\n\\[\n\\text{odds}(X) = \\frac{p(X)}{1 - p(X)}.\n\\]\nThe log-odds (also called the logit) are:\n\\[\n\\text{logit}(p(X)) = \\log\\left(\\frac{p(X)}{1 - p(X)}\\right).\n\\]\nThe logistic regression model assumes that the log-odds are a linear function of the predictors:\n\\[\n\\log\\left(\\frac{p(X)}{1 - p(X)}\\right) = \\beta_0 + \\beta_1 X_1 + \\beta_2 X_2 + \\cdots + \\beta_k X_k.\n\\]\nThis has two big consequences:\n\nThe right-hand side is linear in the predictors, which is familiar and easy to work with.\nThe model automatically keeps \\(p(X)\\) between 0 and 1 via the logistic function:\n\n\\[\np(X) = \\frac{1}{1 + \\exp\\left(-(\\beta_0 + \\beta_1 X_1 + \\cdots + \\beta_k X_k)\\right)}.\n\\]",
+    "crumbs": [
+      "3. Machine Learning",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Logistic Regression in R: Predicting Binary Outcomes</span>"
+    ]
+  },
+  {
+    "objectID": "03-ml-logistic-regression.html#interpreting-coefficients-in-terms-of-odds-ratios",
+    "href": "03-ml-logistic-regression.html#interpreting-coefficients-in-terms-of-odds-ratios",
+    "title": "Logistic Regression in R: Predicting Binary Outcomes",
+    "section": "2.4. Interpreting coefficients (in terms of odds ratios)",
+    "text": "2.4. Interpreting coefficients (in terms of odds ratios)\nFor a single continuous predictor \\(X\\), holding all other predictors constant:\n\n\\(\\beta_1\\) is the change in log-odds of the event for a one-unit increase in \\(X\\).\n\\(\\exp(\\beta_1)\\) is the odds ratio: the multiplicative change in odds for a one-unit increase in \\(X\\).\n\nFor a binary predictor (e.g., Male vs Female):\n\n\\(\\exp(\\beta_1)\\) is the ratio of the odds of the event for one category vs the reference category.\n\nPeople rarely think in log-odds in daily life. Odds ratios and predicted probabilities are usually easier to interpret, especially in HEOR.",
+    "crumbs": [
+      "3. Machine Learning",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Logistic Regression in R: Predicting Binary Outcomes</span>"
+    ]
+  },
+  {
+    "objectID": "03-ml-logistic-regression.html#load-and-prepare-the-data",
+    "href": "03-ml-logistic-regression.html#load-and-prepare-the-data",
+    "title": "Logistic Regression in R: Predicting Binary Outcomes",
+    "section": "3.1. Load and prepare the data",
+    "text": "3.1. Load and prepare the data\nWe focus on adults (Age ≥ 18) and keep only complete cases for simplicity.\n\n\nCode\n# Install NHANES package if needed\nif (!requireNamespace(\"NHANES\", quietly = TRUE)) {\n  install.packages(\"NHANES\")\n}\n\nlibrary(NHANES)\nlibrary(dplyr)\n\ndata(\"NHANES\")\n\n# Create the variable HighBP (Yes/No)\n\nNHANES &lt;- NHANES %&gt;%\n  mutate(\n    HighBP = ifelse(BPSysAve&gt;= 130 | BPDiaAve &gt;= 80, \"Yes\", \"No\")\n  )\n\n#table(NHANES$HighBP, useNA = \"ifany\")\n\nnhanes_logit &lt;- NHANES %&gt;%\n  filter(Age &gt;= 18) %&gt;%\n  select(HighBP, Age, BMI, Gender) %&gt;%\n  filter(!is.na(HighBP), !is.na(Age), !is.na(BMI), !is.na(Gender)) %&gt;%\n  mutate(\n    HighBP = factor(HighBP, levels = c(\"No\", \"Yes\")),\n    Gender = factor(Gender)\n  )\n\nsummary(nhanes_logit)\n\n\n HighBP          Age             BMI           Gender    \n No :4696   Min.   :18.00   Min.   :15.02   female:3601  \n Yes:2454   1st Qu.:31.00   1st Qu.:23.94   male  :3549  \n            Median :45.00   Median :27.62                \n            Mean   :46.23   Mean   :28.69                \n            3rd Qu.:59.00   3rd Qu.:32.10                \n            Max.   :80.00   Max.   :81.25                \n\n\nHere:\n\nHighBP is our binary outcome.\nAge and BMI are continuous predictors.\nGender is a categorical predictor (e.g., Male/Female).",
+    "crumbs": [
+      "3. Machine Learning",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Logistic Regression in R: Predicting Binary Outcomes</span>"
+    ]
+  },
+  {
+    "objectID": "03-ml-logistic-regression.html#fit-a-logistic-regression-model",
+    "href": "03-ml-logistic-regression.html#fit-a-logistic-regression-model",
+    "title": "Logistic Regression in R: Predicting Binary Outcomes",
+    "section": "3.2. Fit a logistic regression model",
+    "text": "3.2. Fit a logistic regression model\nWe use glm() with family = binomial to fit a logistic regression:\n\n\nCode\nfit_logit &lt;- glm(\n  HighBP ~ Age + BMI + Gender,\n  data = nhanes_logit,\n  family = binomial\n)\n\nsummary(fit_logit)\n\n\n\nCall:\nglm(formula = HighBP ~ Age + BMI + Gender, family = binomial, \n    data = nhanes_logit)\n\nCoefficients:\n             Estimate Std. Error z value Pr(&gt;|z|)    \n(Intercept) -4.027080   0.150800 -26.705   &lt;2e-16 ***\nAge          0.040756   0.001608  25.339   &lt;2e-16 ***\nBMI          0.039734   0.003951  10.056   &lt;2e-16 ***\nGendermale   0.524048   0.053677   9.763   &lt;2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\n(Dispersion parameter for binomial family taken to be 1)\n\n    Null deviance: 9197.0  on 7149  degrees of freedom\nResidual deviance: 8303.9  on 7146  degrees of freedom\nAIC: 8311.9\n\nNumber of Fisher Scoring iterations: 3\n\n\nThe summary() output shows:\n\nCoefficients on the log-odds scale,\nStandard errors, z-values, and p-values,\nOverall model information (null deviance, residual deviance, etc.).",
+    "crumbs": [
+      "3. Machine Learning",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Logistic Regression in R: Predicting Binary Outcomes</span>"
+    ]
+  },
+  {
+    "objectID": "03-ml-logistic-regression.html#from-log-odds-to-odds-ratios",
+    "href": "03-ml-logistic-regression.html#from-log-odds-to-odds-ratios",
+    "title": "Logistic Regression in R: Predicting Binary Outcomes",
+    "section": "3.3. From log-odds to odds ratios",
+    "text": "3.3. From log-odds to odds ratios\nTo get odds ratios and 95% confidence intervals:\n\n\nCode\ncoefs &lt;- summary(fit_logit)$coefficients\ncoefs\n\n\n               Estimate  Std. Error   z value      Pr(&gt;|z|)\n(Intercept) -4.02708013 0.150800403 -26.70470 4.150479e-157\nAge          0.04075613 0.001608415  25.33932 1.178622e-141\nBMI          0.03973447 0.003951168  10.05639  8.610123e-24\nGendermale   0.52404778 0.053676539   9.76307  1.621709e-22\n\n\nCode\n# Odds ratios and 95% CI\nor &lt;- exp(coefs[, \"Estimate\"])\nci_low &lt;- exp(coefs[, \"Estimate\"] - 1.96 * coefs[, \"Std. Error\"])\nci_high &lt;- exp(coefs[, \"Estimate\"] + 1.96 * coefs[, \"Std. Error\"])\n\nor_table &lt;- cbind(\n  OR = or,\n  CI_low = ci_low,\n  CI_high = ci_high\n)\n\nround(or_table, 3)\n\n\n               OR CI_low CI_high\n(Intercept) 0.018  0.013   0.024\nAge         1.042  1.038   1.045\nBMI         1.041  1.033   1.049\nGendermale  1.689  1.520   1.876\n\n\nInterpretation example (hypothetical):\n\nIf the odds ratio for Age is 1.04, we might say:\n&gt; For each additional year of age, the odds of having high blood pressure &gt; increase by about 4%, holding BMI and gender constant.\nIf the odds ratio for BMI is 1.05, we might say:\n&gt; For each one-unit increase in BMI, the odds of high blood pressure increase &gt; by about 5%, holding age and gender constant.\n\nRemember: this is odds, not probabilities — but we can get those too.",
+    "crumbs": [
+      "3. Machine Learning",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Logistic Regression in R: Predicting Binary Outcomes</span>"
+    ]
+  },
+  {
+    "objectID": "03-ml-logistic-regression.html#predicted-probabilities-for-specific-profiles",
+    "href": "03-ml-logistic-regression.html#predicted-probabilities-for-specific-profiles",
+    "title": "Logistic Regression in R: Predicting Binary Outcomes",
+    "section": "3.4. Predicted probabilities for specific profiles",
+    "text": "3.4. Predicted probabilities for specific profiles\nLet’s compute predicted probabilities for a few hypothetical individuals:\n\n\nCode\nnew_people &lt;- data.frame(\n  Age = c(30, 50, 65),\n  BMI = c(22, 30, 35),\n  Gender = factor(c(\"Female\", \"Female\", \"Male\"), levels = levels(nhanes_logit$Gender))\n)\n\nnew_people$pred_prob &lt;- predict(\n  fit_logit,\n  newdata = new_people,\n  type = \"response\"  # gives predicted probabilities\n)\n\nnew_people\n\n\n  Age BMI Gender pred_prob\n1  30  22   &lt;NA&gt;        NA\n2  50  30   &lt;NA&gt;        NA\n3  65  35   &lt;NA&gt;        NA\n\n\nNow we can say things like:\n\nA 30-year-old woman with BMI 22 has an estimated probability p of high BP.\nA 50-year-old woman with BMI 30 has a higher estimated probability.\nA 65-year-old man with BMI 35 has a higher estimated probability still.\n\nThese kinds of comparisons are extremely common in HEOR and health policy reports.",
+    "crumbs": [
+      "3. Machine Learning",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Logistic Regression in R: Predicting Binary Outcomes</span>"
+    ]
+  },
+  {
+    "objectID": "03-ml-logistic-regression.html#visualizing-predicted-probabilities",
+    "href": "03-ml-logistic-regression.html#visualizing-predicted-probabilities",
+    "title": "Logistic Regression in R: Predicting Binary Outcomes",
+    "section": "3.5. Visualizing predicted probabilities",
+    "text": "3.5. Visualizing predicted probabilities\nWe can also visualize the relationship between age and the probability of high blood pressure, for example at a fixed BMI, by using ggplot2:\n\n\nCode\nlibrary(ggplot2)\n\n# For plotting, we create a grid over Age and Gender at a fixed BMI (e.g., 27)\nage_grid &lt;- seq(20, 80, by = 1)\n\nplot_data &lt;- expand.grid(\n  Age = age_grid,\n  Gender = levels(nhanes_logit$Gender)\n)\n\nplot_data$BMI = 27\n\nplot_data$pred_prob &lt;- predict(\n  fit_logit,\n  newdata = plot_data,\n  type = \"response\"\n)\n\nggplot(plot_data, aes(x = Age, y = pred_prob, color = Gender)) +\n  geom_line(size = 1) +\n  labs(\n    x = \"Age (years)\",\n    y = \"Predicted probability of HighBP\",\n    title = \"Predicted probability of high blood pressure by age and gender\",\n    color = \"Gender\"\n  ) +\n  ylim(0, 1)\n\n\n\n\n\nEstimated probability of high blood pressure by age and gender.\n\n\n\n\nThis gives us a smooth curve showing how the predicted probability of high blood pressure increases with age, and how it differs by gender (according to the model).",
+    "crumbs": [
+      "3. Machine Learning",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Logistic Regression in R: Predicting Binary Outcomes</span>"
+    ]
+  },
+  {
+    "objectID": "03-ml-logistic-regression.html#modeling-clinical-and-utilization-outcomes",
+    "href": "03-ml-logistic-regression.html#modeling-clinical-and-utilization-outcomes",
+    "title": "Logistic Regression in R: Predicting Binary Outcomes",
+    "section": "4.1. Modeling clinical and utilization outcomes",
+    "text": "4.1. Modeling clinical and utilization outcomes\nMany important outcomes are binary:\n\nHospitalization (yes/no)\nICU admission (yes/no)\nTreatment adherence (yes/no)\nPresence of a comorbidity (yes/no)\nResponse to treatment (responder/non-responder)\n\nLogistic regression provides:\n\nAdjusted comparisons between groups,\nEstimates of how risk changes with age, comorbidities, or treatment,\nA way to generate risk scores or propensities.",
+    "crumbs": [
+      "3. Machine Learning",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Logistic Regression in R: Predicting Binary Outcomes</span>"
+    ]
+  },
+  {
+    "objectID": "03-ml-logistic-regression.html#inputs-for-decision-analytic-and-simulation-models",
+    "href": "03-ml-logistic-regression.html#inputs-for-decision-analytic-and-simulation-models",
+    "title": "Logistic Regression in R: Predicting Binary Outcomes",
+    "section": "4.2. Inputs for decision-analytic and simulation models",
+    "text": "4.2. Inputs for decision-analytic and simulation models\nDecision-analytic models often need:\n\nTransition probabilities (e.g., probability of having a heart attack next year),\nEvent risks given patient characteristics,\nBaseline and treatment-specific risk estimates.\n\nLogistic regression models can be used to:\n\nEstimate event probabilities given age, sex, disease status, etc.,\nProvide individualized risk predictions that feed into microsimulation models,\nInform scenario analyses where you change risk factors or treatment patterns.",
+    "crumbs": [
+      "3. Machine Learning",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Logistic Regression in R: Predicting Binary Outcomes</span>"
+    ]
+  },
+  {
+    "objectID": "03-ml-logistic-regression.html#adjusting-for-confounding-in-observational-studies",
+    "href": "03-ml-logistic-regression.html#adjusting-for-confounding-in-observational-studies",
+    "title": "Logistic Regression in R: Predicting Binary Outcomes",
+    "section": "4.3. Adjusting for confounding in observational studies",
+    "text": "4.3. Adjusting for confounding in observational studies\nWhen outcomes are binary (e.g., did the patient die? was the patient hospitalized?), logistic regression serves as a basic workhorse for:\n\nEstimating adjusted odds ratios,\nImplementing propensity score methods (propensity scores are often estimated using logistic regression),\nExploring how sensitive results are to different sets of covariates.\n\nWhile more advanced causal methods exist, logistic regression is often the first step — and sometimes the main engine — behind applied HEOR analyses.",
+    "crumbs": [
+      "3. Machine Learning",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Logistic Regression in R: Predicting Binary Outcomes</span>"
+    ]
+  },
+  {
+    "objectID": "03-ml-logistic-regression.html#communicating-risk-to-decision-makers",
+    "href": "03-ml-logistic-regression.html#communicating-risk-to-decision-makers",
+    "title": "Logistic Regression in R: Predicting Binary Outcomes",
+    "section": "4.4. Communicating risk to decision-makers",
+    "text": "4.4. Communicating risk to decision-makers\nLogistic regression outputs can be turned into:\n\nTables of predicted probabilities for different patient profiles,\nRisk curves by age or comorbidity,\nSimple “if-then” summaries that are understandable by clinicians, payers, and policy stakeholders.\n\nBeing able to say:\n\n“In this population, patients with characteristic X have roughly twice the odds of event Y compared to patients without X, after adjustment.”\n\n…is incredibly valuable in policy discussions.",
+    "crumbs": [
+      "3. Machine Learning",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Logistic Regression in R: Predicting Binary Outcomes</span>"
+    ]
+  },
+  {
+    "objectID": "00-Motivation-Intro.html",
+    "href": "00-Motivation-Intro.html",
+    "title": "Motivation and Introduction",
+    "section": "",
+    "text": "Why this tutorial exists (and why it’s a bit of a Frankenstein)\nWelcome!\nThis tutorial is my attempt to bring together the most relevant topics I’ve encountered during my professional experience in Health Economics and Outcomes Research (HEOR) and during my PhD training.\nIf you’ve ever felt like health economics requires you to be:\n\na data scientist,\na statistician,\na causal inference nerd,\na decision scientist,\na simulation modeler,\nand a part-time policy wonk…\n\n…then you’re exactly the kind of person this tutorial is for.\n\n\n\nA messy set of topics with surprisingly elegant connections\nAt first glance, the topics covered here look pretty heterogeneous:\n\nData science and machine learning\n\nCausal inference and study design\n\nEconomic evaluation and decision analysis\n\nSimulation models\n\nHealth policy applications\n\nStatistical foundations\n\nThey each come from different traditions, use different jargon, and often live in different courses, textbooks, and departments.\nBut in practice, these areas intersect a lot. Together, they form a network of methods that:\n\nAnswer related questions from different angles,\nShare common building blocks (probability, uncertainty, modeling),\nCreate bridges of knowledge that help us move from raw data → causal understanding → decisions → policy.\n\nA cost-effectiveness model might need:\n\nA causal effect from a regression or quasi-experimental design,\n\nA risk model from machine learning,\n\nA simulation engine to project long-term outcomes,\n\nAnd a policy lens to interpret everything in context.\n\nThis tutorial tries to live right at those intersections.\n\n\n\nInterdisciplinary by design\nHEOR is inherently interdisciplinary, and this tutorial embraces that:\n\nYou’ll see methods from statistics, econometrics, epidemiology, computer science, and decision sciences.\nThe examples and motivation are grounded in health policy and healthcare decision making.\nThe goal is not to defend any one discipline, but to give a practical toolkit for answering real research questions that do not respect disciplinary boundaries.\n\nThink of this as a tour through the “methods neighborhood” where everyone borrows sugar from everyone else.\n\n\n\nMy motivation (a mix of self-defense and generosity)\nThis tutorial serves two main purposes:\n\nRehearsal for me\nIt’s a structured way for me to review and rehearse the topics I’ve been learning in my PhD classes and during my work in HEOR. Writing things down forces clarity (and exposes the gaps!).\nA guide for others\nIt’s also meant as a guide for people who want to learn more about the core methodologies a health economist should know to tackle the many research questions that arise from different root problems, such as:\n\nEvaluating new interventions or policies\nUnderstanding real-world effectiveness and equity\nModeling long-term costs and outcomes\nTranslating evidence into decisions\n\n\nIf you’re trying to figure out “What methods should I know to function as a modern health economist?” — this is for you.\n\n\n\nWhat this tutorial is not\nThis is not meant to be a textbook or a perfectly curated, linear course.\nInstead:\n\nThink of it as a toolkit or methods catalog.\nEach tutorial is somewhat self-contained.\nYou can jump around depending on the question you’re trying to answer:\n\nNeed to remember how DiD works? Jump to that tutorial.\nNeed a refresher on Markov models? There’s a chapter for that.\nNeed to recall how to interpret a logistic regression coefficient? There’s something for that too.\n\n\nWhenever possible, I’ll point to further readings and lectures for people who want to go deeper than these notes.\n\n\n\nAbout the order (spoiler: it’s not perfect)\nYou’ll probably notice that the order of topics is… let’s say, imperfectly optimized\nAnd that’s okay.\nReal-life research questions rarely appear in a neat sequence. Sometimes you need simulation before you fully understand all the causal inference details. Sometimes you need policy context before deciding which model to build.\nSo:\n\nDon’t worry if the order feels weird.\nTreat this as a modular toolkit, not a 1-to-10 linear course.\nUse the sidebar as a menu: take what you need, when you need it.\n\n\n\n\nFor people who “know a bit of everything but are experts in nothing”\nFinally, this tutorial is also a bit of a love letter to people (like me) who often feel like:\n\n“I know something about almost everything… but I’m not a world expert in any of it.”\n\nThat’s okay. In HEOR and health policy, being a connector of ideas and methods is itself a superpower.\nSo let’s treat this tutorial as:\n\nA place to consolidate what we know,\nA gentle reminder of things we’ve seen before but might have forgotten,\nAnd a launching pad for diving deeper when a particular method becomes central to the question we’re working on.\n\nIf this helps you feel a little less lost in the methods forest — and a little more confident stitching ideas together — then it’s doing its job.\nWelcome to my toolkit.",
+    "crumbs": [
+      "0. Introduction",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Motivation and Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "01-foundations-overview.html",
+    "href": "01-foundations-overview.html",
+    "title": "Foundations: Overview",
+    "section": "",
+    "text": "Overview\nThis part introduces the core tools and concepts needed to work through the rest of the tutorials.\nExample topics: - Why reproducibility matters in health research and decision sciences - Overview of R, RStudio, Quarto, and Git/GitHub - How the tutorial repository is organized",
+    "crumbs": [
+      "1. Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Foundations: Overview</span>"
+    ]
+  },
+  {
+    "objectID": "01-foundations-r-setup.html",
+    "href": "01-foundations-r-setup.html",
+    "title": "Setting Up R, RStudio, and Projects",
+    "section": "",
+    "text": "Overview\nThis tutorial covers installation and basic setup: - Installing R and RStudio - Creating and using R projects - Suggested project folder structures for reproducibility",
+    "crumbs": [
+      "1. Foundations",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Setting Up R, RStudio, and Projects</span>"
+    ]
+  },
+  {
+    "objectID": "01-foundations-quarto-git.html",
+    "href": "01-foundations-quarto-git.html",
+    "title": "Quarto, Version Control, and GitHub",
+    "section": "",
+    "text": "Overview\nThis tutorial introduces literate programming and version control: - What Quarto is and why we use it - Basic anatomy of a .qmd file - Initializing a Git repository and connecting to GitHub",
+    "crumbs": [
+      "1. Foundations",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Quarto, Version Control, and GitHub</span>"
+    ]
+  },
+  {
+    "objectID": "02-data-overview.html",
+    "href": "02-data-overview.html",
+    "title": "Data Science in R: Overview",
+    "section": "",
+    "text": "Overview\nThis part focuses on practical data science workflows in R.\nExample topics: - Importing and exporting data - Tidy data principles - Working with health and survey datasets",
+    "crumbs": [
+      "2. Data Science",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Data Science in R: Overview</span>"
+    ]
+  },
+  {
+    "objectID": "02-data-wrangling.html",
+    "href": "02-data-wrangling.html",
+    "title": "Data Wrangling with dplyr",
+    "section": "",
+    "text": "Overview\nThis tutorial covers the basics of data manipulation using dplyr: - Filtering, selecting, mutating, and summarizing data - Grouped operations - Common patterns for cleaning messy data",
+    "crumbs": [
+      "2. Data Science",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Data Wrangling with dplyr</span>"
+    ]
+  },
+  {
+    "objectID": "02-data-eda.html",
+    "href": "02-data-eda.html",
+    "title": "Exploratory Data Analysis (EDA)",
+    "section": "",
+    "text": "Overview\nThis tutorial introduces EDA workflows: - Visual summaries (histograms, boxplots, scatterplots) - Numerical summaries (means, quantiles, correlations) - Identifying outliers and data quality issues",
+    "crumbs": [
+      "2. Data Science",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Exploratory Data Analysis (EDA)</span>"
+    ]
+  }
+]

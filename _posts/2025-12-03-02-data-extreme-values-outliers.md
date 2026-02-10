@@ -1,6 +1,7 @@
 ---
 title: "Extreme Values vs Outliers: What's the Difference?"
 date: 2025-12-03
+link: /tutorials/02-data-extreme-values-outliers.html
 categories: [tutorials, codes]
 ---
 

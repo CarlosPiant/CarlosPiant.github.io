@@ -1,6 +1,7 @@
 ---
 title: "Matching and Weighting Methods"
 date: 2025-12-02
+link: /tutorials/04-ci-matching-weighting.html
 categories: [tutorials, codes]
 ---
 

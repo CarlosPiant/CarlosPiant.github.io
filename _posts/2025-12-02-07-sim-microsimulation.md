@@ -1,6 +1,7 @@
 ---
 title: "Microsimulation Models"
 date: 2025-12-02
+link: /tutorials/07-sim-microsimulation.html
 categories: [tutorials, codes]
 ---
 

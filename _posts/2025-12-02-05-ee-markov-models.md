@@ -1,6 +1,7 @@
 ---
 title: "Markov Models"
 date: 2025-12-02
+link: /tutorials/05-ee-markov-models.html
 categories: [tutorials, codes]
 ---
 

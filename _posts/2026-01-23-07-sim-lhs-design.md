@@ -1,6 +1,7 @@
 ---
 title: "Latin Hypercube Sampling (LHS) for Calibration and Emulators"
 date: 2026-01-23
+link: /tutorials/07-sim-lhs-design.html
 categories: [tutorials, codes]
 ---
 

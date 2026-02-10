@@ -1,6 +1,7 @@
 ---
 title: "Time Series as a Machine Learning Tool: Let the Past Predict the Future"
 date: 2025-12-18
+link: /tutorials/03-ml-time-series.html
 categories: [tutorials, codes]
 ---
 

@@ -1,6 +1,7 @@
 ---
 title: "Linear Regression in R: Foundations, Estimation, and Interpretation"
 date: 2025-12-02
+link: /tutorials/03-ml-linear-regression.html
 categories: [tutorials, codes]
 ---
 

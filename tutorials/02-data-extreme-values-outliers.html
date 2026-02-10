@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Extreme Values vs Outliers: What’s the Difference? – Tutorials in Data Science, Machine Learning, and Decision Sciences in R</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./03-ml-overview.html" rel="next">
+<link href="./02-data-survey-data.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-c341e73240b212e9049509033c81e7b3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./02-data-overview.html">2. Data Science</a></li><li class="breadcrumb-item"><a href="./02-data-extreme-values-outliers.html"><span class="chapter-title">Extreme Values vs Outliers: What’s the Difference?</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Tutorials in Data Science, Machine Learning, and Decision Sciences in R</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/USER/REPO" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Tutorials in Data Science, Machine Learning, and Decision Sciences in R</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">0. Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00-Motivation-Intro.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Motivation and Introduction</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">1. Foundations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01-foundations-overview.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Foundations: Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01-foundations-r-setup.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Setting Up R, RStudio, and Projects</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01-foundations-quarto-git.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Quarto, Version Control, and GitHub</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">2. Data Science</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02-data-overview.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Data Science in R: Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02-data-wrangling.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Data Wrangling with dplyr</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02-data-eda.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Exploratory Data Analysis (EDA)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02-data-survey-data.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Working with Survey Data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02-data-extreme-values-outliers.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Extreme Values vs Outliers: What’s the Difference?</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">3. Machine Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-ml-overview.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Machine Learning: Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-ml-linear-regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Linear Regression in R: Foundations, Estimation, and Interpretation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-ml-logistic-regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Logistic Regression in R: Predicting Binary Outcomes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-ml-ridge.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Ridge Regression: When Your Model Needs a Seatbelt</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-ml-lasso.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lasso Regression: When Your Model Learns to Declutter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-ml-ridge-vs-lasso.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Ridge vs Lasso: Shrink, Select, or Both?</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-ml-regularization.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Regularization (Ridge, Lasso, Elastic Net): Placeholder</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-ml-time-series.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Time Series as a Machine Learning Tool: Let the Past Predict the Future</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-ml-arma.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ARMA Models in R: When Yesterday Predicts Today</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-ml-prophet.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Prophet in R: A Friendly Time Series Forecaster (and How It Compares to ARIMA)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">4. Causal Inference</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04-ci-overview.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Causal Inference: Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04-ci-dags.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Causal Diagrams and DAGs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04-ci-matching-weighting.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Matching and Weighting Methods</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04-ci-did.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Difference-in-Differences (DiD) in R: Before, After, and a Comparison Group</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04-ci-event-study.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Event-Study Designs in R: Watching Policy Effects Over Time</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04-ci-iv.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Instrumental Variables (IV) and Related Designs</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">5. Economic Evaluation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05-ee-overview.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Economic Evaluation: Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05-ee-cea-basics.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Cost-Effectiveness Analysis (CEA): Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05-ee-decision-trees.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Decision Trees for Economic Evaluation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05-ee-markov-models.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Markov Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05-ee-psa.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Probabilistic Sensitivity Analysis (PSA)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">6. Decision Science</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06-ds-overview.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Decision Science: Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06-ds-structuring-decisions.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Structuring Decision Problems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06-ds-utility-preferences.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Utilities and Preferences</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">7. Simulation Models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07-sim-overview.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Simulation Models: Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07-sim-monte-carlo.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Monte Carlo Simulation: Asking “What If?” 10,000 Times</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07-sim-markov-chains.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Markov Chains: When Tomorrow Depends Only on Today</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07-sim-markov-health-models.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Markov Health Decision Models: Following Patients Through Health States</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07-sim-bandits-ab-testing.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Bandits &amp; A/B Testing: Teaching Your Model to Experiment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07-sim-microsimulation.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Microsimulation Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07-sim-des.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Discrete Event Simulation (DES)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07-sim-calibration.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Model Calibration</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07-sim-lhs-design.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Latin Hypercube Sampling (LHS) for Calibration and Emulators</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+ <span class="menu-text">8. Health Policy</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08-hp-overview.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Health Policy Applications: Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08-hp-screening-policies.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Screening and Prevention Policies</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08-hp-budget-impact.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Budget Impact and Resource Allocation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08-hp-equity.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Equity and Distributional Considerations</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
+ <span class="menu-text">9. Statistics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09-stat-overview.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Statistics and Uncertainty: Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09-stat-probability-refresher.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Probability: Refresher</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09-stat-ci-hypothesis.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Confidence Intervals and Hypothesis Testing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09-stat-bayesian-intro.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Introduction to Bayesian Thinking</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction-not-every-weird-data-point-is-a-villain" id="toc-introduction-not-every-weird-data-point-is-a-villain" class="nav-link active" data-scroll-target="#introduction-not-every-weird-data-point-is-a-villain">1. Introduction: not every weird data point is a villain</a></li>
+  <li><a href="#extreme-values-rare-but-sometimes-perfectly-legitimate" id="toc-extreme-values-rare-but-sometimes-perfectly-legitimate" class="nav-link" data-scroll-target="#extreme-values-rare-but-sometimes-perfectly-legitimate">2. Extreme values: rare but (sometimes) perfectly legitimate</a>
+  <ul class="collapse">
+  <li><a href="#what-is-an-extreme-value" id="toc-what-is-an-extreme-value" class="nav-link" data-scroll-target="#what-is-an-extreme-value">2.1. What is an extreme value?</a></li>
+  <li><a href="#when-are-extreme-values-not-a-problem" id="toc-when-are-extreme-values-not-a-problem" class="nav-link" data-scroll-target="#when-are-extreme-values-not-a-problem">2.2. When are extreme values <em>not</em> a problem?</a></li>
+  </ul></li>
+  <li><a href="#outliers-when-the-data-point-doesnt-fit-the-story" id="toc-outliers-when-the-data-point-doesnt-fit-the-story" class="nav-link" data-scroll-target="#outliers-when-the-data-point-doesnt-fit-the-story">3. Outliers: when the data point doesn’t “fit” the story</a>
+  <ul class="collapse">
+  <li><a href="#what-is-an-outlier" id="toc-what-is-an-outlier" class="nav-link" data-scroll-target="#what-is-an-outlier">3.1. What is an outlier?</a></li>
+  <li><a href="#how-do-we-detect-outliers" id="toc-how-do-we-detect-outliers" class="nav-link" data-scroll-target="#how-do-we-detect-outliers">3.2. How do we detect outliers?</a></li>
+  </ul></li>
+  <li><a href="#extreme-value-vs-outlier-same-thing-not-quite." id="toc-extreme-value-vs-outlier-same-thing-not-quite." class="nav-link" data-scroll-target="#extreme-value-vs-outlier-same-thing-not-quite.">4. Extreme value vs outlier: same thing? not quite.</a>
+  <ul class="collapse">
+  <li><a href="#conceptual-difference" id="toc-conceptual-difference" class="nav-link" data-scroll-target="#conceptual-difference">4.1. Conceptual difference</a></li>
+  <li><a href="#quick-thought-experiment" id="toc-quick-thought-experiment" class="nav-link" data-scroll-target="#quick-thought-experiment">4.2. Quick thought experiment</a></li>
+  </ul></li>
+  <li><a href="#what-should-we-do-with-these-points" id="toc-what-should-we-do-with-these-points" class="nav-link" data-scroll-target="#what-should-we-do-with-these-points">5. What should we <em>do</em> with these points?</a>
+  <ul class="collapse">
+  <li><a href="#dont-delete-first-ask-questions-later" id="toc-dont-delete-first-ask-questions-later" class="nav-link" data-scroll-target="#dont-delete-first-ask-questions-later">5.1. Don’t delete first, ask questions later</a></li>
+  <li><a href="#strategies-for-handling-extreme-values-and-outliers" id="toc-strategies-for-handling-extreme-values-and-outliers" class="nav-link" data-scroll-target="#strategies-for-handling-extreme-values-and-outliers">5.2. Strategies for handling extreme values and outliers</a></li>
+  </ul></li>
+  <li><a href="#why-this-matters-in-heor-and-health-policy" id="toc-why-this-matters-in-heor-and-health-policy" class="nav-link" data-scroll-target="#why-this-matters-in-heor-and-health-policy">6. Why this matters in HEOR and health policy</a>
+  <ul class="collapse">
+  <li><a href="#catastrophic-costs-and-resource-use" id="toc-catastrophic-costs-and-resource-use" class="nav-link" data-scroll-target="#catastrophic-costs-and-resource-use">6.1. Catastrophic costs and resource use</a></li>
+  <li><a href="#quality-and-safety-signals" id="toc-quality-and-safety-signals" class="nav-link" data-scroll-target="#quality-and-safety-signals">6.2. Quality and safety signals</a></li>
+  <li><a href="#impact-on-model-based-evaluations" id="toc-impact-on-model-based-evaluations" class="nav-link" data-scroll-target="#impact-on-model-based-evaluations">6.3. Impact on model-based evaluations</a></li>
+  </ul></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading">7. Further reading</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/USER/REPO/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/USER/REPO/blob/main/02-data-extreme-values-outliers.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./02-data-overview.html">2. Data Science</a></li><li class="breadcrumb-item"><a href="./02-data-extreme-values-outliers.html"><span class="chapter-title">Extreme Values vs Outliers: What’s the Difference?</span></a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-title">Extreme Values vs Outliers: What’s the Difference?</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction-not-every-weird-data-point-is-a-villain" class="level1">
+<h1>1. Introduction: not every weird data point is a villain</h1>
+<p>In almost every dataset, there’s <em>that</em> observation:</p>
+<ul>
+<li>The patient who is 110 years old,</li>
+<li>The hospital stay that cost ten times more than the others,</li>
+<li>The BMI of 3 or 300,</li>
+<li>The length of stay of 0 days (…somehow).</li>
+</ul>
+<p>Our first instinct is often: <strong>“Outlier! Get rid of it!”</strong><br>
+But not every unusual data point is a mistake. Some are:</p>
+<ul>
+<li>Real but <strong>rare</strong> (e.g., a genuinely very expensive ICU stay),</li>
+<li>Real but <strong>interesting</strong> (e.g., a high-risk subgroup),</li>
+<li>Or yes, <strong>just wrong</strong> (coding errors, unit mix-ups, data entry typos).</li>
+</ul>
+<p>Spoiler: “Delete it because it looks ugly” is not the recommended strategy.</p>
+<hr>
+</section>
+<section id="extreme-values-rare-but-sometimes-perfectly-legitimate" class="level1">
+<h1>2. Extreme values: rare but (sometimes) perfectly legitimate</h1>
+<section id="what-is-an-extreme-value" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-an-extreme-value">2.1. What is an extreme value?</h2>
+<p>An <strong>extreme value</strong> is a data point that lies in the <strong>tails of the distribution</strong>: it’s unusually high or unusually low compared to most of the observations.</p>
+<p>Examples:</p>
+<ul>
+<li>A patient with <strong>very high costs</strong> because of a long ICU stay,</li>
+<li>A <strong>very young</strong> or <strong>very old</strong> patient in a predominantly middle-aged cohort,</li>
+<li>An unusually <strong>high dosage</strong> or <strong>long treatment duration</strong> in a clinical dataset.</li>
+</ul>
+<p>Key idea:</p>
+<ul>
+<li>Extreme values are <strong>uncommon</strong>, but they may still be <strong>valid</strong> and <strong>expected</strong> given the underlying population and process.</li>
+</ul>
+<p>We can often spot extreme values using:</p>
+<ul>
+<li>Histograms,</li>
+<li>Boxplots (points beyond the “whiskers”),</li>
+<li>Z-scores (values several standard deviations from the mean),</li>
+<li>Quantiles (e.g., below the 1st percentile or above the 99th).</li>
+</ul>
+</section>
+<section id="when-are-extreme-values-not-a-problem" class="level2">
+<h2 class="anchored" data-anchor-id="when-are-extreme-values-not-a-problem">2.2. When are extreme values <em>not</em> a problem?</h2>
+<p>Extreme values are not automatically “bad.” They might:</p>
+<ul>
+<li>Reflect real heterogeneity in the population,</li>
+<li>Be clinically meaningful (e.g., very severe disease),</li>
+<li>Be economically important (e.g., rare catastrophic costs that drive policy).</li>
+</ul>
+<p>If your model or question cares about <strong>extreme risk</strong> or <strong>tail behavior</strong>, then extreme values may be exactly what you <em>need</em> to study.</p>
+<hr>
+</section>
+</section>
+<section id="outliers-when-the-data-point-doesnt-fit-the-story" class="level1">
+<h1>3. Outliers: when the data point doesn’t “fit” the story</h1>
+<section id="what-is-an-outlier" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-an-outlier">3.1. What is an outlier?</h2>
+<p>An <strong>outlier</strong> is a data point that is <strong>unusually inconsistent with the rest of the data</strong> or with the assumed model. It “doesn’t fit” in some important sense.</p>
+<p>Outliers can be:</p>
+<ul>
+<li><strong>Data errors</strong>: wrong units, mis-typed values (e.g., age = 999),</li>
+<li><strong>Measurement issues</strong>: faulty devices, recording problems,</li>
+<li><strong>Model outliers</strong>: observations that don’t follow the pattern of the model, even if they are numerically not extremely large/small.</li>
+</ul>
+<p>So:</p>
+<ul>
+<li>An outlier may be extreme (far in the tail) <strong>or not</strong>.</li>
+<li>Something can be an outlier because it violates the pattern, not just the scale.</li>
+</ul>
+</section>
+<section id="how-do-we-detect-outliers" class="level2">
+<h2 class="anchored" data-anchor-id="how-do-we-detect-outliers">3.2. How do we detect outliers?</h2>
+<p>There’s no single “official” definition, but common approaches include:</p>
+<ul>
+<li><strong>Visual</strong>:
+<ul>
+<li>Points far from others on scatterplots,</li>
+<li>Unusual patterns on residual plots in regression.</li>
+</ul></li>
+<li><strong>Statistical rules of thumb</strong>:
+<ul>
+<li>Values beyond 1.5 × IQR from the quartiles (boxplot rule),</li>
+<li>Z-scores above a certain threshold (e.g., |z| &gt; 3),</li>
+<li>Large residuals or high leverage in regression models.</li>
+</ul></li>
+<li><strong>Contextual checks</strong>:
+<ul>
+<li>Age &lt; 0 or &gt; 130,</li>
+<li>Negative costs,</li>
+<li>Impossible lab values.</li>
+</ul></li>
+</ul>
+<p>Outlier detection is partly about <strong>statistics</strong>, but also heavily about <strong>subject-matter knowledge</strong>.</p>
+<hr>
+</section>
+</section>
+<section id="extreme-value-vs-outlier-same-thing-not-quite." class="level1">
+<h1>4. Extreme value vs outlier: same thing? not quite.</h1>
+<p>It’s tempting to treat “extreme value” and “outlier” as synonyms, but they’re not exactly the same.</p>
+<section id="conceptual-difference" class="level2">
+<h2 class="anchored" data-anchor-id="conceptual-difference">4.1. Conceptual difference</h2>
+<ul>
+<li><strong>Extreme value</strong>:
+<ul>
+<li>A point that lies far in the tail of the <strong>distribution</strong>.</li>
+<li>It might be rare but still consistent with the process generating the data.</li>
+<li>Example: A very high but plausible ICU cost in a dataset of hospital costs.</li>
+</ul></li>
+<li><strong>Outlier</strong>:
+<ul>
+<li>A point that is <strong>inconsistent</strong> with the rest of the data or the assumed model.</li>
+<li>It might be due to error, or it might represent a different process or population.</li>
+<li>Example: A negative length of stay, or a cost value that looks like the result of a coding error (e.g., missing decimal).</li>
+</ul></li>
+</ul>
+<p>So:</p>
+<ul>
+<li><strong>Every outlier is “weird”, but not every extreme value is an outlier.</strong></li>
+<li>Some extreme values are <strong>expected rare events</strong>; removing them can bias your analysis.</li>
+<li>Some outliers may not be numerically extreme (for example, a point with weird covariate combinations that breaks the model).</li>
+</ul>
+</section>
+<section id="quick-thought-experiment" class="level2">
+<h2 class="anchored" data-anchor-id="quick-thought-experiment">4.2. Quick thought experiment</h2>
+<p>Imagine hospital costs in a sample:</p>
+<ul>
+<li>Most are between $1,000 and $20,000.</li>
+<li>One cost is $95,000 from a long ICU stay with multiple complications.</li>
+</ul>
+<p>If this $95,000 is real and documented, it’s likely an <strong>extreme value</strong> but not an “outlier” in the sense of being an error. In fact, it might be very important for evaluating financial risk and policy.</p>
+<p>On the other hand:</p>
+<ul>
+<li>If you see a cost of $9,999,999 that came from a mis-typed date field, that’s an <strong>outlier</strong> (data error) that you should probably fix or exclude.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="what-should-we-do-with-these-points" class="level1">
+<h1>5. What should we <em>do</em> with these points?</h1>
+<section id="dont-delete-first-ask-questions-later" class="level2">
+<h2 class="anchored" data-anchor-id="dont-delete-first-ask-questions-later">5.1. Don’t delete first, ask questions later</h2>
+<p>Good practice:</p>
+<ol type="1">
+<li><strong>Investigate</strong>:
+<ul>
+<li>Check data entry,</li>
+<li>Verify units (kg vs g, days vs hours),</li>
+<li>Look for documentation or clinical notes if available.</li>
+</ul></li>
+<li><strong>Consider the context</strong>:
+<ul>
+<li>Is this value plausible given the clinical/health system context?</li>
+<li>Would removing it change important conclusions?</li>
+</ul></li>
+<li><strong>Document decisions</strong>:
+<ul>
+<li>If you recode, truncate, or exclude values, say <strong>why</strong> and <strong>how</strong>.</li>
+</ul></li>
+</ol>
+</section>
+<section id="strategies-for-handling-extreme-values-and-outliers" class="level2">
+<h2 class="anchored" data-anchor-id="strategies-for-handling-extreme-values-and-outliers">5.2. Strategies for handling extreme values and outliers</h2>
+<p>Depending on the situation, you might:</p>
+<ul>
+<li><strong>Keep them</strong> as is (especially if they’re real and relevant),</li>
+<li><strong>Winsorize</strong> or truncate (cap values at certain percentiles),</li>
+<li><strong>Transform</strong> variables (e.g., log-transform costs),</li>
+<li>Use <strong>robust methods</strong> less sensitive to extremes (e.g., robust regression),</li>
+<li><strong>Model tails explicitly</strong> in specialized contexts (e.g., extreme value theory).</li>
+</ul>
+<p>The key is to match your approach to:</p>
+<ul>
+<li>Your <strong>research question</strong>,</li>
+<li>The <strong>data quality</strong>, and</li>
+<li>The <strong>impact</strong> these values have on your inferences.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="why-this-matters-in-heor-and-health-policy" class="level1">
+<h1>6. Why this matters in HEOR and health policy</h1>
+<p>In HEOR and health policy, extreme values and outliers are not just technical curiosities—they can change decisions.</p>
+<section id="catastrophic-costs-and-resource-use" class="level2">
+<h2 class="anchored" data-anchor-id="catastrophic-costs-and-resource-use">6.1. Catastrophic costs and resource use</h2>
+<p>A small number of patients often account for a large share of:</p>
+<ul>
+<li>Total healthcare costs,</li>
+<li>ICU bed days,</li>
+<li>Emergency department visits.</li>
+</ul>
+<p>These are <strong>extreme values</strong> that may be:</p>
+<ul>
+<li>Central to understanding financial risk,</li>
+<li>Crucial for planning capacity,</li>
+<li>Important for designing interventions (e.g., targeting high-cost patients).</li>
+</ul>
+<p>Removing them because they “look weird” can severely <strong>underestimate</strong> the economic burden and mislead policy.</p>
+</section>
+<section id="quality-and-safety-signals" class="level2">
+<h2 class="anchored" data-anchor-id="quality-and-safety-signals">6.2. Quality and safety signals</h2>
+<p>Some outliers might:</p>
+<ul>
+<li>Indicate <strong>data problems</strong>, which can bias analyses,</li>
+<li>Signal <strong>safety concerns</strong> or unusual care patterns,</li>
+<li>Reflect <strong>subgroups</strong> that are systematically different (e.g., underserved populations).</li>
+</ul>
+<p>If you always ignore or delete them, you might miss:</p>
+<ul>
+<li>Disparities in care,</li>
+<li>Problems in data systems,</li>
+<li>Important lessons for health system performance.</li>
+</ul>
+</section>
+<section id="impact-on-model-based-evaluations" class="level2">
+<h2 class="anchored" data-anchor-id="impact-on-model-based-evaluations">6.3. Impact on model-based evaluations</h2>
+<p>Decision models can be sensitive to:</p>
+<ul>
+<li>A few very high-cost or high-risk observations,</li>
+<li>The way you handle extreme inputs (e.g., extreme utilities, rare events).</li>
+</ul>
+<p>Choices about trimming, transforming, or modeling extreme values can:</p>
+<ul>
+<li>Influence ICERs, net benefit, and uncertainty,</li>
+<li>Affect whether an intervention appears “cost-effective” or not,</li>
+<li>Shape policy recommendations.</li>
+</ul>
+<p>Being explicit about how you treat extreme values and outliers is part of <strong>transparent and credible</strong> HEOR.</p>
+<hr>
+</section>
+</section>
+<section id="further-reading" class="level1">
+<h1>7. Further reading</h1>
+<p>For a deeper dive on outliers, extreme values, and robust analysis, you might explore:</p>
+<ol type="1">
+<li><p><strong>Barnett &amp; Lewis – <em>Outliers in Statistical Data</em></strong><br>
+A classic reference on definitions, detection methods, and theory.</p></li>
+<li><p><strong>Rousseeuw &amp; Leroy – <em>Robust Regression and Outlier Detection</em></strong><br>
+Focuses on methods that remain stable in the presence of outliers.</p></li>
+<li><p><strong>W. N. Venables &amp; B. D. Ripley – <em>Modern Applied Statistics with S</em></strong><br>
+Includes practical discussions on diagnostics and dealing with unusual data.</p></li>
+<li><p><strong>Tukey – <em>Exploratory Data Analysis</em></strong><br>
+A foundational text emphasizing plots, summaries, and the importance of understanding your data before rushing into models.</p></li>
+</ol>
+<p>Use these when you’re ready to move from “that point looks weird” to a more systematic strategy for diagnosing and handling unusual data.</p>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./02-data-survey-data.html" class="pagination-link" aria-label="Working with Survey Data">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Working with Survey Data</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./03-ml-overview.html" class="pagination-link" aria-label="Machine Learning: Overview">
+        <span class="nav-page-text"><span class="chapter-title">Machine Learning: Overview</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Extreme Values vs Outliers: What’s the Difference?"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu"># 1. Introduction: not every weird data point is a villain</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>In almost every dataset, there’s *that* observation:</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The patient who is 110 years old,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The hospital stay that cost ten times more than the others,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The BMI of 3 or 300,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The length of stay of 0 days (…somehow).</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>Our first instinct is often: **“Outlier! Get rid of it!”**  </span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>But not every unusual data point is a mistake. Some are:</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Real but **rare** (e.g., a genuinely very expensive ICU stay),</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Real but **interesting** (e.g., a high-risk subgroup),</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Or yes, **just wrong** (coding errors, unit mix-ups, data entry typos).</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>Spoiler: “Delete it because it looks ugly” is not the recommended strategy.</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="fu"># 2. Extreme values: rare but (sometimes) perfectly legitimate</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.1. What is an extreme value?</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>An **extreme value** is a data point that lies in the **tails of the distribution**:</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>it’s unusually high or unusually low compared to most of the observations.</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>Examples:</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A patient with **very high costs** because of a long ICU stay,</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A **very young** or **very old** patient in a predominantly middle-aged cohort,</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>An unusually **high dosage** or **long treatment duration** in a clinical dataset.</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>Key idea:</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Extreme values are **uncommon**, but they may still be **valid** and **expected**</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>  given the underlying population and process.</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>We can often spot extreme values using:</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Histograms,</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Boxplots (points beyond the “whiskers”),</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Z-scores (values several standard deviations from the mean),</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Quantiles (e.g., below the 1st percentile or above the 99th).</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.2. When are extreme values *not* a problem?</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>Extreme values are not automatically “bad.” They might:</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Reflect real heterogeneity in the population,</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Be clinically meaningful (e.g., very severe disease),</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Be economically important (e.g., rare catastrophic costs that drive policy).</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>If your model or question cares about **extreme risk** or **tail behavior**,</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>then extreme values may be exactly what you *need* to study.</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a><span class="fu"># 3. Outliers: when the data point doesn’t “fit” the story</span></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="fu">## 3.1. What is an outlier?</span></span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>An **outlier** is a data point that is **unusually inconsistent with the rest of the data**</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>or with the assumed model. It “doesn’t fit” in some important sense.</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>Outliers can be:</span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Data errors**: wrong units, mis-typed values (e.g., age = 999),</span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Measurement issues**: faulty devices, recording problems,</span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Model outliers**: observations that don’t follow the pattern of the model,</span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>  even if they are numerically not extremely large/small.</span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>So:</span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>An outlier may be extreme (far in the tail) **or not**.</span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Something can be an outlier because it violates the pattern, not just the scale.</span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a><span class="fu">## 3.2. How do we detect outliers?</span></span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a>There’s no single “official” definition, but common approaches include:</span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Visual**:</span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Points far from others on scatterplots,</span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Unusual patterns on residual plots in regression.</span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Statistical rules of thumb**:</span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Values beyond 1.5 × IQR from the quartiles (boxplot rule),</span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Z-scores above a certain threshold (e.g., |z| &gt; 3),</span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Large residuals or high leverage in regression models.</span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Contextual checks**:</span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Age &lt; 0 or &gt; 130,</span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Negative costs,</span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Impossible lab values.</span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a>Outlier detection is partly about **statistics**, but also heavily about</span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a>**subject-matter knowledge**.</span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a><span class="fu"># 4. Extreme value vs outlier: same thing? not quite.</span></span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a>It’s tempting to treat “extreme value” and “outlier” as synonyms, but they’re</span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a>not exactly the same.</span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a><span class="fu">## 4.1. Conceptual difference</span></span>
+<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Extreme value**:</span>
+<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>A point that lies far in the tail of the **distribution**.</span>
+<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>It might be rare but still consistent with the process generating the data.</span>
+<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Example: A very high but plausible ICU cost in a dataset of hospital costs.</span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Outlier**:</span>
+<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>A point that is **inconsistent** with the rest of the data or the assumed model.</span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>It might be due to error, or it might represent a different process or population.</span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Example: A negative length of stay, or a cost value that looks like the</span>
+<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a>    result of a coding error (e.g., missing decimal).</span>
+<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a>So:</span>
+<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Every outlier is “weird”, but not every extreme value is an outlier.**</span>
+<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Some extreme values are **expected rare events**; removing them can bias your analysis.</span>
+<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Some outliers may not be numerically extreme (for example, a point with</span>
+<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a>  weird covariate combinations that breaks the model).</span>
+<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a><span class="fu">## 4.2. Quick thought experiment</span></span>
+<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a>Imagine hospital costs in a sample:</span>
+<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Most are between \$1,000 and \$20,000.</span>
+<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>One cost is \$95,000 from a long ICU stay with multiple complications.</span>
+<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a>If this \$95,000 is real and documented, it’s likely an **extreme value** but</span>
+<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a>not an “outlier” in the sense of being an error. In fact, it might be very</span>
+<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a>important for evaluating financial risk and policy.</span>
+<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a>On the other hand:</span>
+<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>If you see a cost of \$9,999,999 that came from a mis-typed date field,</span>
+<span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a>  that’s an **outlier** (data error) that you should probably fix or exclude.</span>
+<span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a><span class="fu"># 5. What should we *do* with these points?</span></span>
+<span id="cb1-147"><a href="#cb1-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-148"><a href="#cb1-148" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5.1. Don’t delete first, ask questions later</span></span>
+<span id="cb1-149"><a href="#cb1-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-150"><a href="#cb1-150" aria-hidden="true" tabindex="-1"></a>Good practice:</span>
+<span id="cb1-151"><a href="#cb1-151" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Investigate**:</span>
+<span id="cb1-153"><a href="#cb1-153" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Check data entry,</span>
+<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Verify units (kg vs g, days vs hours),</span>
+<span id="cb1-155"><a href="#cb1-155" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Look for documentation or clinical notes if available.</span>
+<span id="cb1-156"><a href="#cb1-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-157"><a href="#cb1-157" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Consider the context**:</span>
+<span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Is this value plausible given the clinical/health system context?</span>
+<span id="cb1-159"><a href="#cb1-159" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Would removing it change important conclusions?</span>
+<span id="cb1-160"><a href="#cb1-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-161"><a href="#cb1-161" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Document decisions**:</span>
+<span id="cb1-162"><a href="#cb1-162" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>If you recode, truncate, or exclude values, say **why** and **how**.</span>
+<span id="cb1-163"><a href="#cb1-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-164"><a href="#cb1-164" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5.2. Strategies for handling extreme values and outliers</span></span>
+<span id="cb1-165"><a href="#cb1-165" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-166"><a href="#cb1-166" aria-hidden="true" tabindex="-1"></a>Depending on the situation, you might:</span>
+<span id="cb1-167"><a href="#cb1-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-168"><a href="#cb1-168" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Keep them** as is (especially if they’re real and relevant),</span>
+<span id="cb1-169"><a href="#cb1-169" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Winsorize** or truncate (cap values at certain percentiles),</span>
+<span id="cb1-170"><a href="#cb1-170" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Transform** variables (e.g., log-transform costs),</span>
+<span id="cb1-171"><a href="#cb1-171" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Use **robust methods** less sensitive to extremes (e.g., robust regression),</span>
+<span id="cb1-172"><a href="#cb1-172" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Model tails explicitly** in specialized contexts (e.g., extreme value theory).</span>
+<span id="cb1-173"><a href="#cb1-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-174"><a href="#cb1-174" aria-hidden="true" tabindex="-1"></a>The key is to match your approach to:</span>
+<span id="cb1-175"><a href="#cb1-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-176"><a href="#cb1-176" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Your **research question**,</span>
+<span id="cb1-177"><a href="#cb1-177" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The **data quality**, and</span>
+<span id="cb1-178"><a href="#cb1-178" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The **impact** these values have on your inferences.</span>
+<span id="cb1-179"><a href="#cb1-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-180"><a href="#cb1-180" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb1-181"><a href="#cb1-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-182"><a href="#cb1-182" aria-hidden="true" tabindex="-1"></a><span class="fu"># 6. Why this matters in HEOR and health policy</span></span>
+<span id="cb1-183"><a href="#cb1-183" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-184"><a href="#cb1-184" aria-hidden="true" tabindex="-1"></a>In HEOR and health policy, extreme values and outliers are not just technical</span>
+<span id="cb1-185"><a href="#cb1-185" aria-hidden="true" tabindex="-1"></a>curiosities—they can change decisions.</span>
+<span id="cb1-186"><a href="#cb1-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-187"><a href="#cb1-187" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6.1. Catastrophic costs and resource use</span></span>
+<span id="cb1-188"><a href="#cb1-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-189"><a href="#cb1-189" aria-hidden="true" tabindex="-1"></a>A small number of patients often account for a large share of:</span>
+<span id="cb1-190"><a href="#cb1-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-191"><a href="#cb1-191" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Total healthcare costs,</span>
+<span id="cb1-192"><a href="#cb1-192" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>ICU bed days,</span>
+<span id="cb1-193"><a href="#cb1-193" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Emergency department visits.</span>
+<span id="cb1-194"><a href="#cb1-194" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-195"><a href="#cb1-195" aria-hidden="true" tabindex="-1"></a>These are **extreme values** that may be:</span>
+<span id="cb1-196"><a href="#cb1-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-197"><a href="#cb1-197" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Central to understanding financial risk,</span>
+<span id="cb1-198"><a href="#cb1-198" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Crucial for planning capacity,</span>
+<span id="cb1-199"><a href="#cb1-199" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Important for designing interventions (e.g., targeting high-cost patients).</span>
+<span id="cb1-200"><a href="#cb1-200" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-201"><a href="#cb1-201" aria-hidden="true" tabindex="-1"></a>Removing them because they “look weird” can severely **underestimate** the</span>
+<span id="cb1-202"><a href="#cb1-202" aria-hidden="true" tabindex="-1"></a>economic burden and mislead policy.</span>
+<span id="cb1-203"><a href="#cb1-203" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-204"><a href="#cb1-204" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6.2. Quality and safety signals</span></span>
+<span id="cb1-205"><a href="#cb1-205" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-206"><a href="#cb1-206" aria-hidden="true" tabindex="-1"></a>Some outliers might:</span>
+<span id="cb1-207"><a href="#cb1-207" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-208"><a href="#cb1-208" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Indicate **data problems**, which can bias analyses,</span>
+<span id="cb1-209"><a href="#cb1-209" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Signal **safety concerns** or unusual care patterns,</span>
+<span id="cb1-210"><a href="#cb1-210" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Reflect **subgroups** that are systematically different (e.g., underserved populations).</span>
+<span id="cb1-211"><a href="#cb1-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-212"><a href="#cb1-212" aria-hidden="true" tabindex="-1"></a>If you always ignore or delete them, you might miss:</span>
+<span id="cb1-213"><a href="#cb1-213" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-214"><a href="#cb1-214" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Disparities in care,</span>
+<span id="cb1-215"><a href="#cb1-215" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Problems in data systems,</span>
+<span id="cb1-216"><a href="#cb1-216" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Important lessons for health system performance.</span>
+<span id="cb1-217"><a href="#cb1-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-218"><a href="#cb1-218" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6.3. Impact on model-based evaluations</span></span>
+<span id="cb1-219"><a href="#cb1-219" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-220"><a href="#cb1-220" aria-hidden="true" tabindex="-1"></a>Decision models can be sensitive to:</span>
+<span id="cb1-221"><a href="#cb1-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-222"><a href="#cb1-222" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A few very high-cost or high-risk observations,</span>
+<span id="cb1-223"><a href="#cb1-223" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The way you handle extreme inputs (e.g., extreme utilities, rare events).</span>
+<span id="cb1-224"><a href="#cb1-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-225"><a href="#cb1-225" aria-hidden="true" tabindex="-1"></a>Choices about trimming, transforming, or modeling extreme values can:</span>
+<span id="cb1-226"><a href="#cb1-226" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-227"><a href="#cb1-227" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Influence ICERs, net benefit, and uncertainty,</span>
+<span id="cb1-228"><a href="#cb1-228" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Affect whether an intervention appears “cost-effective” or not,</span>
+<span id="cb1-229"><a href="#cb1-229" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Shape policy recommendations.</span>
+<span id="cb1-230"><a href="#cb1-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-231"><a href="#cb1-231" aria-hidden="true" tabindex="-1"></a>Being explicit about how you treat extreme values and outliers is part of</span>
+<span id="cb1-232"><a href="#cb1-232" aria-hidden="true" tabindex="-1"></a>**transparent and credible** HEOR.</span>
+<span id="cb1-233"><a href="#cb1-233" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-234"><a href="#cb1-234" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb1-235"><a href="#cb1-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-236"><a href="#cb1-236" aria-hidden="true" tabindex="-1"></a><span class="fu"># 7. Further reading</span></span>
+<span id="cb1-237"><a href="#cb1-237" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-238"><a href="#cb1-238" aria-hidden="true" tabindex="-1"></a>For a deeper dive on outliers, extreme values, and robust analysis, you might</span>
+<span id="cb1-239"><a href="#cb1-239" aria-hidden="true" tabindex="-1"></a>explore:</span>
+<span id="cb1-240"><a href="#cb1-240" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-241"><a href="#cb1-241" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Barnett &amp; Lewis – _Outliers in Statistical Data_**  </span>
+<span id="cb1-242"><a href="#cb1-242" aria-hidden="true" tabindex="-1"></a>   A classic reference on definitions, detection methods, and theory.</span>
+<span id="cb1-243"><a href="#cb1-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-244"><a href="#cb1-244" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Rousseeuw &amp; Leroy – _Robust Regression and Outlier Detection_**  </span>
+<span id="cb1-245"><a href="#cb1-245" aria-hidden="true" tabindex="-1"></a>   Focuses on methods that remain stable in the presence of outliers.</span>
+<span id="cb1-246"><a href="#cb1-246" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-247"><a href="#cb1-247" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**W. N. Venables &amp; B. D. Ripley – _Modern Applied Statistics with S_**  </span>
+<span id="cb1-248"><a href="#cb1-248" aria-hidden="true" tabindex="-1"></a>   Includes practical discussions on diagnostics and dealing with unusual data.</span>
+<span id="cb1-249"><a href="#cb1-249" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-250"><a href="#cb1-250" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Tukey – _Exploratory Data Analysis_**  </span>
+<span id="cb1-251"><a href="#cb1-251" aria-hidden="true" tabindex="-1"></a>   A foundational text emphasizing plots, summaries, and the importance of</span>
+<span id="cb1-252"><a href="#cb1-252" aria-hidden="true" tabindex="-1"></a>   understanding your data before rushing into models.</span>
+<span id="cb1-253"><a href="#cb1-253" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-254"><a href="#cb1-254" aria-hidden="true" tabindex="-1"></a>Use these when you’re ready to move from “that point looks weird” to</span>
+<span id="cb1-255"><a href="#cb1-255" aria-hidden="true" tabindex="-1"></a>a more systematic strategy for diagnosing and handling unusual data.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/USER/REPO/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/USER/REPO/blob/main/02-data-extreme-values-outliers.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></div></div></footer></body></html>

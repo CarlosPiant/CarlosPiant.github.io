@@ -1,6 +1,7 @@
 ---
 title: "Markov Chains: When Tomorrow Depends Only on Today"
 date: 2026-01-23
+link: /tutorials/07-sim-markov-chains.html
 categories: [tutorials, codes]
 ---
 

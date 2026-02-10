@@ -21,7 +21,7 @@ main:
     url: /portfolio/
         
   - title: "Tutorials & Codes"
-    url: /year-archive/
+    url: /tutorials/
     
   - title: "CV"
     url: /cv/

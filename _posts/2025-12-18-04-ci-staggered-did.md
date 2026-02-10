@@ -1,6 +1,7 @@
 ---
 title: "Modern Difference-in-Differences with Staggered Adoption"
 date: 2025-12-18
+link: /tutorials/04-ci-staggered-did.html
 categories: [tutorials, codes]
 ---
 
