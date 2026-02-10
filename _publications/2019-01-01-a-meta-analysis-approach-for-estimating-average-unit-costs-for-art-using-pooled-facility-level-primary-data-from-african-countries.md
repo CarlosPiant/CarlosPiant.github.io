@@ -3,10 +3,11 @@ title: "A meta-analysis approach for estimating average unit costs for ART using
 collection: publications
 category: journal
 permalink: /publication/2019-01-01-a-meta-analysis-approach-for-estimating-average-unit-costs-for-art-using-pooled-facility-level-primary-data-from-african-countries
-excerpt: "Peer-reviewed journal article."
+excerpt: "Pools facility-level data to estimate average unit costs for antiretroviral therapy in African countries. Produces more stable cost estimates for planning."
 date: 2019-01-01
 venue: "African Journal of AIDS Research"
 paperurl: "https://doi.org/10.2989/16085906.2019.1688362"
 citation: "Cerecero-Garcia D, Pineda-Antunez C, Alexander L, Cameron D, Martinez-Silva G, Obure CD, Bautista-Arredondo S (2019). A meta-analysis approach for estimating average unit costs for ART using pooled facility-level primary data from African countries. <i>African Journal of AIDS Research</i>."
 ---
-Journal article.
+
+Pools facility-level data to estimate average unit costs for antiretroviral therapy in African countries. Produces more stable cost estimates for planning.
