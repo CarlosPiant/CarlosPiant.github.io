@@ -1,8 +1,10 @@
 ---
 title: "Latin Hypercube Sampling (LHS) for Calibration and Emulators"
 date: 2026-01-23
-link: /tutorials/07-sim-lhs-design.html
+link: /tutorials/book/07-sim-lhs-design.html
 categories: [tutorials, codes]
+tags: [Simulation Models]
+summary: "When we say "let's explore the parameter space," we often start with:"
 ---
 
 # 1. Introduction: when "random" needs to be a bit smarter

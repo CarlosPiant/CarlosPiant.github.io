@@ -1,8 +1,10 @@
 ---
 title: "Logistic Regression in R: Predicting Binary Outcomes"
 date: 2025-12-02
-link: /tutorials/03-ml-logistic-regression.html
+link: /tutorials/book/03-ml-logistic-regression.html
 categories: [tutorials, codes]
+tags: [Machine Learning]
+summary: "If linear regression is the overachiever of statistics, logistic regression is its cousin who shows up whenever the question is basically:"
 ---
 
 # 1. Introduction: when your outcome is just \"yes\" or \"no\"

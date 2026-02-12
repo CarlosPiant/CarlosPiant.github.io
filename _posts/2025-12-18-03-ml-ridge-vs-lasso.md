@@ -1,8 +1,10 @@
 ---
 title: "Ridge vs Lasso: Shrink, Select, or Both?"
 date: 2025-12-18
-link: /tutorials/03-ml-ridge-vs-lasso.html
+link: /tutorials/book/03-ml-ridge-vs-lasso.html
 categories: [tutorials, codes]
+tags: [Machine Learning]
+summary: "Ridge regression: shrinks coefficients, loves correlated predictors, never really lets go of any variable. - Lasso regression: shrinks coefficients, but also deletes some predictors by setting their coefficients to zero."
 ---
 
 # 1. Introduction: two regularizers walk into a regression...

@@ -1,8 +1,10 @@
 ---
 title: "Monte Carlo Simulation: Asking \"What If?\" 10,000 Times"
 date: 2026-01-28
-link: /tutorials/07-sim-monte-carlo.html
+link: /tutorials/book/07-sim-monte-carlo.html
 categories: [tutorials, codes]
+tags: [Simulation Models]
+summary: "In a perfect world, every model would be solved with a neat little formula:"
 ---
 
 # 1. Introduction: when your model is allergic to closed-form solutions

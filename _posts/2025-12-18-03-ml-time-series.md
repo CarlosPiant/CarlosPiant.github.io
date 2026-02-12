@@ -1,8 +1,10 @@
 ---
 title: "Time Series as a Machine Learning Tool: Let the Past Predict the Future"
 date: 2025-12-18
-link: /tutorials/03-ml-time-series.html
+link: /tutorials/book/03-ml-time-series.html
 categories: [tutorials, codes]
+tags: [Machine Learning]
+summary: "Most of the models we use in machine learning are like goldfish:"
 ---
 
 # 1. Introduction: when your data has a memory (and an attitude)

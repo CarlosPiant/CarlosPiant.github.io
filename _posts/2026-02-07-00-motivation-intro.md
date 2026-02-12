@@ -1,8 +1,10 @@
 ---
 title: "Motivation and Introduction"
 date: 2026-02-07
-link: /tutorials/00-Motivation-Intro.html
+link: /tutorials/book/00-Motivation-Intro.html
 categories: [tutorials, codes]
+tags: [Introduction]
+summary: "This tutorial is my attempt to bring together the most relevant topics I've encountered during my professional experience in Health Economics and Outcomes Research (HEOR) and during my PhD training."
 ---
 
 # Why this tutorial exists (and why it's a bit of a Frankenstein)

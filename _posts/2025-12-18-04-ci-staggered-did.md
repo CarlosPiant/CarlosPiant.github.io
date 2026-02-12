@@ -1,8 +1,10 @@
 ---
 title: "Modern Difference-in-Differences with Staggered Adoption"
 date: 2025-12-18
-link: /tutorials/04-ci-staggered-did.html
+link: /tutorials/book/04-ci-staggered-did.html
 categories: [tutorials, codes]
+tags: [Causal Inference]
+summary: "Introduces staggered adoption difference-in-differences designs, explaining how treatment timing varies across groups and how to estimate effects under staggered rollout."
 ---
 
 # 1. Introduction: when policies don't start on the same day

@@ -1,8 +1,10 @@
 ---
 title: "Markov Health Decision Models: Following Patients Through Health States"
 date: 2026-01-23
-link: /tutorials/07-sim-markov-health-models.html
+link: /tutorials/book/07-sim-markov-health-models.html
 categories: [tutorials, codes]
+tags: [Simulation Models]
+summary: "In the previous tutorial, we met Markov chains as a way to model how patients move between states like Healthy, Sick, and Dead over time."
 ---
 
 # 1. Introduction: turning Markov chains into decision tools
