@@ -5,6 +5,7 @@ permalink: /apps/statistical-distributions/
 subtitle: "Explore PDF/PMF and CDF shapes across common distributions"
 description: "Interactive Shiny app to visualize multiple statistical distributions, their density (or PMF), and cumulative distribution functions."
 app_url: "https://cpineda.shinyapps.io/statistical_distribution/"
+hide_author_avatar: true
 ---
 
 This app lets you explore how distribution parameters change the shape of the PDF/PMF and CDF. It is useful for teaching core probability concepts and for quick intuition checks.
@@ -41,9 +42,6 @@ shiny::runApp("apps/statistical-distributions")
 ## Source Code
 
 You can view the raw file here: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/apps/statistical-distributions/app.R`
-
-<details>
-<summary>Show app.R</summary>
 
 ```r
 #'This app will provide a user-friendly interface to explore various 
@@ -211,5 +209,3 @@ server <- function(input, output, session) {
 # Run the application 
 shinyApp(ui = ui, server = server)
 ```
-
-</details>
