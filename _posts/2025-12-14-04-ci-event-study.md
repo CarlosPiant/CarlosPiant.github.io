@@ -1,7 +1,6 @@
 ---
 title: "Event-Study Designs in R: Watching Policy Effects Over Time"
 date: 2025-12-14
-link: /tutorials/book/04-ci-event-study.html
 categories: [tutorials, codes]
 tags: [Causal Inference]
 summary: "Difference-in-differences (DiD) is great when you want a single number:"

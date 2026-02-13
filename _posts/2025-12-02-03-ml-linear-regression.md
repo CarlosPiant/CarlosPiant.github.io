@@ -1,7 +1,6 @@
 ---
 title: "Linear Regression in R: Foundations, Estimation, and Interpretation"
 date: 2025-12-02
-link: /tutorials/book/03-ml-linear-regression.html
 categories: [tutorials, codes]
 tags: [Machine Learning]
 summary: "Linear regression is that one student in class who shows up everywhere: In basic stats In machine learning In econometrics In random policy reports your boss forwards you at 4:59 pm"

@@ -1,7 +1,6 @@
 ---
 title: "Extreme Values vs Outliers: What's the Difference?"
 date: 2025-12-03
-link: /tutorials/book/02-data-extreme-values-outliers.html
 categories: [tutorials, codes]
 tags: [Data Science]
 summary: "In almost every dataset, there's that observation:"

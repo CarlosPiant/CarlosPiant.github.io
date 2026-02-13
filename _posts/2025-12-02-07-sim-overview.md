@@ -1,7 +1,6 @@
 ---
 title: "Simulation Models: Overview"
 date: 2025-12-02
-link: /tutorials/book/07-sim-overview.html
 categories: [tutorials, codes]
 tags: [Simulation Models]
 summary: "This part introduces simulation approaches for health decision models."

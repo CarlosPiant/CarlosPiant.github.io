@@ -1,7 +1,6 @@
 ---
 title: "Markov Chains: When Tomorrow Depends Only on Today"
 date: 2026-01-23
-link: /tutorials/book/07-sim-markov-chains.html
 categories: [tutorials, codes]
 tags: [Simulation Models]
 summary: "Imagine a patient whose health state evolves over time:"

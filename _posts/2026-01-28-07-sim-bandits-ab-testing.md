@@ -1,7 +1,6 @@
 ---
 title: "Bandits & A/B Testing: Teaching Your Model to Experiment"
 date: 2026-01-28
-link: /tutorials/book/07-sim-bandits-ab-testing.html
 categories: [tutorials, codes]
 tags: [Simulation Models]
 summary: "In a lot of applications (including HEOR and health policy), we face a recurring question:"
