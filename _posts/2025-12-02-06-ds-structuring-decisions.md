@@ -5,10 +5,11 @@ categories: [tutorials, codes]
 tags: [Decision Science]
 summary: "This tutorial will cover: - Influence diagrams and decision trees as structures - Defining decision nodes, chance nodes, and outcome nodes - Clarifying objectives and constraints"
 ---
+<section id="overview" class="level1">
+<h1>Overview</h1>
+<p>This tutorial will cover: - Influence diagrams and decision trees as structures - Defining decision nodes, chance nodes, and outcome nodes - Clarifying objectives and constraints</p>
 
-# Overview
 
-This tutorial will cover:
-- Influence diagrams and decision trees as structures
-- Defining decision nodes, chance nodes, and outcome nodes
-- Clarifying objectives and constraints
+<!-- -->
+
+</section>

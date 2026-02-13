@@ -74,13 +74,24 @@ Optional short note.
 
 Location: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/_posts/`
 
-Each tutorial is a post. If you are writing in Quarto (.qmd), convert it to Markdown and place it in `_posts` using the Jekyll naming format:
+Tutorials are stored as Jekyll posts, but the graphs/outputs come from Quarto HTML that is rendered first and then injected into the posts.
 
-```
-YYYY-MM-DD-your-tutorial-title.md
-```
+### Recommended workflow
 
-Minimum front matter:
+1. In your Quarto project, render the book:
+   ```bash
+   quarto render
+   ```
+2. Sync the rendered outputs into this site:
+   ```bash
+   python3 /Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/scripts/sync_tutorials_from_quarto.py /path/to/HEOR_Tutorials
+   ```
+
+This will:
+- Copy all figure assets into `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/tutorials/`
+- Replace each tutorial post body with the rendered HTML (so graphs show)
+
+### Front matter (kept in each post)
 
 ```yaml
 ---
@@ -93,7 +104,6 @@ summary: "Short plain-language summary used in the Tutorials list."
 ```
 
 Tips:
-- Math should use `$$...$$` for display and `$...$` for inline.
 - The Tutorials page filters by `tags`, so keep tags consistent (e.g., "Causal Inference", "Machine Learning", "Simulation Models").
 
 ## CV Page

@@ -5,10 +5,11 @@ categories: [tutorials, codes]
 tags: [Machine Learning]
 summary: "This placeholder tutorial will eventually cover: - Motivation for regularization (high-dimensional predictors, multicollinearity) - Ridge, lasso, and elastic net regression - Using packages like glmnet in R"
 ---
+<section id="overview" class="level1">
+<h1>Overview</h1>
+<p>This placeholder tutorial will eventually cover: - Motivation for regularization (high-dimensional predictors, multicollinearity) - Ridge, lasso, and elastic net regression - Using packages like <code>glmnet</code> in R</p>
 
-# Overview
 
-This placeholder tutorial will eventually cover:
-- Motivation for regularization (high-dimensional predictors, multicollinearity)
-- Ridge, lasso, and elastic net regression
-- Using packages like `glmnet` in R
+<!-- -->
+
+</section>

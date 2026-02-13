@@ -5,10 +5,11 @@ categories: [tutorials, codes]
 tags: [Data Science]
 summary: "This tutorial focuses on survey data specifics: - Survey weights and complex designs (high level) - Common pitfalls when analyzing survey data - Pointer to R packages such as survey and srvyr"
 ---
+<section id="overview" class="level1">
+<h1>Overview</h1>
+<p>This tutorial focuses on survey data specifics: - Survey weights and complex designs (high level) - Common pitfalls when analyzing survey data - Pointer to R packages such as <code>survey</code> and <code>srvyr</code></p>
 
-# Overview
 
-This tutorial focuses on survey data specifics:
-- Survey weights and complex designs (high level)
-- Common pitfalls when analyzing survey data
-- Pointer to R packages such as `survey` and `srvyr`
+<!-- -->
+
+</section>
