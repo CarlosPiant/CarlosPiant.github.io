@@ -1,0 +1,130 @@
+---
+layout: single
+title: "How to Update This Site"
+permalink: /update/
+author_profile: true
+---
+
+This guide explains how to update publications, talks, teaching, tutorials, and the CV.
+
+## Publications
+
+Location: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/_publications/`
+
+Each publication is one Markdown file. Use this template:
+
+```yaml
+---
+title: "Your paper title"
+collection: publications
+category: journal   # or preprint
+permalink: /publication/2026-01-15-your-paper-slug
+excerpt: "Plain-language summary for the publications page."
+date: 2026-01-15
+venue: "Journal Name"
+paperurl: "https://doi.org/..."
+citation: "Authors (2026). Title. <i>Journal</i>. Volume(Issue):pages."
+---
+Plain-language summary for the publication detail page.
+```
+
+Notes:
+- Use `category: journal` or `category: preprint` so it appears under the correct heading.
+- The `excerpt` is what shows on the Publications list. Keep it simple and public-facing.
+
+## Talks
+
+Location: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/_talks/`
+
+Template:
+
+```yaml
+---
+title: "Talk title"
+collection: talks
+type: "Conference presentation"
+permalink: /talks/2026-03-01-talk-title
+venue: "Conference name"
+date: 2026-03-01
+location: "City, Country"
+---
+Optional short note (award, invited, etc).
+```
+
+## Teaching
+
+Location: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/_teaching/`
+
+Template:
+
+```yaml
+---
+title: "Role or course title"
+collection: teaching
+type: "Teaching assistant"   # or Workshop, Committee service, etc.
+permalink: /teaching/2026-01-01-role-title
+venue: "Institution"
+date: 2026-01-01
+location: "City, Country"
+---
+Optional short note.
+```
+
+## Tutorials & Codes
+
+Location: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/_posts/`
+
+Each tutorial is a post. If you are writing in Quarto (.qmd), convert it to Markdown and place it in `_posts` using the Jekyll naming format:
+
+```
+YYYY-MM-DD-your-tutorial-title.md
+```
+
+Minimum front matter:
+
+```yaml
+---
+title: "Tutorial title"
+date: 2026-02-15
+categories: [tutorials, codes]
+tags: [Machine Learning]   # one topic tag shown in the sidebar
+summary: "Short plain-language summary used in the Tutorials list."
+---
+```
+
+Tips:
+- Math should use `$$...$$` for display and `$...$` for inline.
+- The Tutorials page filters by `tags`, so keep tags consistent (e.g., "Causal Inference", "Machine Learning", "Simulation Models").
+
+## CV Page
+
+Location: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/_pages/cv.md`
+
+Update these sections directly:
+- Education
+- Professional Experience
+- Skills
+- Awards
+
+Publications, Talks, and Teaching on the CV are generated from their folders above, so keep those updated.
+
+## Profile Sidebar (Contact + Bio)
+
+Location: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/_config.yml`
+
+Update fields under `author:` such as:
+- `bio`
+- `email`
+- `googlescholar`
+- `orcid`
+- `pubmed`
+- `github`
+- `linkedin`
+
+## Publish Updates
+
+1. Save the changes.
+2. Commit and push to GitHub.
+3. Wait 1-5 minutes for GitHub Pages to rebuild.
+
+If you want, I can also add a shortcut to this page in the navigation.
