@@ -19,6 +19,9 @@ main:
     
   - title: "Tutorials & Codes"
     url: /tutorials/
+
+  - title: "Didactic Apps"
+    url: /apps/
     
   - title: "CV"
     url: /cv/

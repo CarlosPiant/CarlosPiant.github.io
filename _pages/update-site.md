@@ -106,6 +106,37 @@ summary: "Short plain-language summary used in the Tutorials list."
 Tips:
 - The Tutorials page filters by `tags`, so keep tags consistent (e.g., "Causal Inference", "Machine Learning", "Simulation Models").
 
+## Didactic Apps
+
+Apps are stored in two places:
+
+- App pages: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/_apps/`
+- App code: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/apps/`
+
+To add a new app:
+
+1. Copy your Shiny app folder into `apps/<app-name>/` (include `app.R`).
+2. Create a page in `_apps/` with front matter like:
+
+```yaml
+---
+title: "App title"
+collection: apps
+permalink: /apps/app-name/
+subtitle: "Short subtitle"
+description: "One or two sentences about what the app does."
+app_url: "https://your-deployed-app-url"
+---
+```
+
+3. In the app page, add:
+- A short description
+- Instructions for use
+- Local run instructions
+- A code section (copy `app.R` into a fenced code block)
+
+The app will appear automatically in the "Didactic Apps" tab.
+
 ## CV Page
 
 Location: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/_pages/cv.md`

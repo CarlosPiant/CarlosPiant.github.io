@@ -1,0 +1,40 @@
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.app-card {
+  border: 1px solid #e6e6e6;
+  border-radius: 10px;
+  padding: 1rem;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.app-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+}
+
+.app-subtitle {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.app-description {
+  color: #444;
+  margin-bottom: 0.75rem;
+}
+
+.app-link {
+  text-decoration: none;
+  color: #111827;
+  font-weight: 600;
+}
+
+.app-link:hover {
+  text-decoration: underline;
+}
