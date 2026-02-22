@@ -47,9 +47,27 @@ permalink: /talks/2026-03-01-talk-title
 venue: "Conference name"
 date: 2026-03-01
 location: "City, Country"
+excerpt: "Short public-facing summary shown in the Talks list page."
+slidesurl: "/files/talks/2026-03-01-talk-title.pdf"
 ---
 Optional short note (award, invited, etc).
+
+**Brief summary**: 1-2 sentence summary in plain language.
+
+## Abstract
+
+Paste the talk abstract text here.
 ```
+
+Talk PDFs:
+- Store talk/poster PDFs in `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/files/talks/`
+- Use a stable filename that matches the talk page slug when possible.
+- `slidesurl` links to the PDF and is shown on the Talks page.
+
+Abstracts and descriptions:
+- If you have a Word abstract, paste the abstract text into the talk page body under `## Abstract`.
+- If you do not have a Word abstract, use the poster PDF/title information to write a short description.
+- Keep `excerpt` short and public-facing. The full abstract goes in the page body.
 
 ## Teaching
 
