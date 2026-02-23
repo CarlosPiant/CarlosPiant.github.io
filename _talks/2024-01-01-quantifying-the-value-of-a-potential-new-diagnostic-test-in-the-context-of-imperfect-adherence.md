@@ -9,8 +9,6 @@ location: "Boston, MA, USA"
 excerpt: "To develop a framework for determining the minimum operating criteria of a new diagnostic test when the current test has imperfect adherence but has better sensitivity and specificity."
 slidesurl: "/files/talks/2024-01-01-quantifying-the-value-of-a-potential-new-diagnostic-test-in-the-context-of-imperfect-adherence.pdf"
 ---
-**Brief summary**: To develop a framework for determining the minimum operating criteria of a new diagnostic test when the current test has imperfect adherence but has better sensitivity and specificity.
-
 ## Abstract
 
 **Purpose**

@@ -9,8 +9,6 @@ location: "Basel, Switzerland"
 excerpt: "Program planners, policy makers and funders need quality cost data to effectively and efficiently implement HIV prevention programs."
 slidesurl: "/files/talks/2019-01-01-exploring-the-intervention-costs-of-pmtct-and-htc-explaining-and-predicting-unit-costs-for-implementation-scenarios-using-pooled-data-from-several-studies.pdf"
 ---
-**Brief summary**: Program planners, policy makers and funders need quality cost data to effectively and efficiently implement HIV prevention programs.
-
 ## Abstract
 
 **Introduction**

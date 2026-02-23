@@ -9,8 +9,6 @@ location: "Virtual congress"
 excerpt: "COVID-19 has spread rapidly across the world, resulting in tremendous economic damage."
 slidesurl: "/files/talks/2021-01-01-the-economic-impact-of-covid-19-non-pharmaceutical-interventions-and-the-influence-of-poverty-and-inequality.pdf"
 ---
-**Brief summary**: COVID-19 has spread rapidly across the world, resulting in tremendous economic damage.
-
 ## Abstract
 
 **Introduction**: COVID-19 has spread rapidly across the world, resulting in tremendous economic damage. Forecasts estimate a 4.9 percent contraction of the global economy because of the implementation of Non-Pharmaceutical Interventions (NPI) aimed to mitigate the spread of SARS-CoV-2. The adverse economic effects of COVID-19 may vary by the stringency of the NPIs, their length of implementation, and the degree of compliance. Robust evidence on how COVID-19 impacted the global economy is needed to inform decision making. This work aims to estimate the variation on quarter Gross Domestic Product (GDP) and its association with the stringency of NPI.

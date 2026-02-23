@@ -9,8 +9,6 @@ location: "Philadelphia, PA, USA"
 excerpt: "Individual-level simulation models are often used to assess the impact of various health policies by simulating disease development, but they tend to be computationally demanding."
 slidesurl: "/files/talks/2023-01-01-optimizing-a-natural-history-simulation-model-of-colorectal-cancer-using-gpus.pdf"
 ---
-**Brief summary**: Individual-level simulation models are often used to assess the impact of various health policies by simulating disease development, but they tend to be computationally demanding.
-
 ## Abstract
 
 **Purpose**

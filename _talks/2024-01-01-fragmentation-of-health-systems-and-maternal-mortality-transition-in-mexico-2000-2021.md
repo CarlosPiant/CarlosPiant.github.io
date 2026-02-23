@@ -9,8 +9,6 @@ location: "Mexico City, Mexico"
 excerpt: "Examines how maternal mortality trends in Mexico differ by social security status and shows how health system fragmentation is linked to persistent inequalities."
 slidesurl: "/files/talks/2024-01-01-fragmentation-of-health-systems-and-maternal-mortality-transition-in-mexico-2000-2021.pdf"
 ---
-**Brief summary**: Examines how maternal mortality trends in Mexico differ by social security status and shows how health system fragmentation is linked to persistent inequalities.
-
 ## Abstract
 
 **Introduction**: Health systems fragmentation (HSF) can lead to inefficiencies, inequities, and suboptimal health outcomes. This presentation analyzes the temporal and territorial evolution of maternal mortality in Mexico and its potential relationship with HSF.

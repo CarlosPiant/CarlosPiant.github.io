@@ -9,8 +9,6 @@ location: "San Francisco, CA, USA"
 excerpt: "Assesses how government responses, mobility, inequality, and political leadership were associated with COVID-19 case trends across 93 countries."
 slidesurl: "/files/talks/2020-01-01-policy-poverty-and-politics-how-public-health-inequality-and-political-leadership-interacted-in-the-covid-19-pandemic.pdf"
 ---
-**Brief summary**: Assesses how government responses, mobility, inequality, and political leadership were associated with COVID-19 case trends across 93 countries.
-
 ## Abstract
 
 **Background**: In early 2020, countries worldwide implemented non-pharmaceutical interventions (NPIs) to slow the spread of COVID-19. NPIs varied between countries in degree and timing of implementation. The effectiveness of NPIs depends on public compliance, and the extent to which NPIs resulted in population mobility reductions varied. We assessed the effects of NPIs on new COVID-19 cases from February 20th to August 17th in 93 countries controlling for ability and willingness to comply with government restrictions.

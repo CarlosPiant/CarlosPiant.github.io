@@ -42,6 +42,17 @@ layout: default
 
       <section class="page__content" itemprop="text">
         {{ content }}
+        {% if page.slidesurl %}
+        <h2>PDF</h2>
+        <p><a href="{{ page.slidesurl | relative_url }}" target="_blank" rel="noopener">Open PDF in a new tab</a></p>
+        <iframe
+          src="{{ page.slidesurl | relative_url }}"
+          title="{{ page.title | default: 'Talk PDF' | strip_html }} PDF"
+          width="100%"
+          height="900"
+          style="border: 1px solid #ddd; border-radius: 4px;"
+        ></iframe>
+        {% endif %}
         {% if page.link %}<div><a href="{{ page.link }}" class="btn">{{ site.data.ui-text[site.locale].ext_link_label | default: "Direct Link" }}</a></div>{% endif %}
       </section>
 
