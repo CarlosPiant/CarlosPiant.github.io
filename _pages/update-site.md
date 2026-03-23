@@ -90,39 +90,41 @@ Optional short note.
 
 ## Tutorials & Codes
 
-Location: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/_posts/`
+Location:
+- Posts: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/_posts/`
+- Rendered tutorial HTML/assets: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/tutorials/`
 
-Tutorials are stored as Jekyll posts, but the graphs/outputs come from Quarto HTML that is rendered first and then injected into the posts.
+Tutorials are stored as Jekyll posts, but each post is rebuilt from the rendered HTML already stored in `tutorials/`.
 
 ### Recommended workflow
 
-1. In your Quarto project, render the book:
+1. Update or replace the rendered HTML files inside:
+   `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/tutorials/`
+2. Rebuild the tutorial posts from those rendered files:
    ```bash
-   quarto render
-   ```
-2. Sync the rendered outputs into this site:
-   ```bash
-   python3 /Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/scripts/sync_tutorials_from_quarto.py /path/to/HEOR_Tutorials
+   python3 /Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/scripts/rebuild_tutorial_posts.py
    ```
 
 This will:
-- Copy all figure assets into `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/tutorials/`
-- Replace each tutorial post body with the rendered HTML (so graphs show)
+- Delete the current tutorial posts in `_posts/`
+- Create one new post per rendered tutorial HTML file in `tutorials/*/*.html`
+- Keep the graphs/figures working by pointing each post to the matching `*_files` asset folder
 
-### Front matter (kept in each post)
+### Front matter (generated automatically)
 
 ```yaml
 ---
 title: "Tutorial title"
 date: 2026-02-15
 categories: [tutorials, codes]
-tags: [Machine Learning]   # one topic tag shown in the sidebar
+tags: ["Simulation Tools"]   # derived from the tutorial folder name
 summary: "Short plain-language summary used in the Tutorials list."
 ---
 ```
 
 Tips:
-- The Tutorials page filters by `tags`, so keep tags consistent (e.g., "Causal Inference", "Machine Learning", "Simulation Models").
+- The Tutorials page filters by `tags`, and the script currently derives them from the folder name (for example `simulation-tools` becomes `Simulation Tools`).
+- If you rename a tutorial group folder, rerun the rebuild script so the new tag appears on `/tutorials/`.
 
 ## Didactic Apps
 
