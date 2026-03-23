@@ -29,4 +29,45 @@
     await mermaid.run({querySelector:'code.language-mermaid'});
 </script>
 
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var copyButtons = document.querySelectorAll(".code-copy-button");
+    copyButtons.forEach(function(button) {
+      if (button.dataset.codexBound === "true") return;
+      button.dataset.codexBound = "true";
+      if (!button.textContent.trim()) {
+        button.textContent = "Copy";
+      }
+      button.setAttribute("type", "button");
+      button.setAttribute("aria-label", "Copy code");
+      button.addEventListener("click", async function() {
+        var pre = button.closest("pre");
+        var code = pre ? pre.querySelector("code") : null;
+        if (!code) return;
+
+        var clone = code.cloneNode(true);
+        clone.querySelectorAll("a").forEach(function(anchor) {
+          anchor.remove();
+        });
+
+        var text = clone.textContent.replace(/\s+$/, "");
+        try {
+          await navigator.clipboard.writeText(text);
+          button.classList.add("is-copied");
+          button.textContent = "Copied";
+          window.setTimeout(function() {
+            button.classList.remove("is-copied");
+            button.textContent = "Copy";
+          }, 1800);
+        } catch (err) {
+          button.textContent = "Copy failed";
+          window.setTimeout(function() {
+            button.textContent = "Copy";
+          }, 1800);
+        }
+      });
+    });
+  });
+</script>
+
 <!-- end custom footer snippets -->
