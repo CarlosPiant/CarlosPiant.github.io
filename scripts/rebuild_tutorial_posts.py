@@ -16,6 +16,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+from html import escape
 from datetime import datetime
 from pathlib import Path
 
@@ -94,6 +95,94 @@ def clean_body(text: str) -> str:
     text = strip_citations(text)
     text = re.sub(r"\n{3,}", "\n\n", text).strip()
     return text + "\n"
+
+
+def transform_knitr_output_blocks(text: str) -> str:
+    lines = text.splitlines()
+    transformed: list[str] = []
+    i = 0
+
+    while i < len(lines):
+        stripped = lines[i].strip()
+        if not stripped.startswith("```"):
+            transformed.append(lines[i])
+            i += 1
+            continue
+
+        fence_lang = stripped[3:].strip()
+        j = i + 1
+        block_lines: list[str] = []
+        while j < len(lines) and lines[j].strip() != "```":
+            block_lines.append(lines[j])
+            j += 1
+
+        if j >= len(lines):
+            transformed.append(lines[i])
+            i += 1
+            continue
+
+        if fence_lang:
+            transformed.extend(lines[i:j + 1])
+            i = j + 1
+            continue
+
+        nonempty = [line for line in block_lines if line.strip()]
+        is_knitr_output = bool(nonempty) and all(
+            re.match(r"^##(?:\s|$)", line) for line in nonempty
+        )
+
+        if not is_knitr_output:
+            transformed.extend(lines[i:j + 1])
+            i = j + 1
+            continue
+
+        merged_output: list[str] = []
+        while True:
+            cleaned = [re.sub(r"^##\s?", "", line) for line in block_lines]
+            merged_output.extend(cleaned)
+
+            next_i = j + 1
+            spacer_lines: list[str] = []
+            while next_i < len(lines) and not lines[next_i].strip():
+                spacer_lines.append(lines[next_i])
+                next_i += 1
+
+            if next_i >= len(lines) or lines[next_i].strip() != "```":
+                break
+
+            next_j = next_i + 1
+            next_block_lines: list[str] = []
+            while next_j < len(lines) and lines[next_j].strip() != "```":
+                next_block_lines.append(lines[next_j])
+                next_j += 1
+
+            next_nonempty = [line for line in next_block_lines if line.strip()]
+            next_is_knitr_output = bool(next_nonempty) and all(
+                re.match(r"^##(?:\s|$)", line) for line in next_nonempty
+            )
+
+            if not next_is_knitr_output:
+                break
+
+            if merged_output and spacer_lines:
+                merged_output.append("")
+            block_lines = next_block_lines
+            j = next_j
+
+        while merged_output and not merged_output[0].strip():
+            merged_output.pop(0)
+        while merged_output and not merged_output[-1].strip():
+            merged_output.pop()
+
+        html_block = [
+            '<div class="cell-output-stdout">',
+            f"<pre>{escape(chr(10).join(merged_output))}</pre>",
+            "</div>",
+        ]
+        transformed.extend(html_block)
+        i = j + 1
+
+    return "\n".join(transformed) + "\n"
 
 
 def split_top_level_fields(text: str) -> list[str]:
@@ -319,6 +408,7 @@ def execute_qmd(source_qmd: Path, slug: str) -> str:
 
         _, body = parse_front_matter(output_md.read_text(encoding="utf-8"))
         body = clean_body(body)
+        body = transform_knitr_output_blocks(body)
         body = body.replace("](figures/", f"](/tutorials/rendered-assets/{slug}/")
         body = body.replace("](figure/", f"](/tutorials/rendered-assets/{slug}/")
         body = body.replace('src="figures/', f'src="/tutorials/rendered-assets/{slug}/')

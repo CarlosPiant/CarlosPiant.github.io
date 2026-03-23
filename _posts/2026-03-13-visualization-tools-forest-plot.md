@@ -29,22 +29,17 @@ We will begin with a synthetic subgroup analysis for a hospital discharge interv
 library(dplyr)
 ```
 
-```
-## 
-## Attaching package: 'dplyr'
-```
+<div class="cell-output-stdout">
+<pre>Attaching package: &#x27;dplyr&#x27;
 
-```
-## The following objects are masked from 'package:stats':
-## 
-## filter, lag
-```
+The following objects are masked from &#x27;package:stats&#x27;:
 
-```
-## The following objects are masked from 'package:base':
-## 
-## intersect, setdiff, setequal, union
-```
+filter, lag
+
+The following objects are masked from &#x27;package:base&#x27;:
+
+intersect, setdiff, setequal, union</pre>
+</div>
 
 ``` r
 library(ggplot2)

@@ -30,22 +30,17 @@ We begin with a synthetic hospital readmission example. The outcome is 30-day re
 library(dplyr)
 ```
 
-```
-## 
-## Attaching package: 'dplyr'
-```
+<div class="cell-output-stdout">
+<pre>Attaching package: &#x27;dplyr&#x27;
 
-```
-## The following objects are masked from 'package:stats':
-## 
-## filter, lag
-```
+The following objects are masked from &#x27;package:stats&#x27;:
 
-```
-## The following objects are masked from 'package:base':
-## 
-## intersect, setdiff, setequal, union
-```
+filter, lag
+
+The following objects are masked from &#x27;package:base&#x27;:
+
+intersect, setdiff, setequal, union</pre>
+</div>
 
 ``` r
 library(ggplot2)
@@ -53,30 +48,22 @@ library(knitr)
 library(randomForest)
 ```
 
-```
-## randomForest 4.7-1.2
-```
+<div class="cell-output-stdout">
+<pre>randomForest 4.7-1.2
 
-```
-## Type rfNews to see new features/changes/bug fixes.
-```
+Type rfNews to see new features/changes/bug fixes.
 
-```
-## 
-## Attaching package: 'randomForest'
-```
 
-```
-## The following object is masked from 'package:ggplot2':
-## 
-## margin
-```
+Attaching package: &#x27;randomForest&#x27;
 
-```
-## The following object is masked from 'package:dplyr':
-## 
-## combine
-```
+The following object is masked from &#x27;package:ggplot2&#x27;:
+
+margin
+
+The following object is masked from &#x27;package:dplyr&#x27;:
+
+combine</pre>
+</div>
 
 ``` r
 format_numeric_table <- function(df, digits = 3) {

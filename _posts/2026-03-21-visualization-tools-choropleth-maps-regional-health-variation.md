@@ -29,22 +29,17 @@ We begin with a synthetic map. The purpose is to show the mechanics of a choropl
 library(dplyr)
 ```
 
-```
-## 
-## Attaching package: 'dplyr'
-```
+<div class="cell-output-stdout">
+<pre>Attaching package: &#x27;dplyr&#x27;
 
-```
-## The following objects are masked from 'package:stats':
-## 
-## filter, lag
-```
+The following objects are masked from &#x27;package:stats&#x27;:
 
-```
-## The following objects are masked from 'package:base':
-## 
-## intersect, setdiff, setequal, union
-```
+filter, lag
+
+The following objects are masked from &#x27;package:base&#x27;:
+
+intersect, setdiff, setequal, union</pre>
+</div>
 
 ``` r
 library(ggplot2)
@@ -52,9 +47,9 @@ library(knitr)
 library(sf)
 ```
 
-```
-## Linking to GEOS 3.13.0, GDAL 3.8.5, PROJ 9.5.1; sf_use_s2 is TRUE
-```
+<div class="cell-output-stdout">
+<pre>Linking to GEOS 3.13.0, GDAL 3.8.5, PROJ 9.5.1; sf_use_s2 is TRUE</pre>
+</div>
 
 ``` r
 library(viridisLite)

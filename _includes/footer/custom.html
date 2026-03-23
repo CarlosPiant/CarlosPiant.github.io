@@ -34,8 +34,11 @@
     var rougeBlocks = document.querySelectorAll(".page__content .highlighter-rouge");
     rougeBlocks.forEach(function(block) {
       if (block.querySelector(".code-copy-button")) return;
+      if (block.classList.contains("language-plaintext") || block.classList.contains("language-text")) return;
       var highlight = block.querySelector(".highlight");
       if (!highlight) return;
+      var code = highlight.querySelector("code");
+      if (code && (code.classList.contains("language-plaintext") || code.classList.contains("language-text"))) return;
       var button = document.createElement("button");
       button.className = "code-copy-button";
       button.type = "button";

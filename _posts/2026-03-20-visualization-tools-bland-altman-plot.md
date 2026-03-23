@@ -41,22 +41,17 @@ We will start with a synthetic example comparing a manual and an automated systo
 library(dplyr)
 ```
 
-```
-## 
-## Attaching package: 'dplyr'
-```
+<div class="cell-output-stdout">
+<pre>Attaching package: &#x27;dplyr&#x27;
 
-```
-## The following objects are masked from 'package:stats':
-## 
-## filter, lag
-```
+The following objects are masked from &#x27;package:stats&#x27;:
 
-```
-## The following objects are masked from 'package:base':
-## 
-## intersect, setdiff, setequal, union
-```
+filter, lag
+
+The following objects are masked from &#x27;package:base&#x27;:
+
+intersect, setdiff, setequal, union</pre>
+</div>
 
 ``` r
 library(ggplot2)
@@ -64,16 +59,13 @@ library(knitr)
 library(MASS)
 ```
 
-```
-## 
-## Attaching package: 'MASS'
-```
+<div class="cell-output-stdout">
+<pre>Attaching package: &#x27;MASS&#x27;
 
-```
-## The following object is masked from 'package:dplyr':
-## 
-## select
-```
+The following object is masked from &#x27;package:dplyr&#x27;:
+
+select</pre>
+</div>
 
 ``` r
 set.seed(2026)
@@ -251,9 +243,9 @@ synthetic_plot <- build_bland_altman_plot(
 synthetic_plot
 ```
 
-```
-## `geom_smooth` using formula = 'y ~ x'
-```
+<div class="cell-output-stdout">
+<pre>`geom_smooth` using formula = &#x27;y ~ x&#x27;</pre>
+</div>
 
 ![plot of chunk unnamed-chunk-4](/tutorials/rendered-assets/visualization-tools-bland-altman-plot/unnamed-chunk-4-1.png)
 
@@ -320,9 +312,9 @@ real_plot <- build_bland_altman_plot(
 real_plot
 ```
 
-```
-## `geom_smooth` using formula = 'y ~ x'
-```
+<div class="cell-output-stdout">
+<pre>`geom_smooth` using formula = &#x27;y ~ x&#x27;</pre>
+</div>
 
 ![plot of chunk unnamed-chunk-6](/tutorials/rendered-assets/visualization-tools-bland-altman-plot/unnamed-chunk-6-1.png)
 

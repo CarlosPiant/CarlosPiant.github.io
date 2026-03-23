@@ -35,22 +35,17 @@ This is a good use case for a Sankey diagram because the policy question is inhe
 library(dplyr)
 ```
 
-```
-## 
-## Attaching package: 'dplyr'
-```
+<div class="cell-output-stdout">
+<pre>Attaching package: &#x27;dplyr&#x27;
 
-```
-## The following objects are masked from 'package:stats':
-## 
-## filter, lag
-```
+The following objects are masked from &#x27;package:stats&#x27;:
 
-```
-## The following objects are masked from 'package:base':
-## 
-## intersect, setdiff, setequal, union
-```
+filter, lag
+
+The following objects are masked from &#x27;package:base&#x27;:
+
+intersect, setdiff, setequal, union</pre>
+</div>
 
 ``` r
 library(ggplot2)

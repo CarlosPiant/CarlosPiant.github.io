@@ -353,13 +353,13 @@ ggplot2::ggplot(synthetic_rng_data, ggplot2::aes(x = severity_score)) +
  ggplot2::theme_minimal(base_size = 12)
 ```
 
-```
-## Warning: The dot-dot notation (`..density..`) was deprecated in ggplot2 3.4.0.
-## i Please use `after_stat(density)` instead.
-## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_lifecycle_warnings` to see where this warning was
-## generated.
-```
+<div class="cell-output-stdout">
+<pre>Warning: The dot-dot notation (`..density..`) was deprecated in ggplot2 3.4.0.
+i Please use `after_stat(density)` instead.
+This warning is displayed once every 8 hours.
+Call `lifecycle::last_lifecycle_warnings` to see where this warning was
+generated.</pre>
+</div>
 
 ![plot of chunk unnamed-chunk-6](/tutorials/rendered-assets/simulation-tools-random-number-generators/unnamed-chunk-6-1.png)
 
