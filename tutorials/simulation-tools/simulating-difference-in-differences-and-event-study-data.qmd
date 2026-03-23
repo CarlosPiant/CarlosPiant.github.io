@@ -1,0 +1,337 @@
+---
+title: "Simulating Difference-in-Differences and Event-Study Data"
+subtitle: "Creating staggered treatment timing and dynamic effects in a synthetic panel"
+---
+
+This chapter creates a synthetic panel dataset in which treatment is adopted at different times across hospitals and the treatment effect evolves dynamically after adoption. The goal is to simulate the kind of panel structure that motivates difference-in-differences event-study analysis rather than a single two-period DiD contrast. In many health-policy settings, reforms do not begin everywhere at once. Hospitals, insurers, or regions adopt interventions in different years, and the policy effect may build up gradually rather than appearing as a one-time level shift.
+
+The design is motivated by the modern staggered-adoption DiD literature, especially the concerns raised when event-study regressions are used with variation in treatment timing @sun2021; @callaway2021. The practical lesson is that a useful simulation should make treatment cohorts, relative event time, and dynamic effects explicit from the start.
+
+This chapter complements the existing DiD simulation chapter by moving from a single adoption date to staggered timing. The earlier chapter is a clean two-group benchmark. This one is a data-generating template for dynamic event-study designs.
+
+## What data will be created and what method it is meant to test
+
+We will create a synthetic hospital panel with staggered policy adoption. The data are meant to test a fixed-effects event-study regression with relative-time indicators.
+
+The variables will be:
+
+- `hospital`: hospital identifier
+- `year`: calendar year
+- `cohort_year`: first treatment year for a hospital, or never treated
+- `event_time`: relative year to treatment adoption
+- `treated`: indicator for being treated in a given year
+- `avoidable_ed`: avoidable emergency department visits per 1,000 discharges
+
+The final step will be to fit an event-study regression with hospital and year fixed effects and compare the estimated lead and lag coefficients with the true dynamic treatment effects used in the simulation.
+
+## The data-generating process
+
+The untreated outcome follows
+
+$$
+Y_{it}(0) = \alpha_i + \lambda_t + \varepsilon_{it},
+$$
+
+where $\alpha_i$ is a hospital fixed effect, $\lambda_t$ is a common calendar-year effect, and $\varepsilon_{it}$ is idiosyncratic noise.
+
+Hospitals belong to adoption cohorts:
+
+$$
+G_i \in \{5, 7, 9, \infty\},
+$$
+
+where $\infty$ denotes never treated.
+
+Define relative event time
+
+$$
+k = t - G_i.
+$$
+
+The treatment effect is dynamic:
+
+$$
+\tau_k =
+\begin{cases}
+0 & k < 0, \\
+0 & k = 0, \\
+-1.5 & k = 1, \\
+-3.0 & k = 2, \\
+-4.0 & k \ge 3.
+\end{cases}
+$$
+
+The observed outcome is therefore
+
+$$
+Y_{it} = Y_{it}(0) + \tau_{t-G_i}\mathbb{1}(t \ge G_i, G_i < \infty).
+$$
+
+This design has three important features:
+
+1. untreated outcomes satisfy parallel trends by construction,
+2. hospitals adopt in different years,
+3. the treatment effect changes with event time.
+
+That is exactly the structure event-study regressions are supposed to recover.
+
+## Step 1: Generate the staggered-adoption panel
+
+```{r}
+set.seed(2037)
+
+n_hospitals <- 90
+years <- 1:10
+
+hospital_id <- rep(seq_len(n_hospitals), each = length(years))
+year_num <- rep(years, times = n_hospitals)
+
+cohort_assignment <- sample(
+  c(5, 7, 9, Inf),
+  size = n_hospitals,
+  replace = TRUE,
+  prob = c(0.25, 0.25, 0.25, 0.25)
+)
+
+cohort_year <- cohort_assignment[hospital_id]
+event_time <- year_num - cohort_year
+treated <- as.integer(year_num >= cohort_year & is.finite(cohort_year))
+
+hospital_fe <- rep(rnorm(n_hospitals, mean = 0, sd = 4.8), each = length(years))
+time_fe <- rep(seq(0, -5, length.out = length(years)), times = n_hospitals)
+
+dynamic_effect <- ifelse(
+  !is.finite(cohort_year) | year_num < cohort_year,
+  0,
+  ifelse(
+    event_time == 0, 0,
+    ifelse(
+      event_time == 1, -1.5,
+      ifelse(
+        event_time == 2, -3.0,
+        ifelse(event_time >= 3, -4.0, 0)
+      )
+    )
+  )
+)
+
+avoidable_ed <- 44 +
+  hospital_fe +
+  time_fe +
+  dynamic_effect +
+  rnorm(length(hospital_id), mean = 0, sd = 2.4)
+
+synthetic_event_study <- data.frame(
+  hospital = factor(hospital_id),
+  year = factor(year_num),
+  year_num = year_num,
+  cohort_year = cohort_year,
+  event_time = event_time,
+  treated = treated,
+  avoidable_ed = avoidable_ed
+)
+
+cohort_summary <- data.frame(
+  cohort = c("Adopt in year 5", "Adopt in year 7", "Adopt in year 9", "Never treated"),
+  hospitals = c(
+    sum(cohort_assignment == 5),
+    sum(cohort_assignment == 7),
+    sum(cohort_assignment == 9),
+    sum(is.infinite(cohort_assignment))
+  )
+)
+
+knitr::kable(
+  cohort_summary,
+  caption = "Treatment-timing cohorts in the simulated staggered-adoption panel",
+  row.names = FALSE
+)
+```
+
+The cohort table makes the treatment-timing structure explicit. Some hospitals adopt early, some adopt later, and some never adopt. That is the raw material of an event-study design.
+
+## Step 2: Create relative-time indicators for the event-study regression
+
+We will estimate relative-time effects for event times $k \in \{-4, -3, -2, 0, 1, 2, 3+\}$, using $k = -1$ as the omitted reference period.
+
+```{r}
+synthetic_event_study$rt_m4 <- as.integer(is.finite(synthetic_event_study$cohort_year) &
+  synthetic_event_study$event_time == -4)
+synthetic_event_study$rt_m3 <- as.integer(is.finite(synthetic_event_study$cohort_year) &
+  synthetic_event_study$event_time == -3)
+synthetic_event_study$rt_m2 <- as.integer(is.finite(synthetic_event_study$cohort_year) &
+  synthetic_event_study$event_time == -2)
+synthetic_event_study$rt_0 <- as.integer(is.finite(synthetic_event_study$cohort_year) &
+  synthetic_event_study$event_time == 0)
+synthetic_event_study$rt_1 <- as.integer(is.finite(synthetic_event_study$cohort_year) &
+  synthetic_event_study$event_time == 1)
+synthetic_event_study$rt_2 <- as.integer(is.finite(synthetic_event_study$cohort_year) &
+  synthetic_event_study$event_time == 2)
+synthetic_event_study$rt_3plus <- as.integer(is.finite(synthetic_event_study$cohort_year) &
+  synthetic_event_study$event_time >= 3)
+
+design_summary <- data.frame(
+  quantity = c(
+    "Hospitals",
+    "Years",
+    "Observations",
+    "Share ever treated",
+    "Share treated-period observations"
+  ),
+  value = c(
+    n_hospitals,
+    length(years),
+    nrow(synthetic_event_study),
+    mean(is.finite(cohort_assignment)),
+    mean(synthetic_event_study$treated)
+  )
+)
+
+design_summary$value <- round(design_summary$value, 3)
+
+knitr::kable(
+  design_summary,
+  caption = "Summary of the simulated DiD and event-study panel",
+  row.names = FALSE
+)
+```
+
+The omitted period $k = -1$ serves as the pre-treatment baseline. That is the usual normalization in event-study regressions because it anchors all coefficients relative to the year just before treatment begins.
+
+## Step 3: Fit the event-study model that matches the true generating process
+
+The natural fitted model is a hospital and year fixed-effects regression with relative-time indicators:
+
+```{r}
+event_study_fit <- lm(
+  avoidable_ed ~ hospital + year +
+    rt_m4 + rt_m3 + rt_m2 +
+    rt_0 + rt_1 + rt_2 + rt_3plus,
+  data = synthetic_event_study
+)
+
+robust_vcov <- sandwich::vcovCL(
+  event_study_fit,
+  cluster = ~ hospital,
+  type = "HC1"
+)
+
+event_terms <- c("rt_m4", "rt_m3", "rt_m2", "rt_0", "rt_1", "rt_2", "rt_3plus")
+true_effects <- c(
+  rt_m4 = 0,
+  rt_m3 = 0,
+  rt_m2 = 0,
+  rt_0 = 0,
+  rt_1 = -1.5,
+  rt_2 = -3.0,
+  rt_3plus = -4.0
+)
+
+event_study_table <- data.frame(
+  event_time = c("-4", "-3", "-2", "0", "1", "2", "3+"),
+  true_effect = true_effects[event_terms],
+  estimated_effect = coef(event_study_fit)[event_terms],
+  standard_error = sqrt(diag(robust_vcov)[event_terms])
+)
+
+event_study_table$bias <- event_study_table$estimated_effect - event_study_table$true_effect
+event_study_table$lower <- event_study_table$estimated_effect - 1.96 * event_study_table$standard_error
+event_study_table$upper <- event_study_table$estimated_effect + 1.96 * event_study_table$standard_error
+
+event_study_table[, c("true_effect", "estimated_effect", "standard_error", "bias", "lower", "upper")] <-
+  round(event_study_table[, c("true_effect", "estimated_effect", "standard_error", "bias", "lower", "upper")], 3)
+
+knitr::kable(
+  event_study_table,
+  caption = "True and estimated event-study coefficients in the simulated staggered-adoption design",
+  row.names = FALSE
+)
+```
+
+This table is the main recovery check. The lead coefficients should stay close to zero because there is no anticipation in the data-generating process. The lag coefficients should trace the dynamic effects built into the simulation.
+
+## Step 4: Visualize the recovered event-study path
+
+```{r}
+plot_data <- event_study_table
+plot_data$event_time_numeric <- c(-4, -3, -2, 0, 1, 2, 3)
+
+ggplot2::ggplot(
+  plot_data,
+  ggplot2::aes(x = event_time_numeric, y = estimated_effect)
+) +
+  ggplot2::geom_hline(yintercept = 0, color = "#6c757d", linetype = 2, linewidth = 0.8) +
+  ggplot2::geom_errorbar(
+    ggplot2::aes(ymin = lower, ymax = upper),
+    width = 0.15,
+    color = "#457b9d"
+  ) +
+  ggplot2::geom_point(size = 2.4, color = "#457b9d") +
+  ggplot2::geom_line(linewidth = 0.8, color = "#457b9d") +
+  ggplot2::geom_line(
+    ggplot2::aes(y = true_effect),
+    color = "#d62828",
+    linewidth = 0.9,
+    linetype = 2
+  ) +
+  ggplot2::labs(
+    title = "Recovered event-study coefficients track the true dynamic treatment path",
+    subtitle = "Blue points are estimated coefficients; dashed red line is the true effect path",
+    x = "Event time",
+    y = "Effect relative to event time -1"
+  ) +
+  ggplot2::scale_x_continuous(breaks = c(-4, -3, -2, 0, 1, 2, 3), labels = c("-4", "-3", "-2", "0", "1", "2", "3+")) +
+  ggplot2::theme_minimal(base_size = 12)
+```
+
+This figure is the most compact summary of the simulation. If the model is behaving well, the pre-treatment leads should be near zero and the post-treatment lags should move downward toward the true dynamic effect path.
+
+## Step 5: Show the mean outcome paths by adoption cohort
+
+```{r}
+cohort_plot_data <- aggregate(
+  avoidable_ed ~ year_num + cohort_year,
+  data = subset(synthetic_event_study, is.finite(cohort_year)),
+  FUN = mean
+)
+
+cohort_plot_data$cohort_label <- factor(
+  cohort_plot_data$cohort_year,
+  levels = c(5, 7, 9),
+  labels = c("Adopt in year 5", "Adopt in year 7", "Adopt in year 9")
+)
+
+ggplot2::ggplot(
+  cohort_plot_data,
+  ggplot2::aes(x = year_num, y = avoidable_ed, color = cohort_label)
+) +
+  ggplot2::geom_line(linewidth = 1) +
+  ggplot2::geom_point(size = 1.8) +
+  ggplot2::labs(
+    title = "Outcome paths differ by treatment-adoption cohort",
+    subtitle = "Staggered timing creates cohort-specific breaks in the mean outcome trend",
+    x = "Year",
+    y = "Avoidable ED visits per 1,000 discharges",
+    color = "Cohort"
+  ) +
+  ggplot2::scale_color_manual(
+    values = c(
+      "Adopt in year 5" = "#8d6e63",
+      "Adopt in year 7" = "#2a9d8f",
+      "Adopt in year 9" = "#457b9d"
+    )
+  ) +
+  ggplot2::theme_minimal(base_size = 12)
+```
+
+This cohort plot shows why event-study notation is helpful. Each cohort experiences the same dynamic treatment pattern, but at different calendar dates. The event-study transformation puts those cohorts onto a common relative-time scale.
+
+## Main assumptions behind this simulation
+
+The simulation assumes parallel trends in untreated outcomes, no anticipation before treatment, and a common dynamic treatment path across treated cohorts. Those assumptions make the event-study coefficients interpretable and allow a clean comparison between the estimated and true dynamic effects.
+
+The design is intentionally simpler than many empirical applications. Real staggered-adoption settings may involve heterogeneous effects across cohorts, selective timing, serial correlation beyond the current structure, or treatment effects that differ by hospital characteristics. Those complications are precisely why the modern event-study literature pays so much attention to estimator choice. The present chapter is meant to be the clean benchmark before those complications are added.
+
+## Further reading
+
+Sun and Abraham provide an essential treatment of event-study estimation under heterogeneous treatment timing @sun2021. Callaway and Sant'Anna provide a related modern framework for DiD with multiple periods and staggered adoption @callaway2021. Bertrand, Duflo, and Mullainathan remain central for understanding inference issues in panel DiD settings @bertrand2004.

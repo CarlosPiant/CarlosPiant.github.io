@@ -1,0 +1,277 @@
+---
+title: "Variable Importance"
+date: 2026-03-20
+categories: [tutorials, codes]
+tags: ["Visualization Tools"]
+summary: "This chapter builds a variable-importance plot rather than a regression-coefficient plot or a partial-dependence plot. The purpose is to show which predictors matter most for a model's predictive performance and to..."
+excerpt: "Building a ranked importance plot to show which predictors drive model performance"
+---
+This chapter builds a variable-importance plot rather than a regression-coefficient plot or a partial-dependence plot. The purpose is to show which predictors matter most for a model's predictive performance and to communicate that ranking in a visually clean, academically formatted way. Variable-importance plots are especially useful when a flexible model captures nonlinearities and interactions that are not easy to summarize with one coefficient per predictor. Greenwell and Boehmke give a broad overview of variable-importance plotting and explain why the plotting choices matter for interpretation.
+
+The specific figure we will build is a horizontal lollipop chart of permutation importance. This choice is deliberate. A lollipop chart is easier to read than a crowded bar chart when variable names are long, and permutation importance has a direct performance-based interpretation: it measures how much the model worsens when a predictor is disrupted. Breiman's random forest paper made this style of performance-based variable importance widely influential in applied predictive modeling.
+
+## What the visualization is showing
+
+A variable-importance plot ranks predictors from most to least important according to a chosen importance measure. In this chapter, importance is defined as the increase in out-of-sample log loss after randomly permuting one predictor while leaving the model itself fixed.
+
+This figure is useful when:
+
+1. a predictive model contains many candidate predictors,
+2. the reader needs a fast summary of which variables matter most,
+3. the analyst wants a model-based ranking rather than only descriptive summaries.
+
+The key interpretation rule is simple: variables farther to the right are more important because permuting them harms predictive performance more. Values close to zero indicate variables that contribute little incremental predictive information in the fitted model. Negative values can occur in finite samples and usually mean that the variable has little stable predictive value under the chosen metric.
+
+## Step 1: Create a synthetic prediction example
+
+We begin with a synthetic hospital readmission example. The outcome is 30-day readmission, and the predictors include age, baseline severity, prior admissions, comorbidity burden, creatinine, follow-up status, and sex. We fit a random forest and compute permutation importance on a held-out test set.
+
+```r
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(randomForest)
+
+format_numeric_table <- function(df, digits = 3) {
+ numeric_cols <- vapply(df, is.numeric, logical(1))
+ df[numeric_cols] <- lapply(df[numeric_cols], round, digits = digits)
+ df
+}
+
+log_loss <- function(actual, prob_yes, eps = 1e-6) {
+ y <- as.integer(actual == "Yes")
+ p <- pmin(pmax(prob_yes, eps), 1 - eps)
+ -mean(y * log(p) + (1 - y) * log(1 - p))
+}
+
+permutation_importance <- function(model, data, outcome, reps = 20, seed = 2026) {
+ set.seed(seed)
+
+ baseline_prob <- predict(model, newdata = data, type = "prob")[, "Yes"]
+ baseline_loss <- log_loss(data[[outcome]], baseline_prob)
+
+ predictors <- setdiff(names(data), outcome)
+
+ importance_df <- lapply(predictors, function(v) {
+ increases <- replicate(reps, {
+ permuted <- data
+ permuted[[v]] <- sample(permuted[[v]])
+ permuted_prob <- predict(model, newdata = permuted, type = "prob")[, "Yes"]
+ log_loss(data[[outcome]], permuted_prob) - baseline_loss
+ })
+
+ data.frame(
+ variable = v,
+ importance = mean(increases),
+ sd_importance = sd(increases)
+ )
+ })
+
+ bind_rows(importance_df)
+}
+```
+
+```r
+set.seed(2026)
+
+n <- 1200
+
+age <- rnorm(n, mean = 67, sd = 10)
+severity <- rnorm(n)
+prior_adm <- rpois(n, lambda = exp(-0.1 + 0.9 * severity))
+charlson <- pmax(round(1.5 + 1.4 * severity + rnorm(n, 0, 0.7)), 0)
+creatinine <- exp(rnorm(n, 0.15 + 0.35 * severity, 0.25))
+followup <- factor(rbinom(n, 1, plogis(0.2 - 0.9 * severity)), labels = c("No", "Yes"))
+sex <- factor(rbinom(n, 1, 0.48), labels = c("Female", "Male"))
+
+linear_predictor <-
+ -4.4 +
+ 0.045 * age +
+ 1.45 * severity +
+ 0.24 * prior_adm +
+ 0.30 * charlson +
+ 0.65 * log(creatinine) -
+ 0.95 * (followup == "Yes") +
+ 0.05 * (sex == "Male")
+
+readmit <- factor(
+ ifelse(runif(n) < plogis(linear_predictor), "Yes", "No"),
+ levels = c("No", "Yes")
+)
+
+synthetic_df <- data.frame(
+ age = age,
+ severity = severity,
+ prior_adm = prior_adm,
+ charlson = charlson,
+ creatinine = creatinine,
+ followup = followup,
+ sex = sex,
+ readmit = readmit
+)
+
+train_index <- sample.int(n, size = round(0.7 * n))
+synthetic_train <- synthetic_df[train_index, ]
+synthetic_test <- synthetic_df[-train_index, ]
+
+synthetic_rf <- randomForest(readmit ~., data = synthetic_train, ntree = 700)
+
+synthetic_importance <- permutation_importance(
+ model = synthetic_rf,
+ data = synthetic_test,
+ outcome = "readmit",
+ reps = 20,
+ seed = 2026
+) |>
+ arrange(desc(importance))
+
+synthetic_summary <- data.frame(
+ training_n = nrow(synthetic_train),
+ test_n = nrow(synthetic_test),
+ test_accuracy = mean(predict(synthetic_rf, synthetic_test) == synthetic_test$readmit),
+ baseline_log_loss = log_loss(
+ synthetic_test$readmit,
+ predict(synthetic_rf, synthetic_test, type = "prob")[, "Yes"]
+ )
+)
+
+knitr::kable(
+ format_numeric_table(synthetic_summary, digits = 3),
+ caption = "Synthetic random-forest setup for the variable-importance plot"
+)
+
+knitr::kable(
+ format_numeric_table(synthetic_importance, digits = 3),
+ caption = "Permutation importance values in the synthetic readmission example"
+)
+```
+
+The table is useful, but the plot is the real goal. We will build a horizontal lollipop chart with a zero reference line and importance labels ordered from smallest to largest so the rank is visually obvious.
+
+## Step 2: Build the synthetic variable-importance plot
+
+```r
+synthetic_plot_df <- synthetic_importance |>
+ mutate(variable = factor(variable, levels = rev(variable)))
+
+ggplot(synthetic_plot_df, aes(x = importance, y = variable)) +
+ geom_segment(aes(x = 0, xend = importance, y = variable, yend = variable),
+ linewidth = 1.2, color = "#9ecae1") +
+ geom_point(size = 3.4, color = "#08519c") +
+ geom_vline(xintercept = 0, linetype = 2, color = "#7f2704") +
+ labs(
+ title = "A variable-importance plot ranks predictors by performance loss after permutation",
+ subtitle = "Synthetic readmission model using held-out log-loss increase",
+ x = "Increase in test-set log loss after permutation",
+ y = NULL
+ ) +
+ theme_minimal(base_size = 12) +
+ theme(
+ panel.grid.major.y = element_blank,
+ panel.grid.minor = element_blank
+ )
+```
+
+This figure is easy to read because it preserves both rank and magnitude. Severity is the most important predictor, followed by age and comorbidity burden, while sex contributes almost nothing to held-out performance. That is the core value of the plot: it turns a model's internal ranking into a figure that a reader can scan in seconds.
+
+## Step 3: Pair the figure with a short ranked table
+
+As with several figures in this section, it is often useful to pair the plot with a compact top-predictor table.
+
+```r
+top_synthetic_predictors <- synthetic_importance |>
+ slice_head(n = 5)
+
+knitr::kable(
+ format_numeric_table(top_synthetic_predictors, digits = 3),
+ caption = "Top predictors in the synthetic variable-importance ranking"
+)
+```
+
+The figure gives the pattern. The table names the values precisely. Together they make the result easier to report in text and easier to inspect critically.
+
+## Step 4: Create a real-world variable-importance plot from a public scientific dataset
+
+For a real-world example, we use the public Pima diabetes data distributed with `MASS`, linked to the prediction problem studied by Smith and colleagues. The original paper used the ADAP learning algorithm to forecast diabetes status. We do not reproduce that algorithm here. Instead, this is a transparent partial application built on the same public prediction task and dataset.
+
+We train a random forest on `Pima.tr`, evaluate it on `Pima.te`, and compute held-out permutation importance for each predictor. This keeps the scientific setting grounded in a published health-prediction problem while focusing the chapter on the visualization itself.
+
+```r
+data("Pima.tr", package = "MASS")
+data("Pima.te", package = "MASS")
+
+pima_rf <- randomForest(type ~., data = Pima.tr, ntree = 700)
+
+pima_importance <- permutation_importance(
+ model = pima_rf,
+ data = Pima.te,
+ outcome = "type",
+ reps = 20,
+ seed = 2026
+) |>
+ arrange(desc(importance))
+
+pima_summary <- data.frame(
+ training_n = nrow(Pima.tr),
+ test_n = nrow(Pima.te),
+ test_accuracy = mean(predict(pima_rf, Pima.te) == Pima.te$type),
+ baseline_log_loss = log_loss(
+ Pima.te$type,
+ predict(pima_rf, Pima.te, type = "prob")[, "Yes"]
+ )
+)
+
+knitr::kable(
+ format_numeric_table(pima_summary, digits = 3),
+ caption = "Public Pima diabetes prediction setup for the real-world variable-importance plot"
+)
+
+knitr::kable(
+ format_numeric_table(pima_importance, digits = 3),
+ caption = "Held-out permutation importance values in the public Pima diabetes example"
+)
+```
+
+## Step 5: Draw the real-world variable-importance plot
+
+```r
+pima_plot_df <- pima_importance |>
+ mutate(variable = factor(variable, levels = rev(variable)))
+
+ggplot(pima_plot_df, aes(x = importance, y = variable)) +
+ geom_segment(aes(x = 0, xend = importance, y = variable, yend = variable),
+ linewidth = 1.2, color = "#c7e9c0") +
+ geom_point(size = 3.4, color = "#238b45") +
+ geom_vline(xintercept = 0, linetype = 2, color = "#7f2704") +
+ labs(
+ title = "Glucose dominates the variable-importance ranking in the public Pima diabetes task",
+ subtitle = "Held-out permutation importance from a random forest linked to Smith et al. (1988)",
+ x = "Increase in test-set log loss after permutation",
+ y = NULL
+ ) +
+ theme_minimal(base_size = 12) +
+ theme(
+ panel.grid.major.y = element_blank,
+ panel.grid.minor = element_blank
+ )
+```
+
+The real-world ranking is easy to interpret. Plasma glucose is the dominant predictor in this model, followed by age and body mass index. Some variables have near-zero or slightly negative importance values. That does not mean the variables are biologically irrelevant. It means that, in this particular fitted model and held-out test split, permuting those variables does not materially worsen predictive performance.
+
+## How to read the figure carefully
+
+Variable-importance plots are useful, but they are not causal diagrams. A highly ranked variable is not necessarily a causal driver. It is a predictor that matters for the fitted model's performance under the chosen importance metric.
+
+It is also important to remember that importance is model specific. A variable can be very important in a random forest and less important in a logistic regression, or vice versa. Correlated predictors complicate interpretation further. If two variables carry similar information, permuting one may not hurt performance much because the model can lean on the other.
+
+That is why permutation importance is often preferable to impurity-based importance for communication. It has a clearer performance interpretation, but it still requires caution. The figure is best understood as a ranking of model reliance, not a ranking of causal importance or policy priority.
+
+## How this figure complements the rest of the book
+
+Variable-importance plots fit naturally beside the machine-learning and prediction chapters. They complement ROC curves by explaining which variables helped the classifier discriminate, and they complement partial-dependence plots by telling the reader which variables deserve closer inspection on a response surface.
+
+They are also useful outside machine learning. A health-services model predicting readmission, a risk-adjustment model predicting spending, or a disease-screening model predicting diagnosis can all benefit from a concise ranked summary of which predictors carry the most predictive signal.
+
+## Further reading
+
+Breiman's random forest article remains a central reference for importance measures in tree-based models. Greenwell and Boehmke provide an accessible overview of importance plotting choices and why they matter for interpretation. For the public health-prediction problem used here, Smith and colleagues remain the original source behind the Pima diabetes application.

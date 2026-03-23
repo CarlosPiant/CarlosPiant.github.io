@@ -1,0 +1,431 @@
+---
+title: "Nomogram Plot"
+subtitle: "Building a bedside-style prediction graphic that turns a regression model into an additive point system"
+---
+
+This chapter builds a nomogram plot, a figure that translates a prediction model into a visual points system. Nomograms are especially common in clinical prediction because they help readers approximate an individual's predicted risk without reading regression coefficients directly. Rather than reporting a fitted model as a table of log-odds or hazard ratios, the nomogram converts each predictor into a point contribution, sums the points, and maps the total to a predicted probability or survival outcome. Iasonos and colleagues explain why nomograms became popular in oncology and prognosis research: they preserve the model structure while making it more usable for bedside or policy-oriented interpretation @iasonos2008nomograms.
+
+The main value of the figure is interpretability. A coefficient table tells the analyst how predictors shift the linear predictor. A nomogram tells the reader how a particular patient profile translates into a total risk score. That makes it a useful communication device when the audience cares about individualized prediction rather than only model fit.
+
+## What the visualization is showing
+
+We will build a static nomogram for a logistic regression model. The figure will contain:
+
+1. a top points axis,
+2. one row for each predictor,
+3. a total-points axis,
+4. a predicted-risk axis.
+
+The underlying logic is additive. If the fitted model is
+
+$$
+\text{logit}\{P(Y=1 \mid X)\} = \beta_0 + \beta_1 X_1 + \cdots + \beta_p X_p,
+$$
+
+then the nomogram rescales the predictor contributions $\beta_j X_j$ into points. The strongest predictor range is often assigned 100 points, and the other predictors are scaled relative to it. The reader can then add the points across predictors and convert the total back into predicted risk.
+
+The key reading rule is simple: for each predictor, locate the patient's value, read the corresponding points, sum those points across rows, and then project the total onto the risk scale.
+
+## Step 1: Fit a synthetic prediction model
+
+We begin with a synthetic 30-day readmission model. The purpose is not to claim substantive truth. It is to create a realistic fitted logistic model that can be turned into a clean nomogram.
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(knitr)
+
+format_numeric_table <- function(df, digits = 2) {
+  numeric_cols <- vapply(df, is.numeric, logical(1))
+  df[numeric_cols] <- lapply(df[numeric_cols], round, digits = digits)
+  df
+}
+
+prepare_nomogram <- function(model, specs, top_points = 100) {
+  beta <- coef(model)
+  intercept <- unname(beta[1])
+
+  predictor_info <- lapply(specs, function(spec) {
+    b <- unname(beta[spec$term])
+
+    values <- if (spec$type == "continuous") {
+      seq(spec$min, spec$max, length.out = spec$n_ticks)
+    } else {
+      spec$values
+    }
+
+    contribution <- b * values
+    min_contribution <- min(contribution)
+    max_contribution <- max(contribution)
+    range_contribution <- max_contribution - min_contribution
+
+    list(
+      term = spec$term,
+      label = spec$label,
+      type = spec$type,
+      values = values,
+      value_labels = if (!is.null(spec$value_labels)) spec$value_labels else as.character(round(values, 2)),
+      contribution = contribution,
+      min_contribution = min_contribution,
+      max_contribution = max_contribution,
+      range_contribution = range_contribution
+    )
+  })
+
+  max_range <- max(vapply(predictor_info, function(x) x$range_contribution, numeric(1)))
+  point_scale <- top_points / max_range
+
+  axis_df <- bind_rows(lapply(predictor_info, function(info) {
+    points <- point_scale * (info$contribution - info$min_contribution)
+
+    data.frame(
+      row = info$label,
+      value = info$values,
+      value_label = info$value_labels,
+      points = points,
+      row_type = "predictor",
+      row_max_points = max(points),
+      stringsAsFactors = FALSE
+    )
+  }))
+
+  base_lp <- intercept + sum(vapply(predictor_info, function(x) x$min_contribution, numeric(1)))
+  total_max_points <- sum(vapply(predictor_info, function(x) point_scale * x$range_contribution, numeric(1)))
+
+  risk_grid <- c(0.05, 0.10, 0.20, 0.30, 0.50, 0.70, 0.85, 0.95)
+  total_points_for_risk <- point_scale * (qlogis(risk_grid) - base_lp)
+  keep <- total_points_for_risk >= 0 & total_points_for_risk <= total_max_points
+
+  list(
+    axis_df = axis_df,
+    point_scale = point_scale,
+    total_max_points = total_max_points,
+    risk_axis = data.frame(
+      risk = risk_grid[keep],
+      total_points = total_points_for_risk[keep],
+      stringsAsFactors = FALSE
+    )
+  )
+}
+
+draw_nomogram <- function(nomogram_obj, title, subtitle) {
+  predictor_rows <- unique(nomogram_obj$axis_df$row)
+  row_order <- c("Points", predictor_rows, "Total points", "Predicted risk")
+
+  row_positions <- setNames(rev(seq_along(row_order)), row_order)
+
+  predictor_lines <- nomogram_obj$axis_df |>
+    group_by(row) |>
+    summarise(
+      xmin = 0,
+      xmax = max(points),
+      .groups = "drop"
+    ) |>
+    mutate(y = row_positions[row])
+
+  top_axis <- data.frame(
+    x = seq(0, 100, by = 20),
+    label = seq(0, 100, by = 20),
+    row = "Points",
+    y = unname(row_positions["Points"])
+  )
+
+  predictor_ticks <- nomogram_obj$axis_df |>
+    mutate(y = row_positions[row])
+
+  total_points_ticks <- data.frame(
+    total_points = seq(0, nomogram_obj$total_max_points, length.out = 6),
+    label = round(seq(0, nomogram_obj$total_max_points, length.out = 6)),
+    x = 100 * seq(0, nomogram_obj$total_max_points, length.out = 6) / nomogram_obj$total_max_points,
+    y = unname(row_positions["Total points"])
+  )
+
+  risk_ticks <- nomogram_obj$risk_axis |>
+    mutate(
+      x = 100 * total_points / nomogram_obj$total_max_points,
+      label = sprintf("%.2f", risk),
+      y = unname(row_positions["Predicted risk"])
+    )
+
+  row_labels <- data.frame(
+    row = row_order,
+    y = unname(row_positions[row_order])
+  )
+
+  ggplot() +
+    geom_segment(
+      data = predictor_lines,
+      aes(x = xmin, xend = xmax, y = y, yend = y),
+      linewidth = 0.7,
+      color = "#4d4d4d"
+    ) +
+    geom_segment(
+      data = data.frame(y = row_positions["Points"]),
+      aes(x = 0, xend = 100, y = y, yend = y),
+      linewidth = 0.7,
+      color = "#4d4d4d"
+    ) +
+    geom_segment(
+      data = data.frame(y = row_positions["Total points"]),
+      aes(x = 0, xend = 100, y = y, yend = y),
+      linewidth = 0.7,
+      color = "#4d4d4d"
+    ) +
+    geom_segment(
+      data = data.frame(y = row_positions["Predicted risk"]),
+      aes(x = 0, xend = 100, y = y, yend = y),
+      linewidth = 0.7,
+      color = "#4d4d4d"
+    ) +
+    geom_segment(
+      data = top_axis,
+      aes(x = x, xend = x, y = y - 0.14, yend = y + 0.14),
+      linewidth = 0.55
+    ) +
+    geom_text(
+      data = top_axis,
+      aes(x = x, y = y + 0.34, label = label),
+      size = 3.0
+    ) +
+    geom_segment(
+      data = predictor_ticks,
+      aes(x = points, xend = points, y = y - 0.14, yend = y + 0.14),
+      linewidth = 0.55
+    ) +
+    geom_text(
+      data = predictor_ticks,
+      aes(x = points, y = y + 0.34, label = value_label),
+      size = 2.8
+    ) +
+    geom_segment(
+      data = total_points_ticks,
+      aes(x = x, xend = x, y = y - 0.14, yend = y + 0.14),
+      linewidth = 0.55
+    ) +
+    geom_text(
+      data = total_points_ticks,
+      aes(x = x, y = y + 0.34, label = label),
+      size = 3.0
+    ) +
+    geom_segment(
+      data = risk_ticks,
+      aes(x = x, xend = x, y = y - 0.14, yend = y + 0.14),
+      linewidth = 0.55
+    ) +
+    geom_text(
+      data = risk_ticks,
+      aes(x = x, y = y + 0.34, label = label),
+      size = 3.0
+    ) +
+    geom_text(
+      data = row_labels,
+      aes(x = -15, y = y, label = row),
+      hjust = 1,
+      size = 3.4,
+      fontface = ifelse(row_labels$row %in% c("Points", "Total points", "Predicted risk"), "bold", "plain")
+    ) +
+    coord_cartesian(xlim = c(-18, 102), ylim = c(0.5, max(row_positions) + 0.9), clip = "off") +
+    labs(
+      title = title,
+      subtitle = subtitle
+    ) +
+    theme_void(base_size = 12) +
+    theme(
+      plot.title = element_text(face = "bold", size = 13),
+      plot.subtitle = element_text(size = 10, color = "#4d4d4d"),
+      plot.margin = margin(10, 20, 10, 50)
+    )
+}
+```
+
+```{r}
+set.seed(2028)
+
+n_patients <- 900
+
+synthetic_nomogram_data <- data.frame(
+  age10 = rnorm(n_patients, mean = 6.7, sd = 1.1),
+  comorbidity = rnorm(n_patients, mean = 0, sd = 1),
+  prior_adm = rpois(n_patients, lambda = 1.5),
+  female = rbinom(n_patients, size = 1, prob = 0.56),
+  care_program = rbinom(n_patients, size = 1, prob = 0.45)
+)
+
+synthetic_lp <- with(
+  synthetic_nomogram_data,
+  -2.1 +
+    0.28 * age10 +
+    0.52 * comorbidity +
+    0.24 * prior_adm -
+    0.22 * female -
+    0.58 * care_program
+)
+
+synthetic_nomogram_data$readmission <- rbinom(
+  n_patients,
+  size = 1,
+  prob = plogis(synthetic_lp)
+)
+
+synthetic_model <- glm(
+  readmission ~ age10 + comorbidity + prior_adm + female + care_program,
+  data = synthetic_nomogram_data,
+  family = binomial()
+)
+
+synthetic_summary <- data.frame(
+  sample_size = nrow(synthetic_nomogram_data),
+  readmission_rate = mean(synthetic_nomogram_data$readmission),
+  mean_age10 = mean(synthetic_nomogram_data$age10),
+  mean_prior_adm = mean(synthetic_nomogram_data$prior_adm)
+)
+
+knitr::kable(
+  format_numeric_table(synthetic_summary, digits = 3),
+  caption = "Synthetic readmission sample used for the nomogram"
+)
+```
+
+## Step 2: Convert the synthetic model into nomogram scales
+
+The main transformation is from regression contribution to points. For each predictor, the lowest-risk value on the plotted range is assigned 0 points, and the highest-risk value gets a larger point value proportional to its contribution to the linear predictor.
+
+```{r}
+synthetic_specs <- list(
+  list(term = "age10", label = "Age (per 10 years)", type = "continuous", min = 4.5, max = 9.0, n_ticks = 6),
+  list(term = "comorbidity", label = "Comorbidity score", type = "continuous", min = -2.0, max = 2.0, n_ticks = 5),
+  list(term = "prior_adm", label = "Prior admissions", type = "continuous", min = 0, max = 5, n_ticks = 6),
+  list(term = "female", label = "Female", type = "binary", values = c(0, 1), value_labels = c("No", "Yes")),
+  list(term = "care_program", label = "Care-management program", type = "binary", values = c(0, 1), value_labels = c("No", "Yes"))
+)
+
+synthetic_nomogram <- prepare_nomogram(
+  model = synthetic_model,
+  specs = synthetic_specs
+)
+
+synthetic_point_ranges <- synthetic_nomogram$axis_df |>
+  group_by(row) |>
+  summarise(
+    min_points = min(points),
+    max_points = max(points),
+    .groups = "drop"
+  )
+
+knitr::kable(
+  format_numeric_table(synthetic_point_ranges, digits = 1),
+  caption = "Point ranges assigned to each predictor in the synthetic nomogram"
+)
+```
+
+The table shows which predictors dominate the point system. The nomogram itself turns those ranges into a readable bedside-style figure.
+
+## Step 3: Draw the synthetic nomogram
+
+```{r}
+synthetic_nomogram_plot <- draw_nomogram(
+  synthetic_nomogram,
+  title = "A nomogram translates a readmission model into an additive point system",
+  subtitle = "Synthetic 30-day readmission example"
+)
+
+synthetic_nomogram_plot
+```
+
+This figure can be read row by row. An older patient with a high comorbidity score and multiple prior admissions accumulates more points. Enrollment in the care-management program reduces points because it lowers predicted risk in the fitted model.
+
+## Step 4: Build a real-world nomogram from a public prognostic dataset
+
+For a real-world example, we use the public `lung` dataset distributed with `survival`, the NCCTG lung cancer data. The original dataset is not itself a published nomogram, so this is a transparent partial application. We fit a simple 180-day mortality model and then convert it into a nomogram-style figure using age, sex, ECOG performance status, and recent weight loss.
+
+The goal is not to claim that this is the definitive prognostic tool for lung cancer. It is to show how a clinically familiar prediction problem can be presented in nomogram form with fully reproducible code.
+
+```{r}
+library(survival)
+
+lung_nomogram_data <- survival::lung |>
+  transmute(
+    dead_180 = ifelse(status == 2 & time <= 180, 1, ifelse(time > 180, 0, NA)),
+    age10 = age / 10,
+    female = ifelse(sex == 2, 1, 0),
+    ecog = ph.ecog,
+    wtloss10 = wt.loss / 10
+  )
+
+lung_nomogram_data <- lung_nomogram_data[complete.cases(lung_nomogram_data), ]
+
+lung_model <- glm(
+  dead_180 ~ age10 + female + ecog + wtloss10,
+  data = lung_nomogram_data,
+  family = binomial()
+)
+
+lung_summary <- data.frame(
+  sample_size = nrow(lung_nomogram_data),
+  mortality_180d = mean(lung_nomogram_data$dead_180),
+  mean_age10 = mean(lung_nomogram_data$age10),
+  female_share = mean(lung_nomogram_data$female)
+)
+
+knitr::kable(
+  format_numeric_table(lung_summary, digits = 3),
+  caption = "Public NCCTG lung cancer sample used for the nomogram example"
+)
+```
+
+```{r}
+lung_specs <- list(
+  list(term = "age10", label = "Age (per 10 years)", type = "continuous", min = 4.0, max = 8.5, n_ticks = 6),
+  list(term = "female", label = "Female", type = "binary", values = c(0, 1), value_labels = c("No", "Yes")),
+  list(term = "ecog", label = "ECOG status", type = "continuous", min = 0, max = 3, n_ticks = 4),
+  list(term = "wtloss10", label = "Weight loss (per 10 lb)", type = "continuous", min = 0, max = 4, n_ticks = 5)
+)
+
+lung_nomogram <- prepare_nomogram(
+  model = lung_model,
+  specs = lung_specs
+)
+
+lung_point_ranges <- lung_nomogram$axis_df |>
+  group_by(row) |>
+  summarise(
+    min_points = min(points),
+    max_points = max(points),
+    .groups = "drop"
+  )
+
+knitr::kable(
+  format_numeric_table(lung_point_ranges, digits = 1),
+  caption = "Point ranges in the public lung-cancer nomogram"
+)
+```
+
+## Step 5: Draw the real-world nomogram
+
+```{r}
+lung_nomogram_plot <- draw_nomogram(
+  lung_nomogram,
+  title = "Nomogram for 180-day mortality in the public NCCTG lung cancer data",
+  subtitle = "A transparent partial prognostic nomogram built from survival::lung"
+)
+
+lung_nomogram_plot
+```
+
+This is a transparent partial replication rather than a recreation of a published nomogram figure. The clinical dataset is real and public, the outcome is clinically meaningful, and the plotted nomogram uses the same additive-translation logic that makes nomograms useful in applied prognosis research.
+
+## How to read the figure carefully
+
+Nomograms are attractive because they simplify prediction, but that simplicity can hide model fragility. The figure does not validate the model. It only displays it. A poorly calibrated or poorly transported model can still produce a beautifully legible nomogram.
+
+Three cautions matter most:
+
+1. the plotted predictor ranges should match the population where the model is intended to be used;
+2. the point system is only as credible as the underlying model specification and validation;
+3. extrapolation beyond the plotted range is not justified simply because the figure looks smooth.
+
+In practice, a nomogram is most useful when it is paired with calibration, discrimination, and external-validation evidence rather than presented as a stand-alone predictive instrument.
+
+## Further reading
+
+Iasonos and colleagues provide one of the clearest practical discussions of how to build and interpret nomograms in prognostic research @iasonos2008nomograms. For the broader graphics framework behind manually built static figures, Wickham remains the core reference @wickham2016ggplot2. Readers who want to connect a nomogram to the wider evaluation of prediction models should read it together with the calibration material already included elsewhere in the book.

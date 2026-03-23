@@ -1,0 +1,207 @@
+---
+title: "Tornado Diagram"
+subtitle: "Visualizing which assumptions drive one-way sensitivity analysis"
+---
+
+This chapter creates a tornado diagram for a simple health-economic decision problem. The figure is designed to show which uncertain inputs move the result the most when they are varied one at a time across plausible ranges. In practice, that makes the tornado diagram one of the fastest ways to explain sensitivity analysis to readers who do not want to inspect a long appendix of tables. The example here uses a synthetic vaccination decision model, but the logic follows the deterministic sensitivity-analysis workflows commonly used in health-economic modeling and decision analysis @briggs2006; @fenwick2001.
+
+The visualization we will build is centered on incremental net monetary benefit, or NMB. For each parameter, we hold everything else at its base-case value, vary that one input from a low value to a high value, and record how much the incremental NMB changes. The parameters are then sorted by the width of that change. The widest bar goes at the top, which is why the chart looks like a tornado.
+
+## What the visualization is showing
+
+The figure will summarize one-way sensitivity analysis for a preventive intervention compared with usual care. The decision model will use a willingness-to-pay threshold of `$50,000` per QALY. Each bar in the tornado diagram will show how the incremental NMB changes when one parameter moves from its low value to its high value while all other parameters remain fixed.
+
+The parameters will be:
+
+`program_cost`, the added intervention cost per patient; `hospital_cost`, the cost of an avoidable hospitalization; `baseline_risk`, the annual hospitalization risk under usual care; `relative_risk`, the intervention effect on hospitalization; `qaly_loss`, the QALY decrement associated with hospitalization; and `uptake`, the fraction of eligible patients who actually receive the intervention.
+
+## Step 1: Define the base-case decision model
+
+```{r}
+wtp <- 50000
+
+base_values <- c(
+  program_cost = 420,
+  hospital_cost = 6800,
+  baseline_risk = 0.18,
+  relative_risk = 0.78,
+  qaly_loss = 0.032,
+  uptake = 0.72
+)
+
+parameter_ranges <- data.frame(
+  parameter = names(base_values),
+  low = c(260, 5200, 0.12, 0.65, 0.018, 0.55),
+  high = c(620, 8800, 0.25, 0.92, 0.050, 0.90)
+)
+
+parameter_ranges$base <- base_values[parameter_ranges$parameter]
+
+calculate_incremental_nmb <- function(values, wtp = 50000) {
+  avoided_events <- values["baseline_risk"] * (1 - values["relative_risk"]) * values["uptake"]
+  incremental_qaly <- avoided_events * values["qaly_loss"]
+  incremental_cost <- values["program_cost"] * values["uptake"] -
+    avoided_events * values["hospital_cost"]
+
+  wtp * incremental_qaly - incremental_cost
+}
+
+base_nmb <- calculate_incremental_nmb(base_values, wtp = wtp)
+
+base_case_table <- data.frame(
+  quantity = c("Incremental cost", "Incremental QALY", "Incremental NMB"),
+  value = c(
+    base_values["program_cost"] * base_values["uptake"] -
+      base_values["baseline_risk"] * (1 - base_values["relative_risk"]) * base_values["uptake"] * base_values["hospital_cost"],
+    base_values["baseline_risk"] * (1 - base_values["relative_risk"]) * base_values["uptake"] * base_values["qaly_loss"],
+    base_nmb
+  )
+)
+
+base_case_table$value <- round(base_case_table$value, 3)
+
+knitr::kable(
+  base_case_table,
+  caption = "Base-case incremental results used for the tornado diagram"
+)
+```
+
+This setup matters because a tornado diagram always depends on a specific target quantity. In this chapter the target is incremental NMB, not incremental cost or incremental effect alone.
+
+## Step 2: Run the one-way sensitivity analysis
+
+```{r}
+tornado_results <- do.call(
+  rbind,
+  lapply(seq_len(nrow(parameter_ranges)), function(i) {
+    parameter_name <- parameter_ranges$parameter[i]
+
+    low_values <- base_values
+    high_values <- base_values
+
+    low_values[parameter_name] <- parameter_ranges$low[i]
+    high_values[parameter_name] <- parameter_ranges$high[i]
+
+    low_nmb <- calculate_incremental_nmb(low_values, wtp = wtp)
+    high_nmb <- calculate_incremental_nmb(high_values, wtp = wtp)
+
+    data.frame(
+      parameter = parameter_name,
+      low_nmb = low_nmb,
+      high_nmb = high_nmb
+    )
+  })
+)
+
+tornado_results$range_width <- abs(tornado_results$high_nmb - tornado_results$low_nmb)
+tornado_results <- tornado_results[order(tornado_results$range_width, decreasing = TRUE), ]
+tornado_results$parameter <- factor(tornado_results$parameter, levels = tornado_results$parameter)
+
+tornado_table <- tornado_results
+tornado_table[, c("low_nmb", "high_nmb", "range_width")] <-
+  round(tornado_table[, c("low_nmb", "high_nmb", "range_width")], 2)
+
+knitr::kable(
+  tornado_table,
+  caption = "One-way sensitivity analysis results ranked by impact on incremental net monetary benefit"
+)
+```
+
+The table already contains the full information needed for the plot. The figure simply turns that ranking into something faster to read.
+
+## Step 3: Reshape the data for the tornado figure
+
+```{r}
+tornado_plot_data <- rbind(
+  data.frame(
+    parameter = tornado_results$parameter,
+    scenario = "Low value",
+    nmb = tornado_results$low_nmb
+  ),
+  data.frame(
+    parameter = tornado_results$parameter,
+    scenario = "High value",
+    nmb = tornado_results$high_nmb
+  )
+)
+
+segment_data <- data.frame(
+  parameter = tornado_results$parameter,
+  xmin = pmin(tornado_results$low_nmb, tornado_results$high_nmb),
+  xmax = pmax(tornado_results$low_nmb, tornado_results$high_nmb)
+)
+```
+
+The only real trick in a tornado diagram is that we want horizontal ranges, not separate unrelated points. That is why the plotting data include both the segment endpoints and the individual low/high markers.
+
+## Step 4: Build the tornado diagram
+
+```{r}
+ggplot2::ggplot() +
+  ggplot2::geom_vline(
+    xintercept = base_nmb,
+    linetype = 2,
+    color = "#8b5e34",
+    linewidth = 0.8
+  ) +
+  ggplot2::geom_segment(
+    data = segment_data,
+    ggplot2::aes(
+      x = xmin,
+      xend = xmax,
+      y = parameter,
+      yend = parameter
+    ),
+    color = "#7a7a7a",
+    linewidth = 6,
+    lineend = "butt"
+  ) +
+  ggplot2::geom_point(
+    data = tornado_plot_data,
+    ggplot2::aes(x = nmb, y = parameter, color = scenario),
+    size = 3
+  ) +
+  ggplot2::labs(
+    title = "Tornado diagram for one-way sensitivity analysis",
+    subtitle = "Bars show how incremental net monetary benefit changes when one parameter is varied at a time",
+    x = "Incremental net monetary benefit ($)",
+    y = NULL,
+    color = "Scenario"
+  ) +
+  ggplot2::scale_color_manual(values = c("#457b9d", "#d62828")) +
+  ggplot2::theme_minimal(base_size = 12) +
+  ggplot2::theme(
+    panel.grid.major.y = ggplot2::element_blank()
+  )
+```
+
+This figure works because the ranking is built into the vertical order. The top bars represent the assumptions with the greatest influence on the decision result. The dashed vertical line marks the base-case NMB, so the reader can see not only the width of the change but also whether a parameter pushes the result above or below that benchmark.
+
+## Step 5: Label the direction of influence
+
+The plot becomes even more useful when paired with a short table clarifying which side corresponds to the low value and which side corresponds to the high value.
+
+```{r}
+direction_table <- data.frame(
+  parameter = as.character(tornado_results$parameter),
+  lower_nmb_scenario = ifelse(tornado_results$low_nmb < tornado_results$high_nmb, "Low value", "High value"),
+  higher_nmb_scenario = ifelse(tornado_results$low_nmb < tornado_results$high_nmb, "High value", "Low value")
+)
+
+knitr::kable(
+  direction_table,
+  caption = "Direction of influence for each parameter in the tornado diagram"
+)
+```
+
+This small companion table helps prevent a common reading mistake. A wide bar tells us a parameter matters, but it does not by itself tell us whether increasing the parameter makes the intervention look better or worse.
+
+## How to read the figure carefully
+
+A tornado diagram is a local sensitivity-analysis tool. It changes one parameter at a time and keeps all others fixed. That makes it easy to explain, but it also means the figure does not capture interaction effects or joint uncertainty across parameters. It is therefore best read as a prioritization tool, not as a complete uncertainty analysis.
+
+The ranges also matter. A tornado diagram can be made to look dramatic or trivial depending on how wide the chosen low and high values are. That is why the chapter uses explicit ranges and why applied work should explain where those ranges came from, whether from confidence intervals, literature reviews, expert elicitation, or policy scenarios.
+
+## Further reading
+
+Briggs, Claxton, and Sculpher provide one of the most useful practical discussions of deterministic sensitivity analysis in health-economic modeling @briggs2006. Fenwick and coauthors are a natural companion reading when the next step is to move from one-way sensitivity analysis to broader uncertainty representation and decision-focused summaries @fenwick2001.

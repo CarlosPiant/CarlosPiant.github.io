@@ -1,0 +1,344 @@
+---
+title: "Random Number Generators from Uniform Draws"
+date: 2026-03-09
+categories: [tutorials, codes]
+tags: ["Simulation Tools"]
+summary: "This chapter builds a synthetic hospital-discharge dataset by generating each variable from a uniform random number and then transforming that draw into the target distribution. The point is to make the engine of..."
+excerpt: "Using inverse CDF ideas to build Bernoulli, categorical, exponential, and normal variables"
+---
+This chapter builds a synthetic hospital-discharge dataset by generating each variable from a uniform random number and then transforming that draw into the target distribution. The point is to make the engine of simulation visible. Rather than calling `rnorm`, `rexp`, or `rbinom` as black boxes, we will start with `runif` and show how inverse-CDF logic creates non-uniform random variables. This is the basic architecture behind a large share of Monte Carlo simulation, including the patient-level models used in health economics and decision sciences;.
+
+The dataset will mimic a simple post-discharge cohort. `severity_score` will follow a normal distribution, `risk_group` will be a categorical variable with three levels, `waiting_days` will follow an exponential distribution, and `followup_attended` will be Bernoulli. These variables are not meant to reproduce one paper exactly. They are meant to reflect the kinds of ingredients that appear in applied simulation studies: latent severity, discrete risk strata, waiting times, and binary care events.
+
+## Why start from the uniform distribution
+
+Pseudo-random number generators do not produce true randomness in a philosophical sense. They produce long deterministic sequences that behave enough like random draws for simulation work. Most software begins with a stream that approximates draws from the uniform distribution on the interval from 0 to 1:
+
+$$
+U \sim \text{Uniform}(0,1).
+$$
+
+The reason this is so useful is that the cumulative distribution function, or CDF, turns any random variable into a probability scale. If `X` has CDF `F`, then under regular conditions we can reverse that mapping:
+
+$$
+X = F^{-1}(U).
+$$
+
+This is the inverse-transform method. It says that if `U` is uniform on the unit interval, then applying the inverse CDF of the target distribution produces a draw from that distribution. That is the main idea of the chapter.
+
+## What variables will be created
+
+The synthetic sample will contain four variables generated from the same underlying idea.
+
+`severity_score` will represent a standardized latent health-severity index and will be generated from a normal distribution with mean $0$ and standard deviation $1$.
+
+`risk_group` will take the values `low`, `medium`, and `high`, with probabilities $0.50$, $0.35$, and $0.15$.
+
+`waiting_days` will represent time until a specialist follow-up slot becomes available. It will be generated from an exponential distribution with rate $0.08$, which implies a mean waiting time of $12.5$ days.
+
+`followup_attended` will be a binary indicator with success probability $0.72$.
+
+Together, these variables produce a simple but useful synthetic cohort that can be used to test models for continuous, discrete, time-to-event, and binary outcomes.
+
+## The inverse-CDF logic
+
+### Bernoulli draws
+
+If $Y$ is Bernoulli with success probability $p$, then its CDF jumps from $0$ to $1 - p$ at $0$, and from $1 - p$ to $1$ at $1$. The inverse-transform rule becomes
+
+$$
+Y =
+\begin{cases}
+1 & \text{if } U < p, \\
+0 & \text{otherwise.}
+\end{cases}
+$$
+
+This is why thresholding a uniform draw generates a binary outcome.
+
+### Categorical draws
+
+Suppose a variable has three categories with probabilities $\pi_1$, $\pi_2$, and $\pi_3$. Then the unit interval is split into cumulative probability regions:
+
+$$
+[0, \pi_1), \qquad [\pi_1, \pi_1 + \pi_2), \qquad [\pi_1 + \pi_2, 1].
+$$
+
+The category is determined by where the uniform draw lands.
+
+### Exponential draws
+
+If $T$ has exponential rate $\lambda$, then
+
+$$
+F(t) = 1 - e^{-\lambda t}, \qquad t \ge 0.
+$$
+
+Set $U = F(T)$ and solve for $T$:
+
+$$
+T = F^{-1}(U) = -\frac{\log(1 - U)}{\lambda}.
+$$
+
+Since $1 - U$ is also uniform on $(0,1)$, many implementations write this as
+
+$$
+T = -\frac{\log(U)}{\lambda}.
+$$
+
+### Normal draws
+
+For the normal distribution, the inverse CDF does not have a simple algebraic closed form, but the principle is exactly the same:
+
+$$
+X = \mu + \sigma \Phi^{-1}(U),
+$$
+
+where $\Phi^{-1}$ is the inverse standard normal CDF. In R, that function is `qnorm`.
+
+## Step 1: Generate one set of uniform draws
+
+We start from uniforms because that is the common input to all later transformations.
+
+```r
+set.seed(2026)
+
+n <- 6000
+
+u_severity <- runif(n)
+u_risk <- runif(n)
+u_waiting <- runif(n)
+u_followup <- runif(n)
+
+uniform_summary <- data.frame(
+ stream = c("severity", "risk_group", "waiting_days", "followup_attended"),
+ min_u = c(min(u_severity), min(u_risk), min(u_waiting), min(u_followup)),
+ mean_u = c(mean(u_severity), mean(u_risk), mean(u_waiting), mean(u_followup)),
+ max_u = c(max(u_severity), max(u_risk), max(u_waiting), max(u_followup))
+)
+
+uniform_summary[, c("min_u", "mean_u", "max_u")] <-
+ round(uniform_summary[, c("min_u", "mean_u", "max_u")], 3)
+
+knitr::kable(
+ uniform_summary,
+ caption = "Summary of the independent uniform random-number streams"
+)
+```
+
+```r
+uniform_plot <- data.frame(
+ stream = rep(c("severity", "risk_group", "waiting_days", "followup_attended"), each = n),
+ u = c(u_severity, u_risk, u_waiting, u_followup)
+)
+
+ggplot2::ggplot(uniform_plot, ggplot2::aes(x = u)) +
+ ggplot2::geom_histogram(
+ bins = 25,
+ fill = "#6a994e",
+ color = "white"
+ ) +
+ ggplot2::facet_wrap(~ stream, ncol = 2) +
+ ggplot2::labs(
+ title = "Uniform draws are the starting point for all later transformations",
+ x = "Uniform random draw",
+ y = "Count"
+ ) +
+ ggplot2::theme_minimal(base_size = 12)
+```
+
+## Step 2: Transform uniforms into the target variables
+
+Now apply the inverse-CDF rule separately to each variable.
+
+```r
+severity_score <- qnorm(u_severity, mean = 0, sd = 1)
+
+risk_group <- ifelse(
+ u_risk < 0.50, "low",
+ ifelse(u_risk < 0.85, "medium", "high")
+)
+
+waiting_days <- -log(1 - u_waiting) / 0.08
+
+followup_attended <- as.integer(u_followup < 0.72)
+
+synthetic_rng_data <- data.frame(
+ severity_score,
+ risk_group = factor(risk_group, levels = c("low", "medium", "high")),
+ waiting_days,
+ followup_attended
+)
+
+data_summary <- data.frame(
+ variable = c("severity_score", "waiting_days", "followup_attended"),
+ mean = c(
+ mean(synthetic_rng_data$severity_score),
+ mean(synthetic_rng_data$waiting_days),
+ mean(synthetic_rng_data$followup_attended)
+ ),
+ sd = c(
+ sd(synthetic_rng_data$severity_score),
+ sd(synthetic_rng_data$waiting_days),
+ sd(synthetic_rng_data$followup_attended)
+ )
+)
+
+data_summary[, c("mean", "sd")] <- round(data_summary[, c("mean", "sd")], 3)
+
+knitr::kable(
+ data_summary,
+ caption = "Summary of variables created from inverse-CDF transformations"
+)
+```
+
+The transformation step is the heart of the chapter. Each variable began as a draw from `U(0,1)`, but the inverse-CDF mapping changed the shape of the distribution while preserving the stochastic information carried by the uniform draw.
+
+## Step 3: Check the categorical probabilities
+
+The categorical variable does not use a smooth inverse formula. Instead, it partitions the unit interval into probability regions. The sample proportions should therefore be close to the target probabilities.
+
+```r
+risk_check <- data.frame(
+ risk_group = c("low", "medium", "high"),
+ true_probability = c(0.50, 0.35, 0.15),
+ sample_probability = as.numeric(prop.table(table(synthetic_rng_data$risk_group)))
+)
+
+risk_check[, c("true_probability", "sample_probability")] <-
+ round(risk_check[, c("true_probability", "sample_probability")], 3)
+
+knitr::kable(
+ risk_check,
+ caption = "Target and observed probabilities for the categorical variable"
+)
+```
+
+## Step 4: Fit the models that match the generating process
+
+The final step is to check whether standard estimators recover the parameters implied by the generating distributions.
+
+For the normal variable, the natural estimators are the sample mean and sample standard deviation. For the exponential variable, the maximum likelihood estimator of the rate is
+
+$$
+\hat{\lambda} = \frac{1}{\bar{T}}.
+$$
+
+For the Bernoulli variable, the maximum likelihood estimator of `p` is the sample mean.
+
+```r
+normal_check <- data.frame(
+ parameter = c("mean", "sd"),
+ true_value = c(0, 1),
+ estimated_value = c(
+ mean(synthetic_rng_data$severity_score),
+ sd(synthetic_rng_data$severity_score)
+ )
+)
+
+exponential_check <- data.frame(
+ parameter = "rate",
+ true_value = 0.08,
+ estimated_value = 1 / mean(synthetic_rng_data$waiting_days)
+)
+
+bernoulli_check <- data.frame(
+ parameter = "p",
+ true_value = 0.72,
+ estimated_value = mean(synthetic_rng_data$followup_attended)
+)
+
+normal_check[, c("true_value", "estimated_value")] <-
+ round(normal_check[, c("true_value", "estimated_value")], 3)
+exponential_check[, c("true_value", "estimated_value")] <-
+ round(exponential_check[, c("true_value", "estimated_value")], 3)
+bernoulli_check[, c("true_value", "estimated_value")] <-
+ round(bernoulli_check[, c("true_value", "estimated_value")], 3)
+
+knitr::kable(
+ normal_check,
+ caption = "Recovery of the parameters for the normal generator"
+)
+
+knitr::kable(
+ exponential_check,
+ caption = "Recovery of the rate parameter for the exponential generator"
+)
+
+knitr::kable(
+ bernoulli_check,
+ caption = "Recovery of the Bernoulli success probability"
+)
+```
+
+## Step 5: Visualize the transformed distributions
+
+The simplest diagnostic is to compare the shape of the generated variables with the shape we expect.
+
+```r
+plot_normal <- data.frame(
+ x = seq(-4, 4, length.out = 300)
+)
+plot_normal$density <- dnorm(plot_normal$x, mean = 0, sd = 1)
+
+ggplot2::ggplot(synthetic_rng_data, ggplot2::aes(x = severity_score)) +
+ ggplot2::geom_histogram(
+ ggplot2::aes(y =..density..),
+ bins = 35,
+ fill = "#7aa874",
+ color = "white"
+ ) +
+ ggplot2::geom_line(
+ data = plot_normal,
+ ggplot2::aes(x = x, y = density),
+ color = "#1f3b2c",
+ linewidth = 1
+ ) +
+ ggplot2::labs(
+ title = "Severity scores generated from the inverse normal CDF",
+ subtitle = "The histogram is the simulated sample; the line is the true density",
+ x = "Severity score",
+ y = "Density"
+ ) +
+ ggplot2::theme_minimal(base_size = 12)
+```
+
+```r
+plot_exponential <- data.frame(
+ x = seq(0, quantile(synthetic_rng_data$waiting_days, 0.99), length.out = 300)
+)
+plot_exponential$density <- dexp(plot_exponential$x, rate = 0.08)
+
+ggplot2::ggplot(synthetic_rng_data, ggplot2::aes(x = waiting_days)) +
+ ggplot2::geom_histogram(
+ ggplot2::aes(y =..density..),
+ bins = 35,
+ fill = "#bc6c25",
+ color = "white"
+ ) +
+ ggplot2::geom_line(
+ data = plot_exponential,
+ ggplot2::aes(x = x, y = density),
+ color = "#5b3413",
+ linewidth = 1
+ ) +
+ ggplot2::labs(
+ title = "Waiting times generated from the inverse exponential CDF",
+ subtitle = "The simulated histogram follows the true exponential density",
+ x = "Waiting days",
+ y = "Density"
+ ) +
+ ggplot2::theme_minimal(base_size = 12)
+```
+
+## Main assumptions and practical limits
+
+The most important assumption is that the inverse CDF exists and can be evaluated accurately. For many standard distributions this is straightforward, either analytically or numerically. For other distributions, especially complicated multivariate ones, direct inverse-transform sampling may be inefficient or inconvenient.
+
+Another practical point is that computers generate pseudo-random numbers, not metaphysical randomness. For most simulation work this is enough, but reproducibility depends on the generator, the seed, and the software implementation. That is why simulation code should always set a seed when exact replication matters.
+
+This chapter also treats the four variables as independent. That is useful for learning, but real synthetic datasets often need correlation structures, conditional dependence, or hierarchical variation. Once that becomes necessary, inverse-transform logic is still useful, but it usually has to be combined with additional modeling ideas.
+
+## Further reading
+
+Devroye remains one of the classic references on non-uniform random variate generation and is especially useful for readers who want to understand the computational details behind simulation algorithms. Von Neumann's early discussion of random digits is part of the historical foundation of Monte Carlo methods. For readers working in health economics, Stout and Goldie provide an applied bridge from random-number generation to patient-level disease simulation and decision modeling.

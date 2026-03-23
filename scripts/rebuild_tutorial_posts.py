@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
 """
-Rebuild tutorial posts from the rendered tutorial HTML stored in /tutorials.
+Rebuild tutorial posts from Quarto source files stored in /tutorials.
 
 This script:
 1. Deletes all existing Jekyll posts categorized as tutorials.
-2. Creates a new post for each rendered tutorial HTML file in /tutorials/*/*.html
-   excluding section index pages.
-3. Injects the Quarto-rendered main content into each post and rewrites local
-   asset paths so figures continue to load from /tutorials/<section>/<stem>_files/.
+2. Creates a new post for each tutorial .qmd file in /tutorials/* excluding
+   section index pages.
+3. Generates the /tutorials/ page intro from tutorials/simulation-tools/index.qmd.
 """
 
 from __future__ import annotations
 
-import html
 import re
 from datetime import datetime
 from pathlib import Path
@@ -20,9 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 POSTS_DIR = ROOT / "_posts"
 TUTORIALS_DIR = ROOT / "tutorials"
-
-TITLE_SUFFIX = " - Health Economics and Decision Sciences Tutorials"
-MAIN_MARKER = '<main class="content" id="quarto-document-content">'
+INTRO_INCLUDE = ROOT / "_includes" / "tutorials-index-intro.md"
 
 SECTION_TAGS = {
     "simulation-tools": "Simulation Tools",
@@ -52,45 +48,53 @@ def slugify(text: str) -> str:
     return text.strip("-")
 
 
-def extract_title(raw_html: str) -> str:
-    match = re.search(r"<title>(.*?)</title>", raw_html, re.S | re.I)
+def parse_front_matter(text: str) -> tuple[dict[str, str], str]:
+    match = re.match(r"\A---\n(.*?)\n---\n(.*)\Z", text, re.S)
     if not match:
-        raise ValueError("missing <title>")
-    title = html.unescape(match.group(1))
-    title = title.replace("\xa0", " ")
-    title = title.replace("–", "-").replace("—", "-")
-    if TITLE_SUFFIX in title:
-        title = title.replace(TITLE_SUFFIX, "")
-    title = re.sub(r"^\s*\d+\s+", "", title).strip()
-    return normalize_text(title)
+        return {}, text
+
+    front_matter = {}
+    raw_front_matter, body = match.groups()
+    for line in raw_front_matter.splitlines():
+        if ":" not in line:
+            continue
+        key, value = line.split(":", 1)
+        front_matter[key.strip()] = value.strip().strip('"').strip("'")
+    return front_matter, body
 
 
-def extract_main_content(raw_html: str, section: str, stem: str) -> str:
-    start = raw_html.find(MAIN_MARKER)
-    if start == -1:
-        raise ValueError("missing tutorial content marker")
-    start += len(MAIN_MARKER)
-    end = raw_html.find("</main>", start)
-    if end == -1:
-        raise ValueError("missing closing </main>")
-    content = raw_html[start:end]
-    content = re.sub(r'<header id="title-block-header"[\s\S]*?</header>', "", content)
-    content = re.sub(r'src="' + re.escape(stem) + r'_files/', f'src="/tutorials/{section}/{stem}_files/', content)
-    content = re.sub(r'href="' + re.escape(stem) + r'_files/', f'href="/tutorials/{section}/{stem}_files/', content)
-    return normalize_text(content.strip())
+def strip_citations(text: str) -> str:
+    text = re.sub(r"[ \t]+@[-A-Za-z0-9_:]+", "", text)
+    text = re.sub(r";[ \t]*(?=[\.\)])", "", text)
+    text = re.sub(r"\([ \t]*\)", "", text)
+    text = re.sub(r"[ \t]+([,.;:])", r"\1", text)
+    text = re.sub(r"[ \t]{2,}", " ", text)
+    return text
 
 
-def extract_summary(content: str) -> str:
-    paragraphs = re.findall(r"<p>(.*?)</p>", content, re.S | re.I)
-    for paragraph in paragraphs:
-        text = re.sub(r"<[^>]+>", "", paragraph)
-        text = html.unescape(normalize_text(text))
-        text = re.sub(r"\s+", " ", text).strip()
-        if text:
-            if len(text) <= 220:
-                return text
-            shortened = text[:217].rsplit(" ", 1)[0].strip()
-            return f"{shortened}..."
+def normalize_code_fences(text: str) -> str:
+    text = re.sub(r"```+\{r[^}]*\}", "```r", text)
+    return text
+
+
+def clean_body(text: str) -> str:
+    text = normalize_text(text)
+    text = strip_citations(text)
+    text = normalize_code_fences(text)
+    text = re.sub(r"\n{3,}", "\n\n", text).strip()
+    return text + "\n"
+
+
+def extract_summary(text: str) -> str:
+    blocks = [block.strip() for block in text.split("\n\n")]
+    for block in blocks:
+        if not block or block.startswith("#") or block.startswith("```") or block.startswith("$$"):
+            continue
+        one_line = re.sub(r"\s+", " ", block).strip()
+        if len(one_line) <= 220:
+            return one_line
+        shortened = one_line[:217].rsplit(" ", 1)[0].strip()
+        return f"{shortened}..."
     return "Tutorial and code example."
 
 
@@ -110,51 +114,65 @@ def delete_existing_tutorial_posts() -> int:
     return len(existing)
 
 
-def build_post_path(source_html: Path) -> Path:
-    section = source_html.parent.name
-    slug = slugify(f"{section}-{source_html.stem}")
-    date = datetime.fromtimestamp(source_html.stat().st_mtime).date().isoformat()
+def source_tutorial_qmd() -> list[Path]:
+    return sorted(
+        path
+        for path in TUTORIALS_DIR.glob("*/*.qmd")
+        if path.name != "index.qmd"
+    )
+
+
+def build_post_path(source_qmd: Path) -> Path:
+    section = source_qmd.parent.name
+    slug = slugify(f"{section}-{source_qmd.stem}")
+    date = datetime.fromtimestamp(source_qmd.stat().st_mtime).date().isoformat()
     return POSTS_DIR / f"{date}-{slug}.md"
 
 
-def render_post(source_html: Path) -> str:
-    section = source_html.parent.name
-    stem = source_html.stem
-    raw_html = source_html.read_text(encoding="utf-8", errors="ignore")
-    title = extract_title(raw_html)
-    content = extract_main_content(raw_html, section, stem)
-    summary = extract_summary(content).replace('"', '\\"')
+def render_post(source_qmd: Path) -> str:
+    section = source_qmd.parent.name
+    front_matter, raw_body = parse_front_matter(source_qmd.read_text(encoding="utf-8"))
+    title = normalize_text(front_matter.get("title", source_qmd.stem.replace("-", " ").title()))
+    subtitle = normalize_text(front_matter.get("subtitle", ""))
+    body = clean_body(raw_body)
+    summary = extract_summary(body).replace('"', '\\"')
     tag = SECTION_TAGS.get(section, section.replace("-", " ").title())
+    date = datetime.fromtimestamp(source_qmd.stat().st_mtime).date().isoformat()
 
-    return (
-        "---\n"
-        f'title: "{title}"\n'
-        f"date: {datetime.fromtimestamp(source_html.stat().st_mtime).date().isoformat()}\n"
-        "categories: [tutorials, codes]\n"
-        f'tags: ["{tag}"]\n'
-        f'summary: "{summary}"\n'
-        "---\n"
-        f"{content}\n"
-    )
+    lines = [
+        "---",
+        f'title: "{title}"',
+        f"date: {date}",
+        "categories: [tutorials, codes]",
+        f'tags: ["{tag}"]',
+        f'summary: "{summary}"',
+    ]
+    if subtitle:
+        lines.append(f'excerpt: "{subtitle.replace(chr(34), r"\\\"")}"')
+    lines.extend(["---", body.rstrip(), ""])
+    return "\n".join(lines)
 
 
-def source_tutorial_html() -> list[Path]:
-    return sorted(
-        path
-        for path in TUTORIALS_DIR.glob("*/*.html")
-        if path.name != "index.html"
-    )
+def rebuild_intro_include() -> None:
+    source_qmd = TUTORIALS_DIR / "simulation-tools" / "index.qmd"
+    front_matter, raw_body = parse_front_matter(source_qmd.read_text(encoding="utf-8"))
+    title = normalize_text(front_matter.get("title", "Simulation Tools"))
+    body = clean_body(raw_body)
+    intro = f"## {title}\n\n{body}"
+    INTRO_INCLUDE.write_text(intro, encoding="utf-8")
 
 
 def main() -> None:
     deleted = delete_existing_tutorial_posts()
     created = 0
-    for source_html in source_tutorial_html():
-        post_path = build_post_path(source_html)
-        post_path.write_text(render_post(source_html), encoding="utf-8")
+    for source_qmd in source_tutorial_qmd():
+        post_path = build_post_path(source_qmd)
+        post_path.write_text(render_post(source_qmd), encoding="utf-8")
         created += 1
+    rebuild_intro_include()
     print(f"Deleted {deleted} old tutorial posts.")
-    print(f"Created {created} tutorial posts from rendered HTML.")
+    print(f"Created {created} tutorial posts from Quarto source.")
+    print(f"Updated intro include: {INTRO_INCLUDE}")
 
 
 if __name__ == "__main__":

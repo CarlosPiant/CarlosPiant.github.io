@@ -1,0 +1,182 @@
+---
+title: "Calibration Plots"
+date: 2026-03-09
+categories: [tutorials, codes]
+tags: ["Visualization Tools"]
+summary: "This chapter creates a calibration plot for a binary risk-prediction model. The point of the figure is not to ask whether a model separates cases from non-cases well, but whether the probabilities it reports are..."
+excerpt: "Visualizing how closely predicted risks match observed outcomes"
+---
+This chapter creates a calibration plot for a binary risk-prediction model. The point of the figure is not to ask whether a model separates cases from non-cases well, but whether the probabilities it reports are numerically trustworthy. A model that predicts a 30% risk should produce events in roughly 30% of similar observations. That is the basic idea of calibration, and it is one of the most important but most frequently neglected parts of predictive modeling. The example here uses the Pima diabetes data distributed with `MASS`, which originate from the diabetes-prediction application described by Smith and coauthors.
+
+The visualization we will build combines two complementary elements. First, it shows grouped observed-versus-predicted risks across bins of predicted probability. Second, it overlays a smooth calibration curve and the 45-degree ideal line. Together, these pieces tell the reader whether the model is systematically underpredicting or overpredicting risk.
+
+## What the visualization is showing
+
+We will fit a logistic regression model in the training data and then evaluate calibration in a separate test set. The x-axis of the plot will show predicted risk. The y-axis will show the observed event frequency. Perfect calibration would place every point on the 45-degree line.
+
+## Step 1: Fit a prediction model and obtain test-set probabilities
+
+```r
+data("Pima.tr", package = "MASS")
+data("Pima.te", package = "MASS")
+
+calibration_fit <- glm(
+ type ~ npreg + glu + bp + skin + bmi + ped + age,
+ data = Pima.tr,
+ family = binomial
+)
+
+predicted_risk <- predict(calibration_fit, newdata = Pima.te, type = "response")
+observed_outcome <- as.integer(Pima.te$type == "Yes")
+
+calibration_data <- data.frame(
+ predicted_risk = predicted_risk,
+ observed_outcome = observed_outcome
+)
+
+summary_table <- data.frame(
+ sample_size = nrow(calibration_data),
+ event_rate = mean(calibration_data$observed_outcome),
+ mean_predicted_risk = mean(calibration_data$predicted_risk),
+ brier_score = mean((calibration_data$predicted_risk - calibration_data$observed_outcome)^2)
+)
+
+summary_table[, c("event_rate", "mean_predicted_risk", "brier_score")] <-
+ round(summary_table[, c("event_rate", "mean_predicted_risk", "brier_score")], 3)
+
+knitr::kable(
+ summary_table,
+ caption = "Summary of the prediction sample used for the calibration plot"
+)
+```
+
+The Brier score is not itself a calibration plot, but it is a useful companion number because it summarizes probabilistic accuracy in a single value.
+
+## Step 2: Build grouped calibration points
+
+```r
+rank_id <- rank(calibration_data$predicted_risk, ties.method = "first")
+calibration_data$bin <- cut(
+ rank_id,
+ breaks = quantile(rank_id, probs = seq(0, 1, 0.1)),
+ include.lowest = TRUE
+)
+
+grouped_calibration <- aggregate(
+ cbind(predicted_risk, observed_outcome) ~ bin,
+ data = calibration_data,
+ FUN = mean
+)
+
+grouped_calibration$count <- as.numeric(table(calibration_data$bin))
+grouped_calibration$predicted_risk <- round(grouped_calibration$predicted_risk, 3)
+grouped_calibration$observed_outcome <- round(grouped_calibration$observed_outcome, 3)
+
+knitr::kable(
+ grouped_calibration,
+ caption = "Grouped calibration table by deciles of predicted risk"
+)
+```
+
+Grouped calibration points are easy to explain because they average predictions and outcomes within risk bins. They are simple and intuitive, though they should not be mistaken for the full story.
+
+## Step 3: Add a smooth calibration curve
+
+```r
+smooth_grid <- data.frame(
+ predicted_risk = seq(
+ min(calibration_data$predicted_risk),
+ max(calibration_data$predicted_risk),
+ length.out = 200
+ )
+)
+
+loess_fit <- loess(
+ observed_outcome ~ predicted_risk,
+ data = calibration_data,
+ span = 0.75
+)
+
+smooth_grid$observed_risk <- pmin(
+ pmax(predict(loess_fit, newdata = smooth_grid), 0),
+ 1
+)
+
+ggplot2::ggplot +
+ ggplot2::geom_abline(
+ intercept = 0,
+ slope = 1,
+ linetype = 2,
+ color = "#8b5e34",
+ linewidth = 0.8
+ ) +
+ ggplot2::geom_line(
+ data = smooth_grid,
+ ggplot2::aes(x = predicted_risk, y = observed_risk),
+ color = "#264653",
+ linewidth = 1
+ ) +
+ ggplot2::geom_point(
+ data = grouped_calibration,
+ ggplot2::aes(x = predicted_risk, y = observed_outcome, size = count),
+ color = "#2a9d8f",
+ alpha = 0.85
+ ) +
+ ggplot2::labs(
+ title = "Calibration plot for diabetes risk predictions",
+ subtitle = "The dashed line is perfect calibration; points show grouped risks and the solid line shows a smooth calibration curve",
+ x = "Predicted probability",
+ y = "Observed event frequency",
+ size = "Bin size"
+ ) +
+ ggplot2::coord_cartesian(xlim = c(0, 1), ylim = c(0, 1)) +
+ ggplot2::theme_minimal(base_size = 12)
+```
+
+This is the core figure of the chapter. If the points and the smooth line stay close to the dashed diagonal, the model is well calibrated. If they drift below the line, the model is overpredicting risk. If they drift above the line, it is underpredicting risk.
+
+## Step 4: Summarize calibration intercept and slope
+
+Two short numerical summaries often accompany the plot. The calibration intercept measures whether predictions are systematically too low or too high overall. The calibration slope measures whether the spread of predictions is too extreme or too conservative.
+
+```r
+clipped_risk <- pmin(pmax(calibration_data$predicted_risk, 1e-6), 1 - 1e-6)
+logit_risk <- qlogis(clipped_risk)
+
+calibration_intercept_fit <- glm(
+ observed_outcome ~ offset(logit_risk),
+ data = calibration_data,
+ family = binomial
+)
+
+calibration_slope_fit <- glm(
+ observed_outcome ~ logit_risk,
+ data = calibration_data,
+ family = binomial
+)
+
+calibration_metrics <- data.frame(
+ metric = c("Calibration intercept", "Calibration slope"),
+ estimate = c(
+ coef(calibration_intercept_fit)[1],
+ coef(calibration_slope_fit)[2]
+ )
+)
+
+calibration_metrics$estimate <- round(calibration_metrics$estimate, 3)
+
+knitr::kable(
+ calibration_metrics,
+ caption = "Calibration intercept and slope"
+)
+```
+
+## How to read the figure carefully
+
+Calibration is sample-dependent. A model can be well calibrated in one dataset and poorly calibrated in another if the case mix, prevalence, or measurement process changes. That is one reason calibration should usually be checked in data separate from the model-development sample.
+
+Grouped points can also be visually helpful but statistically unstable in small samples or extreme-risk regions. The smooth curve helps, but it too depends on the chosen smoothing settings. That is why a good calibration section usually combines a plot with a few clear numerical summaries rather than relying on one graphic alone.
+
+## Further reading
+
+Van Calster and coauthors provide one of the clearest modern discussions of why calibration deserves more attention in predictive analytics. Smith and coauthors provide the real-world diabetes-prediction setting that motivates the example dataset used here. Brier's classic paper is still useful for understanding why probability forecasts should be judged as probabilities rather than as hard classifications.

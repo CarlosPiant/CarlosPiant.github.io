@@ -1,12 +1,9 @@
 ---
 title: "Temporal Series"
-date: 2026-03-21
-categories: [tutorials, codes]
-tags: ["Visualization Tools"]
-summary: "This chapter builds a temporal-series plot rather than a cross-sectional line chart. The goal is to show how an outcome evolves over time while preserving the two features that matter most in applied health data:..."
-excerpt: "Building a polished time-series line plot with a trend overlay"
+subtitle: "Building a polished time-series line plot with a trend overlay"
 ---
-This chapter builds a temporal-series plot rather than a cross-sectional line chart. The goal is to show how an outcome evolves over time while preserving the two features that matter most in applied health data: short-run fluctuation and longer-run movement. A good temporal-series figure makes it possible to see seasonality, secular trend, abrupt level shifts, and unusual months without forcing the reader to inspect a dense table of dates and values. Diggle's biostatistical time-series text is a natural reference point for this kind of health application, while Wickham's grammar of graphics provides a practical framework for turning the series into a clear, publication-ready figure.
+
+This chapter builds a temporal-series plot rather than a cross-sectional line chart. The goal is to show how an outcome evolves over time while preserving the two features that matter most in applied health data: short-run fluctuation and longer-run movement. A good temporal-series figure makes it possible to see seasonality, secular trend, abrupt level shifts, and unusual months without forcing the reader to inspect a dense table of dates and values. Diggle's biostatistical time-series text is a natural reference point for this kind of health application, while Wickham's grammar of graphics provides a practical framework for turning the series into a clear, publication-ready figure @diggle1990; @wickham2016ggplot2.
 
 The specific figure we will build is a two-layer time-series display: a thin line for the raw monthly series and a thicker line for a 12-month moving average. This is a useful default in health economics, epidemiology, and outcomes research because the raw line shows the month-to-month data actually observed, while the smoother overlay helps the reader focus on the underlying direction of change.
 
@@ -29,23 +26,23 @@ The key reading rule is simple. The thin line shows the actual observed pattern,
 
 We begin with a synthetic monthly series for preventable emergency admissions. This is a good teaching example because the data contain several common features at once: winter seasonality, a slow upward baseline trend, and a policy change that reduces admissions after a transitional date.
 
-```r
+```{r}
 library(dplyr)
 library(ggplot2)
 library(knitr)
 
 format_numeric_table <- function(df, digits = 2) {
- numeric_cols <- vapply(df, is.numeric, logical(1))
- df[numeric_cols] <- lapply(df[numeric_cols], round, digits = digits)
- df
+  numeric_cols <- vapply(df, is.numeric, logical(1))
+  df[numeric_cols] <- lapply(df[numeric_cols], round, digits = digits)
+  df
 }
 
 moving_average <- function(x, k = 12) {
- as.numeric(stats::filter(x, rep(1 / k, k), sides = 2))
+  as.numeric(stats::filter(x, rep(1 / k, k), sides = 2))
 }
 ```
 
-```r
+```{r}
 set.seed(2026)
 
 n_months <- 72
@@ -53,36 +50,36 @@ synthetic_dates <- seq.Date(as.Date("2019-01-01"), by = "month", length.out = n_
 t <- seq_len(n_months)
 
 seasonal_pattern <-
- 16 * sin(2 * pi * t / 12) +
- 10 * cos(2 * pi * t / 12)
+  16 * sin(2 * pi * t / 12) +
+  10 * cos(2 * pi * t / 12)
 
 baseline_trend <- 185 + 0.75 * t
 policy_effect <- ifelse(synthetic_dates >= as.Date("2022-07-01"), -22, 0)
 noise <- rnorm(n_months, mean = 0, sd = 6.5)
 
 synthetic_series <- data.frame(
- date = synthetic_dates,
- admissions = baseline_trend + seasonal_pattern + policy_effect + noise
+  date = synthetic_dates,
+  admissions = baseline_trend + seasonal_pattern + policy_effect + noise
 ) |>
- mutate(
- admissions = round(admissions, 1),
- ma12 = moving_average(admissions, k = 12),
- year = format(date, "%Y"),
- month = format(date, "%m")
- )
+  mutate(
+    admissions = round(admissions, 1),
+    ma12 = moving_average(admissions, k = 12),
+    year = format(date, "%Y"),
+    month = format(date, "%m")
+  )
 
 synthetic_summary <- synthetic_series |>
- group_by(year) |>
- summarise(
- mean_monthly_admissions = mean(admissions),
- winter_peak = max(admissions[month %in% c("12", "01", "02")]),
- annual_minimum = min(admissions),
-.groups = "drop"
- )
+  group_by(year) |>
+  summarise(
+    mean_monthly_admissions = mean(admissions),
+    winter_peak = max(admissions[month %in% c("12", "01", "02")]),
+    annual_minimum = min(admissions),
+    .groups = "drop"
+  )
 
 knitr::kable(
- format_numeric_table(synthetic_summary, digits = 1),
- caption = "Yearly summary of the synthetic preventable-admissions series"
+  format_numeric_table(synthetic_summary, digits = 1),
+  caption = "Yearly summary of the synthetic preventable-admissions series"
 )
 ```
 
@@ -90,35 +87,35 @@ The table is informative, but it cannot show the continuity of the series. A tem
 
 ## Step 2: Build the synthetic temporal-series figure
 
-```r
+```{r}
 ggplot(synthetic_series, aes(x = date, y = admissions)) +
- annotate(
- "rect",
- xmin = as.Date("2022-07-01"),
- xmax = max(synthetic_series$date),
- ymin = -Inf,
- ymax = Inf,
- alpha = 0.06,
- fill = "#74a57f"
- ) +
- geom_line(linewidth = 0.55, color = "#7f8c8d") +
- geom_line(aes(y = ma12), linewidth = 1.15, color = "#0b4f6c", na.rm = TRUE) +
- geom_vline(
- xintercept = as.Date("2022-07-01"),
- linetype = 2,
- linewidth = 0.7,
- color = "#4d4d4d"
- ) +
- labs(
- title = "A temporal-series plot separates monthly noise from the underlying trajectory",
- subtitle = "Synthetic preventable emergency admissions with a 12-month moving average",
- x = NULL,
- y = "Monthly admissions"
- ) +
- theme_minimal(base_size = 12) +
- theme(
- panel.grid.minor = element_blank
- )
+  annotate(
+    "rect",
+    xmin = as.Date("2022-07-01"),
+    xmax = max(synthetic_series$date),
+    ymin = -Inf,
+    ymax = Inf,
+    alpha = 0.06,
+    fill = "#74a57f"
+  ) +
+  geom_line(linewidth = 0.55, color = "#7f8c8d") +
+  geom_line(aes(y = ma12), linewidth = 1.15, color = "#0b4f6c", na.rm = TRUE) +
+  geom_vline(
+    xintercept = as.Date("2022-07-01"),
+    linetype = 2,
+    linewidth = 0.7,
+    color = "#4d4d4d"
+  ) +
+  labs(
+    title = "A temporal-series plot separates monthly noise from the underlying trajectory",
+    subtitle = "Synthetic preventable emergency admissions with a 12-month moving average",
+    x = NULL,
+    y = "Monthly admissions"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid.minor = element_blank()
+  )
 ```
 
 This figure works because the raw line and the smoother line serve different purposes. The grey series shows the monthly data actually observed. The blue line strips away much of the seasonal oscillation and makes the post-policy decline easier to see. The shaded post-intervention period is not itself an estimator of effect, but it helps the reader orient the timing of the series.
@@ -127,18 +124,18 @@ This figure works because the raw line and the smoother line serve different pur
 
 As in several other chapters in this section, it is often useful to pair the figure with a short table naming the most important periods.
 
-```r
+```{r}
 synthetic_turning_points <- synthetic_series |>
- arrange(desc(admissions)) |>
- slice_head(n = 6) |>
- transmute(
- date = format(date, "%Y-%m"),
- admissions = admissions
- )
+  arrange(desc(admissions)) |>
+  slice_head(n = 6) |>
+  transmute(
+    date = format(date, "%Y-%m"),
+    admissions = admissions
+  )
 
 knitr::kable(
- format_numeric_table(synthetic_turning_points, digits = 1),
- caption = "Highest monthly observations in the synthetic temporal series"
+  format_numeric_table(synthetic_turning_points, digits = 1),
+  caption = "Highest monthly observations in the synthetic temporal series"
 )
 ```
 
@@ -146,11 +143,11 @@ The figure gives the shape of the whole process. The table names the local extre
 
 ## Step 4: Create a real-world temporal series from a public health dataset
 
-For a real-world example, we use the monthly UK lung-disease deaths series distributed with the `datasets` package in R. The help file cites Diggle's biostatistical time-series text as the source for these monthly deaths from bronchitis, emphysema, and asthma in the UK from 1974 through 1979. This is therefore a transparent public-data application rather than a literal reconstruction of one published figure.
+For a real-world example, we use the monthly UK lung-disease deaths series distributed with the `datasets` package in R. The help file cites Diggle's biostatistical time-series text as the source for these monthly deaths from bronchitis, emphysema, and asthma in the UK from 1974 through 1979 @diggle1990. This is therefore a transparent public-data application rather than a literal reconstruction of one published figure.
 
 The point of the example is to show how the same figure design works in a real health time series with strong seasonality. Winter peaks are visually obvious in the raw line, while the 12-month moving average helps the reader see whether the underlying level is drifting up or down over the sample.
 
-```r
+```{r}
 lung_deaths <- get("ldeaths", envir = asNamespace("datasets"))
 
 time_index <- time(lung_deaths)
@@ -158,46 +155,46 @@ years <- floor(time_index)
 months <- cycle(lung_deaths)
 
 real_series <- data.frame(
- date = as.Date(sprintf("%d-%02d-01", years, months)),
- deaths = as.numeric(lung_deaths)
+  date = as.Date(sprintf("%d-%02d-01", years, months)),
+  deaths = as.numeric(lung_deaths)
 ) |>
- mutate(
- ma12 = moving_average(deaths, k = 12),
- year = format(date, "%Y"),
- month = format(date, "%m")
- )
+  mutate(
+    ma12 = moving_average(deaths, k = 12),
+    year = format(date, "%Y"),
+    month = format(date, "%m")
+  )
 
 real_summary <- real_series |>
- group_by(year) |>
- summarise(
- mean_monthly_deaths = mean(deaths),
- annual_peak = max(deaths),
- annual_minimum = min(deaths),
-.groups = "drop"
- )
+  group_by(year) |>
+  summarise(
+    mean_monthly_deaths = mean(deaths),
+    annual_peak = max(deaths),
+    annual_minimum = min(deaths),
+    .groups = "drop"
+  )
 
 knitr::kable(
- format_numeric_table(real_summary, digits = 1),
- caption = "Yearly summary of the public UK lung-disease deaths series"
+  format_numeric_table(real_summary, digits = 1),
+  caption = "Yearly summary of the public UK lung-disease deaths series"
 )
 ```
 
 ## Step 5: Draw the real-world temporal-series figure
 
-```r
+```{r}
 ggplot(real_series, aes(x = date, y = deaths)) +
- geom_line(linewidth = 0.55, color = "#8c8c8c") +
- geom_line(aes(y = ma12), linewidth = 1.15, color = "#8c2d04", na.rm = TRUE) +
- labs(
- title = "The temporal-series plot shows both seasonality and medium-run movement",
- subtitle = "Monthly UK deaths from bronchitis, emphysema, and asthma, 1974-1979",
- x = NULL,
- y = "Deaths per month"
- ) +
- theme_minimal(base_size = 12) +
- theme(
- panel.grid.minor = element_blank
- )
+  geom_line(linewidth = 0.55, color = "#8c8c8c") +
+  geom_line(aes(y = ma12), linewidth = 1.15, color = "#8c2d04", na.rm = TRUE) +
+  labs(
+    title = "The temporal-series plot shows both seasonality and medium-run movement",
+    subtitle = "Monthly UK deaths from bronchitis, emphysema, and asthma, 1974-1979",
+    x = NULL,
+    y = "Deaths per month"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid.minor = element_blank()
+  )
 ```
 
 This real-world figure shows why the layered temporal-series display is so useful. The raw line makes the winter peaks unmistakable. The moving average shows that the series has a broader level pattern beyond those seasonal swings. A table of annual means would partially capture that, but it would hide the month-to-month structure entirely.
@@ -212,4 +209,4 @@ Finally, the graph should preserve enough of the raw series for the reader to se
 
 ## Further reading
 
-Diggle provides a concise health-oriented introduction to time-series data and is a natural reference for the UK lung-deaths series used here. Wickham's treatment of layered graphics is useful for readers who want to extend this figure design with annotations, faceting, or additional model-based overlays.
+Diggle provides a concise health-oriented introduction to time-series data and is a natural reference for the UK lung-deaths series used here @diggle1990. Wickham's treatment of layered graphics is useful for readers who want to extend this figure design with annotations, faceting, or additional model-based overlays @wickham2016ggplot2.

@@ -92,13 +92,13 @@ Optional short note.
 
 Location:
 - Posts: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/_posts/`
-- Rendered tutorial HTML/assets: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/tutorials/`
+- Quarto source files: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/tutorials/`
 
-Tutorials are stored as Jekyll posts, but each post is rebuilt from the rendered HTML already stored in `tutorials/`.
+Tutorials are stored as Jekyll posts, but each post is rebuilt from the Quarto `.qmd` source files stored in `tutorials/`.
 
 ### Recommended workflow
 
-1. Update or replace the rendered HTML files inside:
+1. Update or replace the Quarto `.qmd` files inside:
    `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/tutorials/`
 2. Rebuild the tutorial posts from those rendered files:
    ```bash
@@ -107,8 +107,9 @@ Tutorials are stored as Jekyll posts, but each post is rebuilt from the rendered
 
 This will:
 - Delete the current tutorial posts in `_posts/`
-- Create one new post per rendered tutorial HTML file in `tutorials/*/*.html`
-- Keep the graphs/figures working by pointing each post to the matching `*_files` asset folder
+- Create one new post per Quarto source file in `tutorials/*/*.qmd`
+- Skip `index.qmd` files when creating tutorial posts
+- Update the `/tutorials/` intro from `tutorials/simulation-tools/index.qmd`
 
 ### Front matter (generated automatically)
 
@@ -119,12 +120,14 @@ date: 2026-02-15
 categories: [tutorials, codes]
 tags: ["Simulation Tools"]   # derived from the tutorial folder name
 summary: "Short plain-language summary used in the Tutorials list."
+excerpt: "Optional subtitle from the .qmd front matter"
 ---
 ```
 
 Tips:
 - The Tutorials page filters by `tags`, and the script currently derives them from the folder name (for example `simulation-tools` becomes `Simulation Tools`).
 - If you rename a tutorial group folder, rerun the rebuild script so the new tag appears on `/tutorials/`.
+- The `/tutorials/` landing page intro is generated from `tutorials/simulation-tools/index.qmd`.
 
 ## Didactic Apps
 

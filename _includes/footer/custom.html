@@ -31,6 +31,19 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
+    var rougeBlocks = document.querySelectorAll(".page__content .highlighter-rouge");
+    rougeBlocks.forEach(function(block) {
+      if (block.querySelector(".code-copy-button")) return;
+      var highlight = block.querySelector(".highlight");
+      if (!highlight) return;
+      var button = document.createElement("button");
+      button.className = "code-copy-button";
+      button.type = "button";
+      button.textContent = "Copy";
+      button.setAttribute("aria-label", "Copy code");
+      highlight.insertBefore(button, highlight.firstChild);
+    });
+
     var copyButtons = document.querySelectorAll(".code-copy-button");
     copyButtons.forEach(function(button) {
       if (button.dataset.codexBound === "true") return;
@@ -42,6 +55,10 @@
       button.setAttribute("aria-label", "Copy code");
       button.addEventListener("click", async function() {
         var pre = button.closest("pre");
+        if (!pre) {
+          var container = button.parentElement;
+          pre = container ? container.querySelector("pre") : null;
+        }
         var code = pre ? pre.querySelector("code") : null;
         if (!code) return;
 

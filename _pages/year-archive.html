@@ -10,7 +10,9 @@ redirect_from:
 
 {% include base_path %}
 
-{% assign tutorials = site.posts | where_exp: "post", "post.categories contains 'tutorials'" %}
+{% assign tutorials = site.posts | where_exp: "post", "post.categories contains 'tutorials'" | sort: "title" %}
+
+{% include tutorials-index-intro.md %}
 
 <div class="tutorials-layout">
   <aside class="tutorials-sidebar">

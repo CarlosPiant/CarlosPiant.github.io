@@ -1,0 +1,9 @@
+---
+title: "Simulation Tools"
+---
+
+This section is a practical workshop for building synthetic datasets. The goal is not mainly to introduce a new estimator, but to show how to create data with a known structure so that econometric, statistical, and mathematical methods can be tested under controlled conditions. These chapters are meant to help readers move from “I know the formula” to “I understand how the data must behave if that formula is actually true.”
+
+Each chapter in this section will explain the variables being created, the assumptions behind the data-generating process, and the exact R code used to simulate the sample. The final step will always be to fit the model that matches the true generating process and check whether it recovers the underlying parameters. That is often one of the best ways to build intuition before working with real-world data.
+
+The current chapters begin with linear-model simulation, then move to instrumental-variables simulation and a second design-focused IV chapter, regression-discontinuity simulation, difference-in-differences simulation, a staggered-adoption event-study simulation, and logistic-outcome simulation, step back to the machinery that powers most simulation work, and then proceed through count data, time-to-event data, censoring-focused survival follow-up, hierarchical data, cluster-randomized treatment allocation, explicit missingness mechanisms, and incomplete datasets. Together, these examples show how continuous outcomes, endogenous treatments, instrument quality, threshold-based assignment, policy timing, dynamic event-time effects, binary outcomes, random-number generation, event counts, survival times, study-end truncation, clustered observations, group-level randomization, response-indicator processes, and incomplete datasets can all be built from explicit assumptions about the data-generating mechanism.
