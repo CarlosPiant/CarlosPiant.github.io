@@ -100,7 +100,7 @@ Tutorials are stored as Jekyll posts, but each post is rebuilt from the Quarto `
 
 1. Update or replace the Quarto `.qmd` files inside:
    `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/tutorials/`
-2. Rebuild the tutorial posts from those rendered files:
+2. Rebuild the tutorial posts from the Quarto source:
    ```bash
    python3 /Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/scripts/rebuild_tutorial_posts.py
    ```
@@ -109,6 +109,8 @@ This will:
 - Delete the current tutorial posts in `_posts/`
 - Create one new post per Quarto source file in `tutorials/*/*.qmd`
 - Skip `index.qmd` files when creating tutorial posts
+- Execute the code chunks so figures and tables are included in the generated pages
+- Copy generated figures into `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/tutorials/rendered-assets/`
 - Update the `/tutorials/` intro from `tutorials/simulation-tools/index.qmd`
 
 ### Front matter (generated automatically)
@@ -128,6 +130,7 @@ Tips:
 - The Tutorials page filters by `tags`, and the script currently derives them from the folder name (for example `simulation-tools` becomes `Simulation Tools`).
 - If you rename a tutorial group folder, rerun the rebuild script so the new tag appears on `/tutorials/`.
 - The `/tutorials/` landing page intro is generated from `tutorials/simulation-tools/index.qmd`.
+- If a tutorial generates plots, keep the source code inside executable chunks so the rebuild script can regenerate the images automatically.
 
 ## Didactic Apps
 

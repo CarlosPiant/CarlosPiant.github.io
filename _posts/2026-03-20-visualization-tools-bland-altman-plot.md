@@ -37,12 +37,45 @@ The plot should be read with three questions in mind:
 
 We will start with a synthetic example comparing a manual and an automated systolic blood pressure measurement taken on the same patients. The automated device is designed to be close to the manual reading but not identical. To make the plot informative, we build in a small positive bias and slightly wider disagreement at higher blood pressure values.
 
-```r
+``` r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+## filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+## intersect, setdiff, setequal, union
+```
+
+``` r
 library(ggplot2)
 library(knitr)
 library(MASS)
+```
 
+```
+## 
+## Attaching package: 'MASS'
+```
+
+```
+## The following object is masked from 'package:dplyr':
+## 
+## select
+```
+
+``` r
 set.seed(2026)
 
 n_patients <- 180
@@ -55,7 +88,7 @@ automated_sbp <- true_sbp + 2.0 + 0.03 * (true_sbp - mean(true_sbp)) +
 
 Next we create a small helper that computes the quantities needed for the figure and for the summary table.
 
-```r
+``` r
 prepare_bland_altman <- function(method_a, method_b, label_a, label_b) {
  plot_df <- data.frame(
  method_a = method_a,
@@ -178,7 +211,7 @@ build_bland_altman_plot <- function(ba_obj, title, subtitle, point_color) {
 }
 ```
 
-```r
+``` r
 synthetic_ba <- prepare_bland_altman(
  method_a = automated_sbp,
  method_b = manual_sbp,
@@ -197,11 +230,17 @@ knitr::kable(
 )
 ```
 
+Table: Summary statistics for the synthetic Bland-Altman example
+
+|comparison | sample_size| mean_method_a| mean_method_b| bias| sd_difference| lower_limit| upper_limit| proportion_outside|
+|:------------------------------|-----------:|-------------:|-------------:|-----:|-------------:|-----------:|-----------:|------------------:|
+|Automated SBP minus Manual SBP | 180| 134.188| 132.113| 2.075| 7.552| -12.727| 16.877| 0.05|
+
 The summary already says something important. The average automated reading is slightly higher than the manual one, so the bias is positive. The limits of agreement show how wide the method-to-method differences can be even when the average bias is modest.
 
 ## Step 2: Draw the synthetic Bland-Altman plot
 
-```r
+``` r
 synthetic_plot <- build_bland_altman_plot(
  synthetic_ba,
  title = "Bland-Altman plot for synthetic systolic blood pressure measurements",
@@ -211,6 +250,12 @@ synthetic_plot <- build_bland_altman_plot(
 
 synthetic_plot
 ```
+
+```
+## `geom_smooth` using formula = 'y ~ x'
+```
+
+![plot of chunk unnamed-chunk-4](/tutorials/rendered-assets/visualization-tools-bland-altman-plot/unnamed-chunk-4-1.png)
 
 This figure should be interpreted point by point. Each point is one patient. If the point lies above 0, the automated device reads higher than the manual method for that patient. If it lies below 0, the automated device reads lower. The dashed lines show the empirical limits of agreement, and the solid line shows the average bias.
 
@@ -222,7 +267,7 @@ For a real-world example, we will use the public `Pima.tr` and `Pima.te` diabete
 
 This is a transparent partial application. The original Smith paper was not published with a Bland-Altman figure, and the two fitted models below are a teaching adaptation. But the public data provide a clear real-world setting for comparing two quantitative methods that estimate the same underlying quantity: patient-level diabetes risk.
 
-```r
+``` r
 data("Pima.tr", package = "MASS")
 data("Pima.te", package = "MASS")
 
@@ -258,7 +303,13 @@ knitr::kable(
 )
 ```
 
-```r
+Table: Agreement summary for logistic and LDA diabetes-risk predictions in the public Pima test sample
+
+|comparison | sample_size| mean_method_a| mean_method_b| bias| sd_difference| lower_limit| upper_limit| proportion_outside|
+|:----------------------------|-----------:|-------------:|-------------:|-----:|-------------:|-----------:|-----------:|------------------:|
+|Logistic risk minus LDA risk | 332| 0.337| 0.328| 0.009| 0.025| -0.041| 0.059| 0.06|
+
+``` r
 real_plot <- build_bland_altman_plot(
  real_ba,
  title = "Bland-Altman plot for two diabetes-risk prediction methods",
@@ -268,6 +319,12 @@ real_plot <- build_bland_altman_plot(
 
 real_plot
 ```
+
+```
+## `geom_smooth` using formula = 'y ~ x'
+```
+
+![plot of chunk unnamed-chunk-6](/tutorials/rendered-assets/visualization-tools-bland-altman-plot/unnamed-chunk-6-1.png)
 
 This real-world plot answers a different question from discrimination plots such as ROC curves. It does not ask which model ranks patients better. It asks whether the two methods give similar probability estimates for the same patients. If the bias is near 0 but the limits of agreement are still wide, then the models agree on average but can disagree materially for individual patients.
 

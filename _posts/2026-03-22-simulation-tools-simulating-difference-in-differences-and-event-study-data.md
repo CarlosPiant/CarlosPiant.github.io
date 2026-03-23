@@ -80,7 +80,7 @@ That is exactly the structure event-study regressions are supposed to recover.
 
 ## Step 1: Generate the staggered-adoption panel
 
-```r
+``` r
 set.seed(2037)
 
 n_hospitals <- 90
@@ -151,13 +151,22 @@ knitr::kable(
 )
 ```
 
+Table: Treatment-timing cohorts in the simulated staggered-adoption panel
+
+|cohort | hospitals|
+|:---------------|---------:|
+|Adopt in year 5 | 23|
+|Adopt in year 7 | 26|
+|Adopt in year 9 | 22|
+|Never treated | 19|
+
 The cohort table makes the treatment-timing structure explicit. Some hospitals adopt early, some adopt later, and some never adopt. That is the raw material of an event-study design.
 
 ## Step 2: Create relative-time indicators for the event-study regression
 
 We will estimate relative-time effects for event times $k \in \{-4, -3, -2, 0, 1, 2, 3+\}$, using $k = -1$ as the omitted reference period.
 
-```r
+``` r
 synthetic_event_study$rt_m4 <- as.integer(is.finite(synthetic_event_study$cohort_year) &
  synthetic_event_study$event_time == -4)
 synthetic_event_study$rt_m3 <- as.integer(is.finite(synthetic_event_study$cohort_year) &
@@ -199,13 +208,23 @@ knitr::kable(
 )
 ```
 
+Table: Summary of the simulated DiD and event-study panel
+
+|quantity | value|
+|:---------------------------------|-------:|
+|Hospitals | 90.000|
+|Years | 10.000|
+|Observations | 900.000|
+|Share ever treated | 0.789|
+|Share treated-period observations | 0.318|
+
 The omitted period $k = -1$ serves as the pre-treatment baseline. That is the usual normalization in event-study regressions because it anchors all coefficients relative to the year just before treatment begins.
 
 ## Step 3: Fit the event-study model that matches the true generating process
 
 The natural fitted model is a hospital and year fixed-effects regression with relative-time indicators:
 
-```r
+``` r
 event_study_fit <- lm(
  avoidable_ed ~ hospital + year +
  rt_m4 + rt_m3 + rt_m2 +
@@ -251,11 +270,23 @@ knitr::kable(
 )
 ```
 
+Table: True and estimated event-study coefficients in the simulated staggered-adoption design
+
+|event_time | true_effect| estimated_effect| standard_error| bias| lower| upper|
+|:----------|-----------:|----------------:|--------------:|------:|------:|------:|
+|-4 | 0.0| -0.480| 0.434| -0.480| -1.330| 0.370|
+|-3 | 0.0| 0.213| 0.350| 0.213| -0.472| 0.899|
+|-2 | 0.0| 0.099| 0.483| 0.099| -0.848| 1.045|
+|0 | 0.0| 0.132| 0.525| 0.132| -0.898| 1.161|
+|1 | -1.5| -1.347| 0.426| 0.153| -2.183| -0.511|
+|2 | -3.0| -3.704| 0.641| -0.704| -4.961| -2.448|
+|3+ | -4.0| -3.840| 0.517| 0.160| -4.853| -2.827|
+
 This table is the main recovery check. The lead coefficients should stay close to zero because there is no anticipation in the data-generating process. The lag coefficients should trace the dynamic effects built into the simulation.
 
 ## Step 4: Visualize the recovered event-study path
 
-```r
+``` r
 plot_data <- event_study_table
 plot_data$event_time_numeric <- c(-4, -3, -2, 0, 1, 2, 3)
 
@@ -287,11 +318,13 @@ ggplot2::ggplot(
  ggplot2::theme_minimal(base_size = 12)
 ```
 
+![plot of chunk unnamed-chunk-4](/tutorials/rendered-assets/simulation-tools-simulating-difference-in-differences-and-event-study-data/unnamed-chunk-4-1.png)
+
 This figure is the most compact summary of the simulation. If the model is behaving well, the pre-treatment leads should be near zero and the post-treatment lags should move downward toward the true dynamic effect path.
 
 ## Step 5: Show the mean outcome paths by adoption cohort
 
-```r
+``` r
 cohort_plot_data <- aggregate(
  avoidable_ed ~ year_num + cohort_year,
  data = subset(synthetic_event_study, is.finite(cohort_year)),
@@ -326,6 +359,8 @@ ggplot2::ggplot(
  ) +
  ggplot2::theme_minimal(base_size = 12)
 ```
+
+![plot of chunk unnamed-chunk-5](/tutorials/rendered-assets/simulation-tools-simulating-difference-in-differences-and-event-study-data/unnamed-chunk-5-1.png)
 
 This cohort plot shows why event-study notation is helpful. Each cohort experiences the same dynamic treatment pattern, but at different calendar dates. The event-study transformation puts those cohorts onto a common relative-time scale.
 

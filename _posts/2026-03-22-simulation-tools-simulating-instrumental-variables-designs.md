@@ -88,7 +88,7 @@ The first two satisfy exclusion by construction. The third violates exclusion be
 
 ## Step 1: Generate the common patient-level covariates
 
-```r
+``` r
 set.seed(2036)
 
 n <- 6000
@@ -120,11 +120,17 @@ knitr::kable(
 )
 ```
 
+Table: Common covariates used across all simulated IV designs
+
+| sample_size| mean_age| mean_chronic| sd_severity|
+|-----------:|--------:|------------:|-----------:|
+| 6000| 66.011| 2.188| 1.002|
+
 These covariates are held fixed across the three designs. That way, differences in IV performance come from the instrument design itself rather than from different underlying patient samples.
 
 ## Step 2: Generate three alternative IV designs
 
-```r
+``` r
 simulate_iv_design <- function(design_name, pi1, gamma_direct) {
  instrument <- rbinom(n, size = 1, prob = 0.5)
 
@@ -177,11 +183,19 @@ knitr::kable(
 )
 ```
 
+Table: Observed treatment and outcome means across the simulated IV designs
+
+|design | treatment| annual_cost|
+|:-------------------------|---------:|-----------:|
+|Strong invalid instrument | 0.760| 13718.51|
+|Strong valid instrument | 0.772| 13370.45|
+|Weak valid instrument | 0.668| 13505.28|
+
 The underlying patient covariates are the same in all three designs, but the instrument behaves differently. That allows a clean comparison of design quality.
 
 ## Step 3: Fit OLS and 2SLS within each design
 
-```r
+``` r
 estimate_iv_design <- function(df) {
  ols_fit <- lm(
  annual_cost ~ treatment + age + chronic,
@@ -226,6 +240,14 @@ knitr::kable(
 )
 ```
 
+Table: Estimator recovery under strong, weak, and invalid IV designs
+
+|design | first_stage_f| ols_estimate| iv_estimate| true_effect| ols_bias| iv_bias|
+|:-------------------------|-------------:|------------:|-----------:|-----------:|--------:|--------:|
+|Strong invalid instrument | 590.670| 407.235| 1175.650| -1600| 2007.235| 2775.650|
+|Strong valid instrument | 555.149| 184.398| -1962.017| -1600| 1784.398| -362.017|
+|Weak valid instrument | 35.759| 228.224| -734.851| -1600| 1828.224| 865.149|
+
 This table is the center of the chapter. It shows three different reasons IV designs can succeed or fail:
 
 - OLS is biased in all three designs because treatment is endogenous
@@ -235,7 +257,7 @@ This table is the center of the chapter. It shows three different reasons IV des
 
 ## Step 4: Visualize first-stage strength across designs
 
-```r
+``` r
 first_stage_plot <- aggregate(
  treatment ~ design + instrument,
  data = iv_design_data,
@@ -266,13 +288,15 @@ ggplot2::ggplot(
  ggplot2::theme(legend.position = "none")
 ```
 
+![plot of chunk unnamed-chunk-4](/tutorials/rendered-assets/simulation-tools-simulating-instrumental-variables-designs/unnamed-chunk-4-1.png)
+
 This figure is the visual first stage. The weak valid design shows much smaller separation between instrument groups, which is exactly why 2SLS becomes less reliable there.
 
 ## Step 5: Compare the model that matches the true generating process with the truth
 
 The matching model is 2SLS under the valid designs. To make that explicit, compare the valid-design estimates with the true treatment effect.
 
-```r
+``` r
 valid_design_check <- subset(
  results_table,
  design %in% c("Strong valid instrument", "Weak valid instrument")
@@ -287,6 +311,13 @@ knitr::kable(
  row.names = FALSE
 )
 ```
+
+Table: Recovery check for the valid IV designs
+
+|design | first_stage_f| iv_estimate| true_effect| iv_bias|
+|:-----------------------|-------------:|-----------:|-----------:|--------:|
+|Strong valid instrument | 555.149| -1962.017| -1600| -362.017|
+|Weak valid instrument | 35.759| -734.851| -1600| 865.149|
 
 The strong valid design should come much closer to the true treatment effect than the weak valid design. That is the practical lesson of weak-instrument theory in a single table.
 

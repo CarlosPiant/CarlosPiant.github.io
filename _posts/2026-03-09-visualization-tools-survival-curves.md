@@ -18,7 +18,7 @@ The `lung` dataset contains survival follow-up information for patients in a Nor
 
 ## Step 1: Prepare the data
 
-```r
+``` r
 lung_data <- survival::lung[, c("time", "status", "sex")]
 lung_data <- na.omit(lung_data)
 
@@ -45,11 +45,17 @@ knitr::kable(
 )
 ```
 
+Table: Summary of the lung-cancer survival dataset
+
+| sample_size| events| event_rate| median_followup|
+|-----------:|------:|----------:|---------------:|
+| 228| 165| 0.724| 255.5|
+
 The most important preparation step is to make the event coding explicit. A survival curve depends on two things: the observed time and whether that time ended in an event or in censoring.
 
 ## Step 2: Fit the Kaplan-Meier curves
 
-```r
+``` r
 km_fit <- survival::survfit(
  survival::Surv(time, event) ~ sex_label,
  data = lung_data
@@ -81,11 +87,22 @@ knitr::kable(
 )
 ```
 
+Table: Estimated survival probabilities at selected landmark times
+
+|group | time| survival|
+|:------|----:|--------:|
+|Male | 90| 0.848|
+|Male | 180| 0.644|
+|Male | 365| 0.336|
+|Female | 90| 0.933|
+|Female | 180| 0.842|
+|Female | 365| 0.526|
+
 This table complements the plot. A figure gives the full trajectory, while landmark values make it easier to quote specific survival probabilities in the text.
 
 ## Step 3: Build the survival curve figure
 
-```r
+``` r
 ggplot2::ggplot(km_plot_data, ggplot2::aes(x = time, y = surv, color = strata)) +
  ggplot2::geom_step(linewidth = 1) +
  ggplot2::geom_step(
@@ -112,6 +129,8 @@ ggplot2::ggplot(km_plot_data, ggplot2::aes(x = time, y = surv, color = strata)) 
  ggplot2::theme_minimal(base_size = 12)
 ```
 
+![plot of chunk unnamed-chunk-3](/tutorials/rendered-assets/visualization-tools-survival-curves/unnamed-chunk-3-1.png)
+
 This figure works because it preserves the structure of survival data instead of smoothing it away. The steps show when events happen. The vertical distance between curves shows the separation in survival experience. The dashed confidence limits show the uncertainty around those estimates.
 
 ## Step 4: Add a cumulative-event view
@@ -122,7 +141,7 @@ $$
 1 - \hat{S}(t).
 $$
 
-```r
+``` r
 km_plot_data$cumulative_event <- 1 - km_plot_data$surv
 
 ggplot2::ggplot(km_plot_data, ggplot2::aes(x = time, y = cumulative_event, color = strata)) +
@@ -138,6 +157,8 @@ ggplot2::ggplot(km_plot_data, ggplot2::aes(x = time, y = cumulative_event, color
  ggplot2::coord_cartesian(ylim = c(0, 1)) +
  ggplot2::theme_minimal(base_size = 12)
 ```
+
+![plot of chunk unnamed-chunk-4](/tutorials/rendered-assets/visualization-tools-survival-curves/unnamed-chunk-4-1.png)
 
 This second view is often useful in policy or services settings where the event, such as readmission or treatment failure, is the quantity of direct interest.
 

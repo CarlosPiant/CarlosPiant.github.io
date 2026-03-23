@@ -27,8 +27,28 @@ The main conceptual difference from a coefficient plot is that the x-axis now re
 
 We will start with a synthetic logistic regression for 30-day hospital readmission. The goal is to build a fitted model from which we can compute average marginal effects and then visualize them.
 
-```r
+``` r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+## filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+## intersect, setdiff, setequal, union
+```
+
+``` r
 library(ggplot2)
 library(knitr)
 
@@ -81,13 +101,19 @@ knitr::kable(
 )
 ```
 
+Table: Summary of the synthetic readmission dataset used for the marginal effects plot
+
+| sample_size| readmission_rate| mean_age10| mean_prior_admissions|
+|-----------:|----------------:|----------:|---------------------:|
+| 900| 0.606| 6.923| 1.424|
+
 This model is similar to the one used in the coefficient-plot chapter, but the quantity we will report is different. We want changes in predicted readmission probability, not just changes in log-odds.
 
 ## Step 2: Compute average marginal effects manually
 
 Because the local environment does not rely on a dedicated marginal-effects package, we will compute the effects directly from the fitted model. For a binary predictor such as `intervention`, the average marginal effect is the average difference in predicted probability when the variable is set to 1 versus 0 for every observation. For a continuous predictor, we can approximate the derivative by taking a small finite difference.
 
-```r
+``` r
 compute_binary_ame <- function(model, data, var) {
  data_lo <- data
  data_hi <- data
@@ -159,13 +185,23 @@ knitr::kable(
 )
 ```
 
+Table: Synthetic average marginal effects on the readmission probability scale
+
+|predictor | average_marginal_effect| lower_95_ci| upper_95_ci|
+|:----------------------|-----------------------:|-----------:|-----------:|
+|Discharge intervention | -0.080| -0.081| -0.079|
+|Age (per 10 years) | 0.049| 0.049| 0.050|
+|Prior admissions | 0.053| 0.053| 0.054|
+|Comorbidity score | 0.088| 0.087| 0.089|
+|Social risk index | 0.068| 0.067| 0.068|
+
 This table contains the information that the plot will encode. A coefficient plot would show effects in log-odds units; this plot will show changes in predicted readmission probability.
 
 ## Step 3: Build a reusable dot-and-whisker plotting function
 
 The function below is designed for marginal effects with confidence intervals centered around a null value of 0. The aesthetic grammar is similar to a coefficient plot, but the x-axis label now refers to marginal effects rather than model coefficients.
 
-```r
+``` r
 build_marginal_effects_plot <- function(data, title, subtitle, x_label) {
  plot_data <- data |>
  dplyr::mutate(
@@ -217,7 +253,7 @@ The figure is intentionally restrained. The point is to show estimated magnitude
 
 ## Step 4: Draw the synthetic marginal effects plot
 
-```r
+``` r
 synthetic_marginal_plot <- build_marginal_effects_plot(
  synthetic_ame,
  title = "Dot-and-whisker plot of synthetic average marginal effects",
@@ -228,6 +264,8 @@ synthetic_marginal_plot <- build_marginal_effects_plot(
 synthetic_marginal_plot
 ```
 
+![plot of chunk unnamed-chunk-4](/tutorials/rendered-assets/visualization-tools-dot-and-whisker-marginal-effects-plot/unnamed-chunk-4-1.png)
+
 This figure is often easier to explain than the corresponding coefficient plot. The intervention's marginal effect can now be read as an average percentage-point change in readmission probability rather than as a change in log-odds.
 
 ## Step 5: Create a real-world marginal effects plot from a public trial dataset
@@ -236,7 +274,7 @@ For a real-world example, we can use the public `colon` dataset from the `surviv
 
 This is a transparent partial replication. The original trial publications did not report exactly this plot, and the 1-year mortality model below is a modern teaching adaptation rather than a reconstruction of the original printed analyses.
 
-```r
+``` r
 library(survival)
 
 colon_1y <- survival::colon |>
@@ -301,7 +339,18 @@ knitr::kable(
 )
 ```
 
-```r
+Table: Average marginal effects from a logistic model for 1-year mortality in the public colon trial data
+
+|predictor | average_marginal_effect| lower_95_ci| upper_95_ci|
+|:--------------------------|-----------------------:|-----------:|-----------:|
+|Levamisole + 5FU treatment | 0.014| 0.013| 0.015|
+|Age (per 10 years) | 0.033| 0.031| 0.035|
+|Male sex | -0.018| -0.019| -0.016|
+|More than 4 positive nodes | 0.101| 0.097| 0.105|
+|Obstruction present | 0.067| 0.063| 0.070|
+|Adherent to protocol | 0.056| 0.053| 0.058|
+
+``` r
 colon_marginal_plot <- build_marginal_effects_plot(
  colon_ame,
  title = "Dot-and-whisker plot of marginal effects in the public colon trial data",
@@ -311,6 +360,8 @@ colon_marginal_plot <- build_marginal_effects_plot(
 
 colon_marginal_plot
 ```
+
+![plot of chunk unnamed-chunk-6](/tutorials/rendered-assets/visualization-tools-dot-and-whisker-marginal-effects-plot/unnamed-chunk-6-1.png)
 
 This figure highlights something coefficient tables often hide: some predictors may have modest-looking model coefficients but practically meaningful effects on predicted risk once translated onto the probability scale.
 

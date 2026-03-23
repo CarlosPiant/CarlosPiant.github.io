@@ -54,7 +54,7 @@ The key identifying assumption is built into the DGP by construction: in the abs
 
 ## Step 1: Generate the synthetic panel
 
-```r
+``` r
 set.seed(2026)
 
 n_hospitals <- 80
@@ -104,13 +104,19 @@ knitr::kable(
 )
 ```
 
+Table: Summary of the synthetic difference-in-differences panel
+
+| hospitals| years| treated_share| mean_outcome| sd_outcome|
+|---------:|-----:|-------------:|------------:|----------:|
+| 80| 8| 0.5| 41.391| 6.665|
+
 The panel now contains two ingredients that matter for DiD. First, treated and untreated hospitals have different baseline levels because of hospital fixed effects. Second, untreated trends move in parallel over time because the same calendar trend applies to both groups before the policy begins.
 
 ## Step 2: Fit the model that matches the true generating process
 
 The natural recovery check is a two-way fixed-effects DiD regression. For context, it is also useful to compare that estimate with a naive post-period comparison.
 
-```r
+``` r
 extract_clustered_effect <- function(model, term, cluster, model_name) {
  robust_vcov <- sandwich::vcovCL(model, cluster = cluster, type = "HC1")
  estimate <- coef(model)[term]
@@ -164,13 +170,21 @@ knitr::kable(
 )
 ```
 
+Table: Estimated treatment effects in the synthetic DiD panel
+
+| |model | estimate| lower| upper|
+|:----------------|:----------------------------|--------:|------:|------:|
+|1 |True effect | -4.000| NA| NA|
+|treated_hospital |Naive post-period comparison | -3.824| -6.227| -1.421|
+|did_treatment |Difference-in-differences | -4.551| -5.428| -3.675|
+
 The DiD estimate should be close to the true effect because the data were generated exactly to satisfy the design assumptions. The naive post-period comparison is less informative because it compares hospitals with different baseline levels after the policy has already been implemented.
 
 ## Step 3: Check the pre-treatment trend structure
 
 Difference-in-differences relies on changes over time, not just treated-versus-untreated level differences. The most important descriptive check is therefore the group trend plot.
 
-```r
+``` r
 trend_data <- aggregate(
  avoidable_ed ~ year_num + treated_hospital,
  data = synthetic_did,
@@ -203,13 +217,15 @@ ggplot2::ggplot(
  ggplot2::theme_minimal(base_size = 12)
 ```
 
+![plot of chunk unnamed-chunk-3](/tutorials/rendered-assets/simulation-tools-simulating-did-data/unnamed-chunk-3-1.png)
+
 The figure should show parallel movement before treatment and a post-policy divergence afterward. That is the visual signature of a well-behaved DiD design.
 
 ## Step 4: Recover the 2x2 DiD contrast directly from means
 
 Because this is a classic two-group panel, it is useful to compute the DiD contrast directly from sample means as a second recovery check.
 
-```r
+``` r
 mean_table <- aggregate(
  avoidable_ed ~ treated_hospital + post,
  data = synthetic_did,
@@ -225,7 +241,18 @@ knitr::kable(
  mean_table[, c("group", "period", "avoidable_ed")],
  caption = "Mean outcome by group and period in the synthetic DiD panel"
 )
+```
 
+Table: Mean outcome by group and period in the synthetic DiD panel
+
+|group |period | avoidable_ed|
+|:----------|:------|------------:|
+|Comparison |Pre | 44.051|
+|Treated |Pre | 44.778|
+|Comparison |Post | 40.280|
+|Treated |Post | 36.456|
+
+``` r
 treated_post <- mean_table$avoidable_ed[mean_table$treated_hospital == 1 & mean_table$post == 1]
 treated_pre <- mean_table$avoidable_ed[mean_table$treated_hospital == 1 & mean_table$post == 0]
 control_post <- mean_table$avoidable_ed[mean_table$treated_hospital == 0 & mean_table$post == 1]
@@ -256,13 +283,22 @@ knitr::kable(
 )
 ```
 
+Table: Direct two-by-two difference-in-differences recovery check
+
+|quantity | value|
+|:-------------------------------------------|------:|
+|Treated change | -8.322|
+|Comparison change | -3.771|
+|Difference-in-differences from sample means | -4.551|
+|True effect | -4.000|
+
 This table is useful because it reminds the reader that the fixed-effects regression is just a structured way of computing the same underlying contrast.
 
 ## Step 5: Show what happens when the treated and untreated groups are compared only after the policy
 
 Simulation is most useful when it reveals the failure mode of the naive estimator. The post-period-only comparison confounds the treatment effect with the pre-existing level difference between hospital groups.
 
-```r
+``` r
 post_group_means <- aggregate(
  avoidable_ed ~ treated_hospital,
  data = subset(synthetic_did, post == 1),
@@ -277,6 +313,13 @@ knitr::kable(
  caption = "Naive post-policy group means"
 )
 ```
+
+Table: Naive post-policy group means
+
+|group | avoidable_ed|
+|:----------|------------:|
+|Comparison | 40.280|
+|Treated | 36.456|
 
 This is the comparison that DiD is designed to improve on. Looking only after treatment ignores baseline differences that were already present before the policy began.
 

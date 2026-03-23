@@ -33,8 +33,28 @@ Values below about 0.1 are often treated as acceptable in applied work, although
 
 We begin with a synthetic care-management example. Treatment assignment is deliberately confounded: older, sicker, and lower-income patients are more likely to receive the intervention. That makes the initial covariate imbalance visible and gives the Love plot something meaningful to diagnose.
 
-```r
+``` r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+## filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+## intersect, setdiff, setequal, union
+```
+
+``` r
 library(ggplot2)
 library(knitr)
 library(MatchIt)
@@ -145,7 +165,7 @@ build_love_plot <- function(balance_df, title, subtitle) {
 }
 ```
 
-```r
+``` r
 set.seed(2027)
 
 n_patients <- 1200
@@ -254,18 +274,37 @@ knitr::kable(
  format_numeric_table(synthetic_summary, digits = 3),
  caption = "Synthetic propensity-score weighting setup for the Love plot"
 )
+```
 
+Table: Synthetic propensity-score weighting setup for the Love plot
+
+| sample_size| treatment_rate| mean_propensity_score| max_weight| mean_weight|
+|-----------:|--------------:|---------------------:|----------:|-----------:|
+| 1200| 0.953| 0.947| 2.913| 0.993|
+
+``` r
 knitr::kable(
  format_numeric_table(synthetic_balance_table, digits = 3),
  caption = "Absolute standardized mean differences before and after weighting in the synthetic example"
 )
 ```
 
+Table: Absolute standardized mean differences before and after weighting in the synthetic example
+
+|covariate_label | abs_smd_before| abs_smd_after|
+|:----------------------------|--------------:|-------------:|
+|Comorbidity score | 0.758| 0.199|
+|Baseline cost (thousand USD) | 0.617| 0.165|
+|Prior admissions | 0.421| 0.096|
+|Age | 0.271| 0.087|
+|Low income | 0.240| 0.266|
+|Female | 0.139| 0.029|
+
 The tables already show the logic of the figure. Several covariates are meaningfully imbalanced before weighting, especially comorbidity, prior admissions, and low income. The weighted sample is much closer on those same variables.
 
 ## Step 2: Draw the synthetic Love plot
 
-```r
+``` r
 synthetic_love_plot <- build_love_plot(
  synthetic_balance,
  title = "A Love plot makes covariate balance visible before and after weighting",
@@ -274,6 +313,8 @@ synthetic_love_plot <- build_love_plot(
 
 synthetic_love_plot
 ```
+
+![plot of chunk unnamed-chunk-3](/tutorials/rendered-assets/visualization-tools-love-plot-covariate-balance/unnamed-chunk-3-1.png)
 
 This plot is easier to read than the table because it compresses the design-stage diagnostic into one visual pattern. The most important features are:
 
@@ -290,7 +331,7 @@ For a real-world example, we use the public LaLonde job-training benchmark distr
 
 The goal here is not to reproduce the full treatment-effect literature on the National Supported Work data. Instead, this is a transparent partial application focused on the figure itself: we estimate a nearest-neighbor propensity-score match and then ask whether the matched sample is more balanced on the observed covariates than the original one.
 
-```r
+``` r
 data("lalonde", package = "MatchIt")
 
 lalonde_plot_data <- lalonde |>
@@ -371,18 +412,39 @@ knitr::kable(
  format_numeric_table(lalonde_summary, digits = 1),
  caption = "Public LaLonde benchmark setup for the Love plot example"
 )
+```
 
+Table: Public LaLonde benchmark setup for the Love plot example
+
+| sample_size| treated_share| matched_units| treated_matched| control_matched|
+|-----------:|-------------:|-------------:|---------------:|---------------:|
+| 614| 0.3| 370| 185| 185|
+
+``` r
 knitr::kable(
  format_numeric_table(lalonde_balance_table, digits = 3),
  caption = "Absolute standardized mean differences before and after nearest-neighbor matching in the LaLonde benchmark"
 )
 ```
 
+Table: Absolute standardized mean differences before and after nearest-neighbor matching in the LaLonde benchmark
+
+|covariate_label | abs_smd_before| abs_smd_after|
+|:-------------------------------|--------------:|-------------:|
+|Black | 1.671| 0.854|
+|Married | 0.721| 0.054|
+|Earnings in 1974 (thousand USD) | 0.597| 0.054|
+|Earnings in 1975 (thousand USD) | 0.288| 0.028|
+|Hispanic | 0.277| 0.467|
+|Age | 0.242| 0.057|
+|No high-school degree | 0.235| 0.150|
+|Years of education | 0.045| 0.110|
+
 The main substantive point is that the figure is evaluating the design stage rather than the outcome model. That is why Love plots are so useful in causal work. They separate the question "Did the design create comparable groups?" from the later question "What treatment effect do we estimate once the design is acceptable?"
 
 ## Step 4: Draw the real-world Love plot
 
-```r
+``` r
 lalonde_love_plot <- build_love_plot(
  lalonde_balance,
  title = "Love plot for covariate balance in the public LaLonde benchmark",
@@ -391,6 +453,8 @@ lalonde_love_plot <- build_love_plot(
 
 lalonde_love_plot
 ```
+
+![plot of chunk unnamed-chunk-5](/tutorials/rendered-assets/visualization-tools-love-plot-covariate-balance/unnamed-chunk-5-1.png)
 
 This is a transparent partial replication rather than a literal reproduction of a figure from the original papers. LaLonde and Dehejia-Wahba were not published as Love-plot tutorials. The contribution here is different: it uses the public benchmark data and a standard matching design to show how a balance figure helps diagnose whether observational adjustment has moved the analysis closer to an experimental comparison.
 

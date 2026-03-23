@@ -4,14 +4,18 @@ Rebuild tutorial posts from Quarto source files stored in /tutorials.
 
 This script:
 1. Deletes all existing Jekyll posts categorized as tutorials.
-2. Creates a new post for each tutorial .qmd file in /tutorials/* excluding
-   section index pages.
-3. Generates the /tutorials/ page intro from tutorials/simulation-tools/index.qmd.
+2. Executes each tutorial .qmd file with knitr to capture code, tables, and figures.
+3. Copies generated figures into /tutorials/rendered-assets/<slug>/.
+4. Appends a chapter-specific References section from tutorials/references.bib.
+5. Regenerates the /tutorials/ intro from tutorials/simulation-tools/index.qmd.
 """
 
 from __future__ import annotations
 
 import re
+import shutil
+import subprocess
+import tempfile
 from datetime import datetime
 from pathlib import Path
 
@@ -20,6 +24,7 @@ POSTS_DIR = ROOT / "_posts"
 TUTORIALS_DIR = ROOT / "tutorials"
 INTRO_INCLUDE = ROOT / "_includes" / "tutorials-index-intro.md"
 REFERENCES_BIB = TUTORIALS_DIR / "references.bib"
+RENDERED_ASSETS_DIR = TUTORIALS_DIR / "rendered-assets"
 
 SECTION_TAGS = {
     "simulation-tools": "Simulation Tools",
@@ -73,11 +78,6 @@ def strip_citations(text: str) -> str:
     return text
 
 
-def normalize_code_fences(text: str) -> str:
-    text = re.sub(r"```+\{r[^}]*\}", "```r", text)
-    return text
-
-
 def find_citation_keys(text: str) -> list[str]:
     keys = re.findall(r"@([-A-Za-z0-9_:]+)", text)
     unique_keys = []
@@ -92,7 +92,6 @@ def find_citation_keys(text: str) -> list[str]:
 def clean_body(text: str) -> str:
     text = normalize_text(text)
     text = strip_citations(text)
-    text = normalize_code_fences(text)
     text = re.sub(r"\n{3,}", "\n\n", text).strip()
     return text + "\n"
 
@@ -224,9 +223,6 @@ def build_references_section(citation_keys: list[str], bibliography: dict[str, d
     return "\n## References\n\n" + "\n".join(references) + "\n"
 
 
-BIB_ENTRIES = parse_bibtex_entries()
-
-
 def extract_summary(text: str) -> str:
     blocks = [block.strip() for block in text.split("\n\n")]
     for block in blocks:
@@ -271,14 +267,81 @@ def build_post_path(source_qmd: Path) -> Path:
     return POSTS_DIR / f"{date}-{slug}.md"
 
 
-def render_post(source_qmd: Path) -> str:
+def reset_rendered_assets() -> None:
+    if RENDERED_ASSETS_DIR.exists():
+        shutil.rmtree(RENDERED_ASSETS_DIR)
+    RENDERED_ASSETS_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def cleanup_figure_dirs(paths: list[Path]) -> None:
+    for path in paths:
+        if path.exists():
+            shutil.rmtree(path)
+
+
+def execute_qmd(source_qmd: Path, slug: str) -> str:
+    with tempfile.TemporaryDirectory(prefix="tutorial-knit-") as tmp_dir:
+        tmp_path = Path(tmp_dir)
+        output_md = tmp_path / f"{slug}.md"
+        candidate_figure_dirs = [
+            tmp_path / "figures",
+            tmp_path / "figure",
+            ROOT / "figures",
+            ROOT / "figure",
+        ]
+        cleanup_figure_dirs(candidate_figure_dirs)
+        (tmp_path / "figures").mkdir(parents=True, exist_ok=True)
+
+        r_code = (
+            "args <- commandArgs(trailingOnly=TRUE); "
+            "options(knitr.graphics.auto_pdf = FALSE); "
+            "knitr::opts_chunk$set(fig.path='figures/'); "
+            "knitr::knit(args[1], output=args[2], quiet=TRUE)"
+        )
+        subprocess.run(
+            ["Rscript", "-e", r_code, str(source_qmd), str(output_md)],
+            check=True,
+            cwd=ROOT,
+        )
+
+        asset_dir = RENDERED_ASSETS_DIR / slug
+        copied_any_assets = False
+        for figures_dir in candidate_figure_dirs:
+            if not figures_dir.exists():
+                continue
+            files = [file for file in figures_dir.glob("*") if file.is_file()]
+            if not files:
+                continue
+            asset_dir.mkdir(parents=True, exist_ok=True)
+            for file in files:
+                shutil.copy2(file, asset_dir / file.name)
+                copied_any_assets = True
+
+        _, body = parse_front_matter(output_md.read_text(encoding="utf-8"))
+        body = clean_body(body)
+        body = body.replace("](figures/", f"](/tutorials/rendered-assets/{slug}/")
+        body = body.replace("](figure/", f"](/tutorials/rendered-assets/{slug}/")
+        body = body.replace('src="figures/', f'src="/tutorials/rendered-assets/{slug}/')
+        body = body.replace('src="figure/', f'src="/tutorials/rendered-assets/{slug}/')
+        if not copied_any_assets:
+            body = re.sub(
+                rf"\n!\[[^\]]*\]\(/tutorials/rendered-assets/{re.escape(slug)}/[^)]+\)\n?",
+                "\n",
+                body,
+            )
+        cleanup_figure_dirs([ROOT / "figures", ROOT / "figure"])
+        return body
+
+
+def render_post(source_qmd: Path, bibliography: dict[str, dict[str, str]]) -> str:
     section = source_qmd.parent.name
+    slug = slugify(f"{section}-{source_qmd.stem}")
     front_matter, raw_body = parse_front_matter(source_qmd.read_text(encoding="utf-8"))
     title = normalize_text(front_matter.get("title", source_qmd.stem.replace("-", " ").title()))
     subtitle = normalize_text(front_matter.get("subtitle", ""))
     citation_keys = find_citation_keys(raw_body)
-    body = clean_body(raw_body)
-    body += build_references_section(citation_keys, BIB_ENTRIES)
+    body = execute_qmd(source_qmd, slug)
+    body += build_references_section(citation_keys, bibliography)
     summary = extract_summary(body).replace('"', '\\"')
     tag = SECTION_TAGS.get(section, section.replace("-", " ").title())
     date = datetime.fromtimestamp(source_qmd.stat().st_mtime).date().isoformat()
@@ -307,16 +370,19 @@ def rebuild_intro_include() -> None:
 
 
 def main() -> None:
+    bibliography = parse_bibtex_entries()
     deleted = delete_existing_tutorial_posts()
+    reset_rendered_assets()
     created = 0
     for source_qmd in source_tutorial_qmd():
         post_path = build_post_path(source_qmd)
-        post_path.write_text(render_post(source_qmd), encoding="utf-8")
+        post_path.write_text(render_post(source_qmd, bibliography), encoding="utf-8")
         created += 1
     rebuild_intro_include()
     print(f"Deleted {deleted} old tutorial posts.")
     print(f"Created {created} tutorial posts from Quarto source.")
     print(f"Updated intro include: {INTRO_INCLUDE}")
+    print(f"Rendered assets: {RENDERED_ASSETS_DIR}")
 
 
 if __name__ == "__main__":

@@ -25,11 +25,38 @@ The figure is most useful when the outcome is naturally defined at an areal leve
 
 We begin with a synthetic map. The purpose is to show the mechanics of a choropleth without relying on real administrative boundaries. We will create a small grid of rectangular regions and assign each one a synthetic preventable-hospitalization rate.
 
-```r
+``` r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+## filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+## intersect, setdiff, setequal, union
+```
+
+``` r
 library(ggplot2)
 library(knitr)
 library(sf)
+```
+
+```
+## Linking to GEOS 3.13.0, GDAL 3.8.5, PROJ 9.5.1; sf_use_s2 is TRUE
+```
+
+``` r
 library(viridisLite)
 
 format_numeric_table <- function(df, digits = 2) {
@@ -39,7 +66,7 @@ format_numeric_table <- function(df, digits = 2) {
 }
 ```
 
-```r
+``` r
 set.seed(2027)
 
 synthetic_bbox <- st_as_sfc(
@@ -80,11 +107,24 @@ knitr::kable(
 )
 ```
 
+Table: Highest-rate regions in the synthetic choropleth example
+
+|region | preventable_admission_rate| deprivation| primary_care_access|
+|:---------|--------------------------:|-----------:|-------------------:|
+|Region 30 | 97.18| 5.33| 1.78|
+|Region 24 | 86.34| 4.27| 1.11|
+|Region 06 | 83.99| 3.76| 0.80|
+|Region 28 | 82.65| 3.80| 2.11|
+|Region 29 | 80.89| 4.48| 1.90|
+|Region 23 | 80.65| 4.09| 1.98|
+|Region 12 | 80.14| 3.72| 1.00|
+|Region 17 | 79.20| 3.96| 1.86|
+
 The synthetic data have a clear spatial logic. Regions farther to the upper right tend to have higher deprivation and weaker primary-care access, which translates into higher preventable-admission rates. That gives the map a meaningful pattern rather than random color noise.
 
 ## Step 2: Build the synthetic choropleth map
 
-```r
+``` r
 ggplot(synthetic_map) +
  geom_sf(aes(fill = preventable_admission_rate), color = "white", linewidth = 0.5) +
  scale_fill_gradientn(
@@ -104,13 +144,15 @@ ggplot(synthetic_map) +
  )
 ```
 
+![plot of chunk unnamed-chunk-3](/tutorials/rendered-assets/visualization-tools-choropleth-maps-regional-health-variation/unnamed-chunk-3-1.png)
+
 This figure works because it uses geography only for the job geography can do well. The map lets the reader see where high-rate regions cluster, whether there is a gradient across space, and whether a few polygons stand out from their neighbors.
 
 ## Step 3: Pair the map with a compact regional summary
 
 Maps are strongest when paired with a short table that names the most extreme regions directly. A reader can see the spatial pattern in the figure and then use the table to identify the regions precisely.
 
-```r
+``` r
 synthetic_distribution <- synthetic_map |>
  st_drop_geometry |>
  summarize(
@@ -126,6 +168,12 @@ knitr::kable(
 )
 ```
 
+Table: Distribution of rates in the synthetic choropleth example
+
+| min_rate| median_rate| mean_rate| max_rate|
+|--------:|-----------:|---------:|--------:|
+| 31.9| 62.41| 63.64| 97.18|
+
 This is also a good point to emphasize the main methodological caution: if these were event counts rather than rates, the map would mostly reflect where large populations happen to live. Choropleths are most defensible when the shading encodes a quantity that is comparable across areas.
 
 ## Step 4: Create a real-world choropleth map from public health data
@@ -134,7 +182,7 @@ For a real-world example, we use the public North Carolina county dataset bundle
 
 This is a transparent partial application rather than a reconstruction of one published figure. The underlying public data are real, the health outcome is real, and the map is built for teaching the choropleth itself.
 
-```r
+``` r
 nc <- st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE) |>
  mutate(
  sid_rate_79 = 1000 * SID79 / BIR79,
@@ -161,18 +209,39 @@ knitr::kable(
  format_numeric_table(nc_summary, digits = 2),
  caption = "Summary of the public North Carolina county health-variation dataset"
 )
+```
 
+Table: Summary of the public North Carolina county health-variation dataset
+
+| counties| total_births_1979| total_sid_1979| mean_sid_rate_79| median_sid_rate_79|
+|--------:|-----------------:|--------------:|----------------:|------------------:|
+| 100| 422392| 836| 2.04| 2.08|
+
+``` r
 knitr::kable(
  format_numeric_table(nc_extremes, digits = 3),
  caption = "Highest county SIDS rates per 1,000 births in the 1979 North Carolina data"
 )
 ```
 
+Table: Highest county SIDS rates per 1,000 births in the 1979 North Carolina data
+
+|NAME | BIR79| SID79| sid_rate_79|
+|:----------|-----:|-----:|-----------:|
+|Scotland | 2617| 16| 6.114|
+|Camden | 350| 2| 5.714|
+|Alleghany | 542| 3| 5.535|
+|Montgomery | 1598| 8| 5.006|
+|Columbus | 4144| 17| 4.102|
+|Halifax | 4463| 17| 3.809|
+|Cleveland | 5526| 21| 3.800|
+|Cabarrus | 5669| 20| 3.528|
+
 The rate is the right mapped quantity here because births vary substantially across counties. A map of raw SIDS counts would mostly show where there were more births, not where the rate of infant death was unusually high.
 
 ## Step 5: Draw the real-world choropleth map
 
-```r
+``` r
 ggplot(nc) +
  geom_sf(aes(fill = sid_rate_79), color = "grey95", linewidth = 0.15) +
  scale_fill_gradientn(
@@ -191,6 +260,8 @@ ggplot(nc) +
  panel.grid = element_blank
  )
 ```
+
+![plot of chunk unnamed-chunk-6](/tutorials/rendered-assets/visualization-tools-choropleth-maps-regional-health-variation/unnamed-chunk-6-1.png)
 
 This real-world figure shows why choropleth maps are so useful for regional health variation. The map makes it possible to see geographic heterogeneity immediately, rather than forcing the reader to parse a county-by-county table. It also makes clear why the analyst should think carefully about regional interpretation: some dark counties are contiguous, while others are isolated and may reflect small-area volatility as much as true underlying risk.
 

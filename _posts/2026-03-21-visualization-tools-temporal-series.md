@@ -29,8 +29,28 @@ The key reading rule is simple. The thin line shows the actual observed pattern,
 
 We begin with a synthetic monthly series for preventable emergency admissions. This is a good teaching example because the data contain several common features at once: winter seasonality, a slow upward baseline trend, and a policy change that reduces admissions after a transitional date.
 
-```r
+``` r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+## filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+## intersect, setdiff, setequal, union
+```
+
+``` r
 library(ggplot2)
 library(knitr)
 
@@ -45,7 +65,7 @@ moving_average <- function(x, k = 12) {
 }
 ```
 
-```r
+``` r
 set.seed(2026)
 
 n_months <- 72
@@ -86,11 +106,22 @@ knitr::kable(
 )
 ```
 
+Table: Yearly summary of the synthetic preventable-admissions series
+
+|year | mean_monthly_admissions| winter_peak| annual_minimum|
+|:----|-----------------------:|-----------:|--------------:|
+|2019 | 186.1| 205.8| 163.1|
+|2020 | 198.2| 222.5| 177.4|
+|2021 | 211.8| 235.8| 188.2|
+|2022 | 205.4| 233.3| 170.8|
+|2023 | 201.4| 222.1| 181.7|
+|2024 | 211.0| 229.4| 184.9|
+
 The table is informative, but it cannot show the continuity of the series. A temporal-series plot is useful precisely because it connects adjacent months and makes the timing of peaks, troughs, and regime changes visible.
 
 ## Step 2: Build the synthetic temporal-series figure
 
-```r
+``` r
 ggplot(synthetic_series, aes(x = date, y = admissions)) +
  annotate(
  "rect",
@@ -121,13 +152,15 @@ ggplot(synthetic_series, aes(x = date, y = admissions)) +
  )
 ```
 
+![plot of chunk unnamed-chunk-3](/tutorials/rendered-assets/visualization-tools-temporal-series/unnamed-chunk-3-1.png)
+
 This figure works because the raw line and the smoother line serve different purposes. The grey series shows the monthly data actually observed. The blue line strips away much of the seasonal oscillation and makes the post-policy decline easier to see. The shaded post-intervention period is not itself an estimator of effect, but it helps the reader orient the timing of the series.
 
 ## Step 3: Identify key turning points
 
 As in several other chapters in this section, it is often useful to pair the figure with a short table naming the most important periods.
 
-```r
+``` r
 synthetic_turning_points <- synthetic_series |>
  arrange(desc(admissions)) |>
  slice_head(n = 6) |>
@@ -142,6 +175,17 @@ knitr::kable(
 )
 ```
 
+Table: Highest monthly observations in the synthetic temporal series
+
+|date | admissions|
+|:-------|----------:|
+|2021-02 | 235.8|
+|2022-03 | 234.0|
+|2022-01 | 233.3|
+|2021-03 | 232.5|
+|2021-12 | 229.6|
+|2024-02 | 229.4|
+
 The figure gives the shape of the whole process. The table names the local extremes precisely. Together they make the series easier to describe in text and easier to inspect critically.
 
 ## Step 4: Create a real-world temporal series from a public health dataset
@@ -150,7 +194,7 @@ For a real-world example, we use the monthly UK lung-disease deaths series distr
 
 The point of the example is to show how the same figure design works in a real health time series with strong seasonality. Winter peaks are visually obvious in the raw line, while the 12-month moving average helps the reader see whether the underlying level is drifting up or down over the sample.
 
-```r
+``` r
 lung_deaths <- get("ldeaths", envir = asNamespace("datasets"))
 
 time_index <- time(lung_deaths)
@@ -182,9 +226,20 @@ knitr::kable(
 )
 ```
 
+Table: Yearly summary of the public UK lung-disease deaths series
+
+|year | mean_monthly_deaths| annual_peak| annual_minimum|
+|:----|-------------------:|-----------:|--------------:|
+|1974 | 2178.3| 3035| 1524|
+|1975 | 2175.1| 2938| 1396|
+|1976 | 2143.2| 3891| 1300|
+|1977 | 1935.8| 3102| 1346|
+|1978 | 1995.9| 3137| 1357|
+|1979 | 1911.5| 3084| 1333|
+
 ## Step 5: Draw the real-world temporal-series figure
 
-```r
+``` r
 ggplot(real_series, aes(x = date, y = deaths)) +
  geom_line(linewidth = 0.55, color = "#8c8c8c") +
  geom_line(aes(y = ma12), linewidth = 1.15, color = "#8c2d04", na.rm = TRUE) +
@@ -199,6 +254,8 @@ ggplot(real_series, aes(x = date, y = deaths)) +
  panel.grid.minor = element_blank
  )
 ```
+
+![plot of chunk unnamed-chunk-6](/tutorials/rendered-assets/visualization-tools-temporal-series/unnamed-chunk-6-1.png)
 
 This real-world figure shows why the layered temporal-series display is so useful. The raw line makes the winter peaks unmistakable. The moving average shows that the series has a broader level pattern beyond those seasonal swings. A table of annual means would partially capture that, but it would hide the month-to-month structure entirely.
 

@@ -73,7 +73,7 @@ The negative treatment effect means that eligibility for the intensive follow-up
 
 ## Step 1: Generate the synthetic sample
 
-```r
+``` r
 set.seed(2026)
 
 n <- 3500
@@ -108,13 +108,19 @@ knitr::kable(
 )
 ```
 
+Table: Summary of the synthetic regression discontinuity dataset
+
+| sample_size| treated_share| mean_outcome| sd_outcome| score_min| score_max|
+|-----------:|-------------:|------------:|----------:|---------:|---------:|
+| 3500| 0.507| 6.808| 2.372| -19.996| 19.987|
+
 This code creates a clean sharp RD design. The only discontinuity in the generating process is the treatment effect at the cutoff. Everything else evolves smoothly with the running variable.
 
 ## Step 2: Fit the model that matches the true generating process
 
 The most direct recovery check is to estimate the local treatment effect with a local linear RD procedure. To give that estimate context, it is also useful to compare it with a naive treated-versus-untreated comparison and a global regression with score controls.
 
-```r
+``` r
 naive_model <- lm(hospital_days ~ eligible, data = synthetic_rd)
 global_model <- lm(
  hospital_days ~ eligible * risk_score + I(risk_score^2),
@@ -170,13 +176,22 @@ knitr::kable(
 )
 ```
 
+Table: Estimated treatment effects in the synthetic RD example
+
+| |model | estimate| lower| upper|
+|:---------|:-------------------------------------|--------:|------:|------:|
+|1 |True effect at the cutoff | -1.500| NA| NA|
+|eligible |Naive treated vs untreated comparison | 2.040| 1.900| 2.181|
+|eligible1 |Global regression with score controls | -1.501| -1.658| -1.343|
+|11 |Local linear RD (robust) | -1.400| -1.780| -1.020|
+
 The local linear RD estimate should be close to the true effect because the data were generated exactly to satisfy the RD assumptions. The naive comparison is usually far less informative because treated and untreated units differ across the full support of the running variable.
 
 ## Step 3: Check the bandwidth and local sample
 
 One of the most important features of regression discontinuity is locality. The estimator should focus on observations near the cutoff rather than trying to compare the entire treated and untreated samples.
 
-```r
+``` r
 bandwidth_table <- data.frame(
  side = c("Left of cutoff", "Right of cutoff"),
  bandwidth = c(rd_fit$bws["h", "left"], rd_fit$bws["h", "right"]),
@@ -192,13 +207,20 @@ knitr::kable(
 )
 ```
 
+Table: Bandwidth and effective sample size used by the local RD estimator
+
+|side | bandwidth| effective_n|
+|:---------------|---------:|-----------:|
+|Left of cutoff | 5.145| 434|
+|Right of cutoff | 5.145| 480|
+
 This table shows that the RD fit is not trying to learn from the whole sample. It is learning from a neighborhood around the threshold, which is exactly the point of the design.
 
 ## Step 4: Build the visual discontinuity plot
 
 A simulation chapter on RD should always make the jump visible. The code below creates binned averages and overlays local linear fits within the selected bandwidth.
 
-```r
+``` r
 make_rd_bins <- function(x, y, cutoff = 0, bins_per_side = 15) {
  left_breaks <- seq(min(x), cutoff, length.out = bins_per_side + 1)
  right_breaks <- seq(cutoff, max(x), length.out = bins_per_side + 1)
@@ -304,13 +326,15 @@ ggplot2::ggplot(synthetic_rd, ggplot2::aes(x = risk_score, y = hospital_days)) +
  ggplot2::theme_minimal(base_size = 12)
 ```
 
+![plot of chunk unnamed-chunk-4](/tutorials/rendered-assets/simulation-tools-simulating-rd-data/unnamed-chunk-4-1.png)
+
 This is the key figure in the chapter. It shows both the smooth evolution of the outcome away from the threshold and the discrete jump exactly at the cutoff.
 
 ## Step 5: Compare the local fitted means just below and just above the cutoff
 
 The final recovery check is to compare the fitted left and right limits implied by the local RD regression.
 
-```r
+``` r
 left_limit <- local_lines$fit[local_lines$side == "Left of cutoff"][length(local_lines$fit[local_lines$side == "Left of cutoff"])]
 right_limit <- local_lines$fit[local_lines$side == "Right of cutoff"][1]
 
@@ -336,6 +360,15 @@ knitr::kable(
  caption = "Local fitted means and discontinuity at the threshold"
 )
 ```
+
+Table: Local fitted means and discontinuity at the threshold
+
+|quantity | value|
+|:-----------------------------------|------:|
+|Estimated left limit at the cutoff | 6.017|
+|Estimated right limit at the cutoff | 4.492|
+|Estimated discontinuity | -1.525|
+|True discontinuity | -1.500|
 
 This table translates the geometry of the RD graph back into the estimand: the treatment effect is the jump between the left and right limits at the cutoff.
 

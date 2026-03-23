@@ -26,12 +26,59 @@ The key interpretation rule is simple: variables farther to the right are more i
 
 We begin with a synthetic hospital readmission example. The outcome is 30-day readmission, and the predictors include age, baseline severity, prior admissions, comorbidity burden, creatinine, follow-up status, and sex. We fit a random forest and compute permutation importance on a held-out test set.
 
-```r
+``` r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+## filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+## intersect, setdiff, setequal, union
+```
+
+``` r
 library(ggplot2)
 library(knitr)
 library(randomForest)
+```
 
+```
+## randomForest 4.7-1.2
+```
+
+```
+## Type rfNews to see new features/changes/bug fixes.
+```
+
+```
+## 
+## Attaching package: 'randomForest'
+```
+
+```
+## The following object is masked from 'package:ggplot2':
+## 
+## margin
+```
+
+```
+## The following object is masked from 'package:dplyr':
+## 
+## combine
+```
+
+``` r
 format_numeric_table <- function(df, digits = 3) {
  numeric_cols <- vapply(df, is.numeric, logical(1))
  df[numeric_cols] <- lapply(df[numeric_cols], round, digits = digits)
@@ -71,7 +118,7 @@ permutation_importance <- function(model, data, outcome, reps = 20, seed = 2026)
 }
 ```
 
-```r
+``` r
 set.seed(2026)
 
 n <- 1200
@@ -139,18 +186,38 @@ knitr::kable(
  format_numeric_table(synthetic_summary, digits = 3),
  caption = "Synthetic random-forest setup for the variable-importance plot"
 )
+```
 
+Table: Synthetic random-forest setup for the variable-importance plot
+
+| training_n| test_n| test_accuracy| baseline_log_loss|
+|----------:|------:|-------------:|-----------------:|
+| 840| 360| 0.833| 0.417|
+
+``` r
 knitr::kable(
  format_numeric_table(synthetic_importance, digits = 3),
  caption = "Permutation importance values in the synthetic readmission example"
 )
 ```
 
+Table: Permutation importance values in the synthetic readmission example
+
+|variable | importance| sd_importance|
+|:----------|----------:|-------------:|
+|severity | 0.160| 0.014|
+|age | 0.032| 0.015|
+|charlson | 0.029| 0.014|
+|prior_adm | 0.022| 0.009|
+|creatinine | 0.019| 0.010|
+|followup | 0.015| 0.006|
+|sex | 0.001| 0.003|
+
 The table is useful, but the plot is the real goal. We will build a horizontal lollipop chart with a zero reference line and importance labels ordered from smallest to largest so the rank is visually obvious.
 
 ## Step 2: Build the synthetic variable-importance plot
 
-```r
+``` r
 synthetic_plot_df <- synthetic_importance |>
  mutate(variable = factor(variable, levels = rev(variable)))
 
@@ -172,13 +239,15 @@ ggplot(synthetic_plot_df, aes(x = importance, y = variable)) +
  )
 ```
 
+![plot of chunk unnamed-chunk-3](/tutorials/rendered-assets/visualization-tools-variable-importance/unnamed-chunk-3-1.png)
+
 This figure is easy to read because it preserves both rank and magnitude. Severity is the most important predictor, followed by age and comorbidity burden, while sex contributes almost nothing to held-out performance. That is the core value of the plot: it turns a model's internal ranking into a figure that a reader can scan in seconds.
 
 ## Step 3: Pair the figure with a short ranked table
 
 As with several figures in this section, it is often useful to pair the plot with a compact top-predictor table.
 
-```r
+``` r
 top_synthetic_predictors <- synthetic_importance |>
  slice_head(n = 5)
 
@@ -188,6 +257,16 @@ knitr::kable(
 )
 ```
 
+Table: Top predictors in the synthetic variable-importance ranking
+
+|variable | importance| sd_importance|
+|:----------|----------:|-------------:|
+|severity | 0.160| 0.014|
+|age | 0.032| 0.015|
+|charlson | 0.029| 0.014|
+|prior_adm | 0.022| 0.009|
+|creatinine | 0.019| 0.010|
+
 The figure gives the pattern. The table names the values precisely. Together they make the result easier to report in text and easier to inspect critically.
 
 ## Step 4: Create a real-world variable-importance plot from a public scientific dataset
@@ -196,7 +275,7 @@ For a real-world example, we use the public Pima diabetes data distributed with 
 
 We train a random forest on `Pima.tr`, evaluate it on `Pima.te`, and compute held-out permutation importance for each predictor. This keeps the scientific setting grounded in a published health-prediction problem while focusing the chapter on the visualization itself.
 
-```r
+``` r
 data("Pima.tr", package = "MASS")
 data("Pima.te", package = "MASS")
 
@@ -225,16 +304,36 @@ knitr::kable(
  format_numeric_table(pima_summary, digits = 3),
  caption = "Public Pima diabetes prediction setup for the real-world variable-importance plot"
 )
+```
 
+Table: Public Pima diabetes prediction setup for the real-world variable-importance plot
+
+| training_n| test_n| test_accuracy| baseline_log_loss|
+|----------:|------:|-------------:|-----------------:|
+| 200| 332| 0.765| 0.484|
+
+``` r
 knitr::kable(
  format_numeric_table(pima_importance, digits = 3),
  caption = "Held-out permutation importance values in the public Pima diabetes example"
 )
 ```
 
+Table: Held-out permutation importance values in the public Pima diabetes example
+
+|variable | importance| sd_importance|
+|:--------|----------:|-------------:|
+|glu | 0.110| 0.016|
+|age | 0.026| 0.013|
+|bmi | 0.023| 0.010|
+|ped | 0.010| 0.012|
+|npreg | 0.009| 0.008|
+|skin | -0.002| 0.004|
+|bp | -0.008| 0.006|
+
 ## Step 5: Draw the real-world variable-importance plot
 
-```r
+``` r
 pima_plot_df <- pima_importance |>
  mutate(variable = factor(variable, levels = rev(variable)))
 
@@ -255,6 +354,8 @@ ggplot(pima_plot_df, aes(x = importance, y = variable)) +
  panel.grid.minor = element_blank
  )
 ```
+
+![plot of chunk unnamed-chunk-6](/tutorials/rendered-assets/visualization-tools-variable-importance/unnamed-chunk-6-1.png)
 
 The real-world ranking is easy to interpret. Plasma glucose is the dominant predictor in this model, followed by age and body mass index. Some variables have near-zero or slightly negative importance values. That does not mean the variables are biologically irrelevant. It means that, in this particular fitted model and held-out test split, permuting those variables does not materially worsen predictive performance.
 

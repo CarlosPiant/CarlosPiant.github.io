@@ -76,7 +76,7 @@ The coefficient of interest is $\beta_1 = -1800$, which means that true program 
 
 ## Step 1: Generate the synthetic sample
 
-```r
+``` r
 set.seed(2026)
 
 n <- 7000
@@ -128,13 +128,19 @@ knitr::kable(
 )
 ```
 
+Table: Summary of the synthetic instrumental-variables dataset
+
+| sample_size| treatment_rate| encouragement_rate| mean_cost| mean_age| mean_chronic|
+|-----------:|--------------:|------------------:|---------:|--------:|------------:|
+| 7000| 0.773| 0.498| 13449.91| 67.034| 2.398|
+
 The data now contain the exact feature that makes IV necessary. Higher latent severity raises treatment take-up and also raises cost. If that latent severity were omitted from the fitted regression, ordinary least squares would treat part of that confounding as if it were a treatment effect.
 
 ## Step 2: Show why ordinary least squares is biased
 
 First fit the naive linear regression that ignores the endogeneity problem.
 
-```r
+``` r
 ols_fit <- lm(
  annual_cost ~ program_enrollment + age + chronic,
  data = synthetic_iv
@@ -153,13 +159,22 @@ knitr::kable(
 )
 ```
 
+Table: Naive OLS estimates when treatment is endogenous
+
+| |term | estimate|
+|:------------------|:------------------|--------:|
+|(Intercept) |(Intercept) | 7849.267|
+|program_enrollment |program_enrollment | -117.092|
+|age |age | 53.371|
+|chronic |chronic | 881.456|
+
 The coefficient on `program_enrollment` should be biased toward zero or even in the wrong direction relative to the true treatment effect because sicker patients are more likely to enroll.
 
 ## Step 3: Fit the model that matches the true generating process
 
 Now fit the correct IV specification using two-stage least squares, with `encouragement` as the instrument.
 
-```r
+``` r
 iv_fit <- AER::ivreg(
  annual_cost ~ program_enrollment + age + chronic |
  encouragement + age + chronic,
@@ -185,13 +200,20 @@ knitr::kable(
 )
 ```
 
+Table: Naive and IV treatment-effect estimates compared with the known truth
+
+|model | estimated_treatment_effect| true_treatment_effect| bias|
+|:-----------------------|--------------------------:|---------------------:|--------:|
+|Naive OLS | -117.092| -1800| 1682.908|
+|Two-stage least squares | -1365.691| -1800| 434.309|
+
 This is the main point of the exercise. The IV estimate should move much closer to the true treatment effect because the instrument isolates exogenous variation in treatment take-up.
 
 ## Step 4: Check the first stage
 
 An IV design only works if the instrument actually shifts treatment. The first-stage regression is therefore part of the generating process that must be checked explicitly.
 
-```r
+``` r
 first_stage <- lm(
  program_enrollment ~ encouragement + age + chronic,
  data = synthetic_iv
@@ -216,7 +238,14 @@ knitr::kable(
 )
 ```
 
-```r
+Table: First-stage diagnostics in the synthetic IV design
+
+| |quantity | value|
+|:-------------|:----------------------------------------|-------:|
+|encouragement |First-stage coefficient on encouragement | 0.261|
+|value |First-stage F statistic | 353.682|
+
+``` r
 first_stage_plot <- aggregate(
  program_enrollment ~ encouragement,
  data = synthetic_iv,
@@ -246,13 +275,15 @@ ggplot2::ggplot(
  ggplot2::theme(legend.position = "none")
 ```
 
+![plot of chunk unnamed-chunk-5](/tutorials/rendered-assets/simulation-tools-simulating-iv-data/unnamed-chunk-5-1.png)
+
 The bar plot is the visual version of the first stage. If the bars were nearly identical, the instrument would be weak and the simulation would not be very informative.
 
 ## Step 5: Compare predicted treatment by observed risk groups
 
 One more useful check is to compare how enrollment changes across chronic-condition groups and instrument status.
 
-```r
+``` r
 synthetic_iv$risk_group <- cut(
  synthetic_iv$chronic,
  breaks = c(-Inf, 1, 3, 5, Inf),
@@ -278,6 +309,19 @@ knitr::kable(
  caption = "Treatment take-up by chronic-condition group and instrument status"
 )
 ```
+
+Table: Treatment take-up by chronic-condition group and instrument status
+
+|risk_group |encouragement | program_enrollment|
+|:----------|:----------------|------------------:|
+|0-1 |No encouragement | 0.514|
+|2-3 |No encouragement | 0.665|
+|4-5 |No encouragement | 0.765|
+|6+ |No encouragement | 0.862|
+|0-1 |Encouragement | 0.849|
+|2-3 |Encouragement | 0.912|
+|4-5 |Encouragement | 0.961|
+|6+ |Encouragement | 0.976|
 
 This table shows how the same instrument can operate in a population with different underlying risk. It also reinforces the basic logic of the DGP: treatment is more likely among sicker patients, but encouragement shifts take-up within those risk strata as well.
 

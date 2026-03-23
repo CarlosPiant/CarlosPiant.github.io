@@ -26,8 +26,28 @@ The key reading rule is simple: darker or more saturated tiles represent larger 
 
 We begin with a synthetic example showing average hourly urgent-care demand by day of week. This is a good use case for a heat map because the analyst cares about joint timing structure, not only daily totals or hourly averages in isolation.
 
-```r
+``` r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+## filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+## intersect, setdiff, setequal, union
+```
+
+``` r
 library(ggplot2)
 library(knitr)
 
@@ -38,7 +58,7 @@ format_numeric_table <- function(df, digits = 2) {
 }
 ```
 
-```r
+``` r
 set.seed(2026)
 
 days <- c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
@@ -81,11 +101,23 @@ knitr::kable(
 )
 ```
 
+Table: Summary of the synthetic urgent-care demand surface
+
+|day | mean_daily_hourly_visits| peak_hour| peak_visits|
+|:---|------------------------:|---------:|-----------:|
+|Mon | 16.99| 10| 26.7|
+|Tue | 15.69| 17| 26.6|
+|Wed | 16.31| 17| 27.3|
+|Thu | 16.41| 18| 28.6|
+|Fri | 18.75| 18| 29.9|
+|Sat | 13.08| 18| 25.5|
+|Sun | 12.10| 18| 21.0|
+
 The table is readable, but it loses the interaction structure. To see when demand concentrates jointly by day and hour, we need the heat map itself.
 
 ## Step 2: Build the synthetic heat map
 
-```r
+``` r
 ggplot(synthetic_heat, aes(x = day, y = factor(hour), fill = mean_visits)) +
  geom_tile(color = "white", linewidth = 0.5) +
  scale_fill_gradient(
@@ -105,13 +137,15 @@ ggplot(synthetic_heat, aes(x = day, y = factor(hour), fill = mean_visits)) +
  )
 ```
 
+![plot of chunk unnamed-chunk-3](/tutorials/rendered-assets/visualization-tools-heat-maps/unnamed-chunk-3-1.png)
+
 This figure makes the demand surface immediately visible. The Monday morning intensity and Friday evening peak are easy to spot, and the weekend lull is clear without reading dozens of separate numbers. That is exactly what a heat map should do well.
 
 ## Step 3: Identify the most intense cells
 
 It is often helpful to pair a heat map with a short ranked table of the most important cells.
 
-```r
+``` r
 top_synthetic_cells <- synthetic_heat |>
  arrange(desc(mean_visits)) |>
  slice_head(n = 8) |>
@@ -123,6 +157,19 @@ knitr::kable(
 )
 ```
 
+Table: Highest-intensity cells in the synthetic heat map
+
+|day | hour| mean_visits|
+|:---|----:|-----------:|
+|Fri | 18| 29.9|
+|Fri | 17| 29.7|
+|Thu | 18| 28.6|
+|Fri | 19| 28.4|
+|Wed | 17| 27.3|
+|Mon | 10| 26.7|
+|Tue | 17| 26.6|
+|Thu | 17| 26.5|
+
 This combination works well in teaching and reporting. The figure gives the global pattern, and the small table names the local peaks precisely.
 
 ## Step 4: Create a real-world risk heat map from a public scientific dataset
@@ -131,7 +178,7 @@ For a real-world example, we use the public Pima diabetes data distributed with 
 
 The point of the figure is to show how diabetes prevalence changes jointly over two clinically meaningful dimensions. A table could report prevalence in each bin, but a heat map makes the risk surface much easier to interpret.
 
-```r
+``` r
 data("Pima.tr", package = "MASS")
 data("Pima.te", package = "MASS")
 
@@ -183,9 +230,22 @@ knitr::kable(
 )
 ```
 
+Table: Highest-prevalence cells in the public Pima diabetes heat map
+
+|glu_group |bmi_group | n| diabetes_prevalence|
+|:---------|:---------|--:|-------------------:|
+|[160,200] |[35,40) | 17| 0.941|
+|[160,200] |[40,50] | 15| 0.867|
+|[160,200] |[30,35) | 29| 0.828|
+|[160,200] |[25,30) | 7| 0.714|
+|[140,160) |[35,40) | 14| 0.643|
+|[120,140) |[40,50] | 13| 0.615|
+|[140,160) |[30,35) | 24| 0.542|
+|[140,160) |[40,50] | 14| 0.500|
+
 ## Step 5: Draw the real-world heat map
 
-```r
+``` r
 ggplot(risk_heat, aes(x = glu_group, y = bmi_group, fill = prevalence_display)) +
  geom_tile(color = "white", linewidth = 0.6) +
  geom_text(aes(label = prevalence_label), size = 3.1) +
@@ -206,6 +266,8 @@ ggplot(risk_heat, aes(x = glu_group, y = bmi_group, fill = prevalence_display)) 
  axis.text.x = element_text(angle = 20, hjust = 1)
  )
 ```
+
+![plot of chunk unnamed-chunk-6](/tutorials/rendered-assets/visualization-tools-heat-maps/unnamed-chunk-6-1.png)
 
 The real-world figure shows why heat maps are valuable for risk communication. The reader can see immediately that high glucose and high BMI cells concentrate much larger diabetes prevalence than the low-glucose, lower-BMI cells. A line plot would force one of those variables into the background. The heat map keeps both dimensions central.
 

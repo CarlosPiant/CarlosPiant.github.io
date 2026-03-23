@@ -33,8 +33,28 @@ The key reading rule is simple: for each predictor, locate the patient's value, 
 
 We begin with a synthetic 30-day readmission model. The purpose is not to claim substantive truth. It is to create a realistic fitted logistic model that can be turned into a clean nomogram.
 
-```r
+``` r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+## filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+## intersect, setdiff, setequal, union
+```
+
+``` r
 library(ggplot2)
 library(knitr)
 
@@ -241,7 +261,7 @@ draw_nomogram <- function(nomogram_obj, title, subtitle) {
 }
 ```
 
-```r
+``` r
 set.seed(2028)
 
 n_patients <- 900
@@ -289,11 +309,17 @@ knitr::kable(
 )
 ```
 
+Table: Synthetic readmission sample used for the nomogram
+
+| sample_size| readmission_rate| mean_age10| mean_prior_adm|
+|-----------:|----------------:|----------:|--------------:|
+| 900| 0.453| 6.716| 1.468|
+
 ## Step 2: Convert the synthetic model into nomogram scales
 
 The main transformation is from regression contribution to points. For each predictor, the lowest-risk value on the plotted range is assigned 0 points, and the highest-risk value gets a larger point value proportional to its contribution to the linear predictor.
 
-```r
+``` r
 synthetic_specs <- list(
  list(term = "age10", label = "Age (per 10 years)", type = "continuous", min = 4.5, max = 9.0, n_ticks = 6),
  list(term = "comorbidity", label = "Comorbidity score", type = "continuous", min = -2.0, max = 2.0, n_ticks = 5),
@@ -321,11 +347,21 @@ knitr::kable(
 )
 ```
 
+Table: Point ranges assigned to each predictor in the synthetic nomogram
+
+|row | min_points| max_points|
+|:-----------------------|----------:|----------:|
+|Age (per 10 years) | 0| 56.3|
+|Care-management program | 0| 25.5|
+|Comorbidity score | 0| 100.0|
+|Female | 0| 5.7|
+|Prior admissions | 0| 32.0|
+
 The table shows which predictors dominate the point system. The nomogram itself turns those ranges into a readable bedside-style figure.
 
 ## Step 3: Draw the synthetic nomogram
 
-```r
+``` r
 synthetic_nomogram_plot <- draw_nomogram(
  synthetic_nomogram,
  title = "A nomogram translates a readmission model into an additive point system",
@@ -335,6 +371,8 @@ synthetic_nomogram_plot <- draw_nomogram(
 synthetic_nomogram_plot
 ```
 
+![plot of chunk unnamed-chunk-4](/tutorials/rendered-assets/visualization-tools-nomogram-plot/unnamed-chunk-4-1.png)
+
 This figure can be read row by row. An older patient with a high comorbidity score and multiple prior admissions accumulates more points. Enrollment in the care-management program reduces points because it lowers predicted risk in the fitted model.
 
 ## Step 4: Build a real-world nomogram from a public prognostic dataset
@@ -343,7 +381,7 @@ For a real-world example, we use the public `lung` dataset distributed with `sur
 
 The goal is not to claim that this is the definitive prognostic tool for lung cancer. It is to show how a clinically familiar prediction problem can be presented in nomogram form with fully reproducible code.
 
-```r
+``` r
 library(survival)
 
 lung_nomogram_data <- survival::lung |>
@@ -376,7 +414,13 @@ knitr::kable(
 )
 ```
 
-```r
+Table: Public NCCTG lung cancer sample used for the nomogram example
+
+| sample_size| mortality_180d| mean_age10| female_share|
+|-----------:|--------------:|----------:|------------:|
+| 207| 0.256| 6.248| 0.391|
+
+``` r
 lung_specs <- list(
  list(term = "age10", label = "Age (per 10 years)", type = "continuous", min = 4.0, max = 8.5, n_ticks = 6),
  list(term = "female", label = "Female", type = "binary", values = c(0, 1), value_labels = c("No", "Yes")),
@@ -403,9 +447,18 @@ knitr::kable(
 )
 ```
 
+Table: Point ranges in the public lung-cancer nomogram
+
+|row | min_points| max_points|
+|:-----------------------|----------:|----------:|
+|Age (per 10 years) | 0| 37.9|
+|ECOG status | 0| 100.0|
+|Female | 0| 44.2|
+|Weight loss (per 10 lb) | 0| 27.3|
+
 ## Step 5: Draw the real-world nomogram
 
-```r
+``` r
 lung_nomogram_plot <- draw_nomogram(
  lung_nomogram,
  title = "Nomogram for 180-day mortality in the public NCCTG lung cancer data",
@@ -414,6 +467,8 @@ lung_nomogram_plot <- draw_nomogram(
 
 lung_nomogram_plot
 ```
+
+![plot of chunk unnamed-chunk-7](/tutorials/rendered-assets/visualization-tools-nomogram-plot/unnamed-chunk-7-1.png)
 
 This is a transparent partial replication rather than a recreation of a published nomogram figure. The clinical dataset is real and public, the outcome is clinically meaningful, and the plotted nomogram uses the same additive-translation logic that makes nomograms useful in applied prognosis research.
 

@@ -16,7 +16,7 @@ We will simulate two arms of a simple comparative study: usual care and an inter
 
 ## Step 1: Create a trial-style dataset
 
-```r
+``` r
 set.seed(2026)
 
 n_control <- 250
@@ -47,11 +47,18 @@ knitr::kable(
 )
 ```
 
+Table: Mean one-year costs and QALYs in the synthetic trial dataset
+
+|arm | cost| qaly|
+|:------------|--------:|-----:|
+|Intervention | 13494.76| 0.706|
+|Usual care | 12469.19| 0.661|
+
 The example is synthetic, but it reproduces the structure of a standard trial-based economic evaluation: patient-level outcomes in two study arms and uncertainty around the incremental comparison.
 
 ## Step 2: Bootstrap incremental cost and effect
 
-```r
+``` r
 set.seed(2026)
 
 B <- 1000
@@ -91,9 +98,17 @@ knitr::kable(
 )
 ```
 
+Table: Summary of the bootstrap incremental results
+
+|quantity | value|
+|:---------------------|---------:|
+|Mean incremental cost | 1029.326|
+|Mean incremental QALY | 0.045|
+|ICER | 22807.750|
+
 ## Step 3: Build the cost-effectiveness plane
 
-```r
+``` r
 wtp <- 50000
 
 effect_limits <- range(bootstrap_results$incremental_qaly)
@@ -141,11 +156,13 @@ ggplot2::ggplot(
  ggplot2::theme_minimal(base_size = 12)
 ```
 
+![plot of chunk unnamed-chunk-3](/tutorials/rendered-assets/visualization-tools-cost-effectiveness-planes/unnamed-chunk-3-1.png)
+
 This figure works because it compresses a large amount of uncertainty into one visual frame. The cloud of points shows variability. The quadrant location shows whether the intervention tends to improve outcomes, reduce costs, or both. The willingness-to-pay line adds a decision threshold.
 
 ## Step 4: Summarize the quadrant probabilities
 
-```r
+``` r
 quadrant_table <- data.frame(
  quadrant = c(
  "More effective and more costly",
@@ -169,9 +186,18 @@ knitr::kable(
 )
 ```
 
+Table: Probability mass in each quadrant of the cost-effectiveness plane
+
+|quadrant | probability|
+|:------------------------------|-----------:|
+|More effective and more costly | 0.988|
+|More effective and less costly | 0.012|
+|Less effective and more costly | 0.000|
+|Less effective and less costly | 0.000|
+
 ## Step 5: Add simple cost-effectiveness probabilities at common thresholds
 
-```r
+``` r
 thresholds <- c(20000, 50000, 100000)
 
 ce_probability_table <- data.frame(
@@ -192,6 +218,14 @@ knitr::kable(
  caption = "Probability the intervention is cost-effective at selected willingness-to-pay thresholds"
 )
 ```
+
+Table: Probability the intervention is cost-effective at selected willingness-to-pay thresholds
+
+| threshold| probability_cost_effective|
+|---------:|--------------------------:|
+| 2e+04| 0.402|
+| 5e+04| 0.967|
+| 1e+05| 1.000|
 
 ## How to read the figure carefully
 

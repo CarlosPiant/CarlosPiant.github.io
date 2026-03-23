@@ -31,8 +31,28 @@ We begin with a synthetic hospital pathway for a transitional-care program. The 
 
 This is a good use case for a Sankey diagram because the policy question is inherently sequential. The analyst wants to know not only how many patients are readmitted, but which upstream routes are most associated with those downstream outcomes.
 
-```r
+``` r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+## filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+## intersect, setdiff, setequal, union
+```
+
+``` r
 library(ggplot2)
 library(knitr)
 
@@ -231,7 +251,7 @@ draw_sankey_plot <- function(components, fill_palette, title, subtitle) {
 }
 ```
 
-```r
+``` r
 synthetic_flow_table <- data.frame(
  admission_source = c(
  rep("Emergency\ndepartment", 9),
@@ -279,6 +299,21 @@ knitr::kable(
 )
 ```
 
+Table: Largest synthetic care pathways that will appear in the Sankey diagram
+
+|admission_source |discharge_destination |outcome_30d | n|
+|:-------------------------|:---------------------|:--------------|---:|
+|Emergency department |Home |No readmission | 180|
+|Primary care referral |Home |No readmission | 150|
+|Post-surgical observation |Home |No readmission | 120|
+|Emergency department |Home with nursing |No readmission | 70|
+|Emergency department |Home |Readmitted | 55|
+|Primary care referral |Home with nursing |No readmission | 45|
+|Post-surgical observation |Home with nursing |No readmission | 38|
+|Emergency department |Home with nursing |Readmitted | 35|
+|Emergency department |Rehabilitation |No readmission | 25|
+|Post-surgical observation |Rehabilitation |No readmission | 25|
+
 The synthetic table already contains the full pathway information, but it is hard to see the structure by inspection alone. The Sankey diagram will make the dominant routes immediately visible.
 
 ## Step 2: Build a reusable static Sankey diagram
@@ -292,7 +327,7 @@ This is useful because it keeps the figure entirely reproducible in static `ggpl
 
 ## Step 3: Draw the synthetic Sankey diagram
 
-```r
+``` r
 synthetic_stage_orders <- list(
  admission_source = c(
  "Emergency\ndepartment",
@@ -336,6 +371,8 @@ synthetic_sankey <- draw_sankey_plot(
 synthetic_sankey
 ```
 
+![plot of chunk unnamed-chunk-3](/tutorials/rendered-assets/visualization-tools-sankey-diagram-care-pathways/unnamed-chunk-3-1.png)
+
 This figure is useful because it answers several questions at once:
 
 1. which admission source contributes the most patients,
@@ -354,7 +391,7 @@ For a real-world example, we use the public `colon` dataset distributed with `su
 
 To keep the pathway definition interpretable, we restrict attention to patients whose recurrence-by-3-years and survival-by-5-years status can be determined from the public follow-up information. That makes the application partial but transparent.
 
-```r
+``` r
 library(survival)
 
 colon_patient <- survival::colon |>
@@ -409,18 +446,41 @@ knitr::kable(
  format_numeric_table(colon_summary, digits = 0),
  caption = "Public colon cancer trial sample used in the Sankey-diagram example"
 )
+```
 
+Table: Public colon cancer trial sample used in the Sankey-diagram example
+
+| sample_size| observation| levamisole| levamisole_5fu|
+|-----------:|-----------:|----------:|--------------:|
+| 896| 303| 302| 291|
+
+``` r
 knitr::kable(
  format_numeric_table(colon_top_paths, digits = 0),
  caption = "Largest treatment-to-recurrence-to-survival pathways in the public colon trial data"
 )
 ```
 
+Table: Largest treatment-to-recurrence-to-survival pathways in the public colon trial data
+
+|treatment_arm |recurrence_3y |survival_5y | n|
+|:----------------|:------------------------|:----------------|---:|
+|Levamisole + 5FU |No recurrence by 3 years |Alive at 5 years | 180|
+|Levamisole |No recurrence by 3 years |Alive at 5 years | 145|
+|Observation |No recurrence by 3 years |Alive at 5 years | 142|
+|Observation |Recurrence by 3 years |Died by 5 years | 135|
+|Levamisole |Recurrence by 3 years |Died by 5 years | 132|
+|Levamisole + 5FU |Recurrence by 3 years |Died by 5 years | 96|
+|Levamisole |Recurrence by 3 years |Alive at 5 years | 19|
+|Observation |Recurrence by 3 years |Alive at 5 years | 18|
+|Levamisole + 5FU |No recurrence by 3 years |Died by 5 years | 8|
+|Observation |No recurrence by 3 years |Died by 5 years | 8|
+
 The real-world table shows the pathway counts explicitly, but the visual structure is still hard to absorb from rows alone. That is exactly the problem the Sankey diagram solves.
 
 ## Step 5: Draw the real-world Sankey diagram
 
-```r
+``` r
 colon_stage_orders <- list(
  treatment_arm = c("Observation", "Levamisole", "Levamisole\n+ 5FU"),
  recurrence_3y = c("No recurrence\nby 3 years", "Recurrence\nby 3 years"),
@@ -450,6 +510,8 @@ colon_sankey <- draw_sankey_plot(
 
 colon_sankey
 ```
+
+![plot of chunk unnamed-chunk-5](/tutorials/rendered-assets/visualization-tools-sankey-diagram-care-pathways/unnamed-chunk-5-1.png)
 
 This is a transparent partial replication rather than a reproduction of a published trial figure. The contribution here is methodological: the public trial data are recast as a pathway diagram so the reader can see how treatment arm, recurrence, and survival relate as sequential categories rather than as separate endpoint tables.
 

@@ -25,8 +25,28 @@ When the calibration curve lies on the 45-degree line, the model is perfectly ca
 
 To make the purpose of the figure clear, we will start with a synthetic example in which a logistic model is fit in a development sample and then applied to a shifted validation sample. The validation data are generated from a slightly different risk structure, so some miscalibration should appear.
 
-```r
+``` r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+## filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+## intersect, setdiff, setequal, union
+```
+
+``` r
 library(ggplot2)
 library(knitr)
 
@@ -92,13 +112,19 @@ knitr::kable(
 )
 ```
 
+Table: Summary of the synthetic development and validation samples
+
+| development_n| validation_n| validation_event_rate| mean_predicted_risk| brier_score|
+|-------------:|------------:|---------------------:|-------------------:|-----------:|
+| 2500| 2500| 0.768| 0.738| 0.151|
+
 The development model is intentionally misspecified because it omits the interaction and nonlinear term used in the true data-generating process. The validation sample also has a shifted intercept, which introduces additional miscalibration.
 
 ## Step 2: Build a calibration-belt function
 
 The calibration belt models the relationship between the logit of predicted probability and the logit of observed outcome probability with a polynomial logistic regression. The code below uses AIC to choose the polynomial degree from 1 to 3, then computes fitted calibration probabilities and nested confidence belts across a grid of predicted risks.
 
-```r
+``` r
 build_calibration_belt <- function(predicted_risk, observed_outcome, max_degree = 3) {
  clipped_risk <- pmin(pmax(predicted_risk, 1e-6), 1 - 1e-6)
  logit_risk <- qlogis(clipped_risk)
@@ -170,7 +196,7 @@ This is a simplified pedagogic implementation rather than a full reproduction of
 
 ## Step 3: Draw the synthetic calibration belt plot
 
-```r
+``` r
 synthetic_belt <- build_calibration_belt(
  predicted_risk = validation_data$predicted_risk,
  observed_outcome = validation_data$event
@@ -191,7 +217,13 @@ knitr::kable(
 )
 ```
 
-```r
+Table: Polynomial degree selection for the synthetic calibration belt
+
+| selected_polynomial_degree| aic_degree_1| aic_degree_2| aic_degree_3|
+|--------------------------:|------------:|------------:|------------:|
+| 2| 2347.565| 2323.227| 2324.408|
+
+``` r
 ggplot +
  geom_ribbon(
  data = synthetic_belt$grid,
@@ -235,6 +267,8 @@ ggplot +
  theme_minimal(base_size = 12)
 ```
 
+![plot of chunk unnamed-chunk-4](/tutorials/rendered-assets/visualization-tools-calibration-belt-plot/unnamed-chunk-4-1.png)
+
 This figure can be read in a way that grouped calibration points alone cannot. The curve shows the estimated calibration relationship, while the belt makes uncertainty visible across the whole probability range. Where the ideal line falls well outside the belt, miscalibration is most evident.
 
 ## Step 4: Create a real-world calibration belt from a public clinical prediction dataset
@@ -243,7 +277,7 @@ For a real-world example, we can use the public `Pima.tr` and `Pima.te` datasets
 
 This is a transparent partial application. The original Smith paper did not publish a calibration belt, and the calibration-belt methodology itself was proposed much later by Finazzi and colleagues and further refined by Nattino and colleagues. The figure below therefore combines a public clinical dataset with the later calibration-belt methodology rather than reproducing a single published plot verbatim.
 
-```r
+``` r
 data("Pima.tr", package = "MASS")
 data("Pima.te", package = "MASS")
 
@@ -278,7 +312,13 @@ knitr::kable(
 )
 ```
 
-```r
+Table: Summary of the public diabetes prediction sample used for the calibration belt
+
+| sample_size| event_rate| mean_predicted_risk| brier_score| selected_polynomial_degree|
+|-----------:|----------:|-------------------:|-----------:|--------------------------:|
+| 332| 0.328| 0.337| 0.139| 2|
+
+``` r
 ggplot +
  geom_ribbon(
  data = pima_belt$grid,
@@ -321,6 +361,8 @@ ggplot +
  coord_cartesian(xlim = c(0, 1), ylim = c(0, 1)) +
  theme_minimal(base_size = 12)
 ```
+
+![plot of chunk unnamed-chunk-6](/tutorials/rendered-assets/visualization-tools-calibration-belt-plot/unnamed-chunk-6-1.png)
 
 This real-world example highlights the added value of the belt. The grouped points are still useful, but the belt clarifies whether apparent deviations from perfect calibration are large relative to sampling uncertainty and where in the risk range those deviations are concentrated.
 

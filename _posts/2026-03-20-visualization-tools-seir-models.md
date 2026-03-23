@@ -31,8 +31,28 @@ The reading rule is simple. Follow the lines from left to right and compare thei
 
 We begin with a synthetic outbreak in a closed population of 10,000 people. The model is deterministic and solved with ordinary differential equations. The purpose is not to estimate a full transmission model, but to create a smooth trajectory figure that makes the latent compartment visible.
 
-```r
+``` r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+## filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+## intersect, setdiff, setequal, union
+```
+
+``` r
 library(ggplot2)
 library(knitr)
 library(deSolve)
@@ -92,7 +112,7 @@ plot_seir_trajectories <- function(data, title, subtitle, y_label, palette) {
 }
 ```
 
-```r
+``` r
 synthetic_init <- c(S = 9990, E = 5, I = 5, R = 0)
 synthetic_parms <- c(beta = 1.15, sigma = 0.35, gamma = 0.22)
 synthetic_times <- 0:160
@@ -128,9 +148,19 @@ knitr::kable(
 )
 ```
 
+Table: Key features of the synthetic SEIR trajectory
+
+|quantity | value|
+|:----------------------|------:|
+|Peak exposed share | 0.231|
+|Peak infectious share | 0.287|
+|Day of exposed peak | 21.000|
+|Day of infectious peak | 24.000|
+|Final recovered share | 0.994|
+
 ## Step 2: Draw the synthetic SEIR trajectory plot
 
-```r
+``` r
 synthetic_palette <- c(
  "Susceptible" = "#3182bd",
  "Exposed" = "#fd8d3c",
@@ -149,13 +179,15 @@ synthetic_plot <- plot_seir_trajectories(
 synthetic_plot
 ```
 
+![plot of chunk unnamed-chunk-3](/tutorials/rendered-assets/visualization-tools-seir-models/unnamed-chunk-3-1.png)
+
 This figure works because the exposed compartment is visually separated from the infectious compartment. A simple case curve would not show that hidden build-up at all. The timing gap between the exposed and infectious peaks is exactly the kind of structure that motivates an SEIR visualization instead of an SIR one.
 
 ## Step 3: Pair the figure with a compact summary table
 
 The trajectory plot is more informative when paired with a short table of turning points and endpoint quantities.
 
-```r
+``` r
 synthetic_turning_points <- data.frame(
  compartment = c("Exposed", "Infectious", "Recovered"),
  peak_or_final_day = c(
@@ -176,6 +208,14 @@ knitr::kable(
 )
 ```
 
+Table: Turning points highlighted by the synthetic SEIR figure
+
+|compartment | peak_or_final_day| peak_or_final_share|
+|:-----------|-----------------:|-------------------:|
+|Exposed | 21| 0.231|
+|Infectious | 24| 0.287|
+|Recovered | 160| 0.994|
+
 The plot communicates the whole shape. The table names the peak values and peak days explicitly.
 
 ## Step 4: Create a real-world SEIR figure from a published outbreak
@@ -184,7 +224,7 @@ For a real-world example, we use the famous 1978 English boarding-school influen
 
 This is a transparent partial replication rather than a full epidemiological re-estimation. We use the published daily counts of boys ill in bed as the observed series, fit a simple deterministic SEIR model by minimizing squared error in the infectious curve, and then use the fitted trajectory as the basis for a visualization. The goal is to build the figure, not to claim a definitive transmission estimate.
 
-```r
+``` r
 boarding_outbreak <- data.frame(
  day = 1:14,
  observed_cases = c(1, 3, 6, 25, 73, 222, 294, 258, 237, 191, 125, 69, 27, 11)
@@ -251,16 +291,46 @@ knitr::kable(
  format_numeric_table(boarding_summary, digits = 3),
  caption = "Fitted parameters for the partial boarding-school SEIR approximation"
 )
+```
 
+Table: Fitted parameters for the partial boarding-school SEIR approximation
+
+| |parameter | value|
+|:-----|:---------|------:|
+|beta |beta | 2.742|
+|sigma |sigma | 1.176|
+|gamma |gamma | 0.452|
+| |RMSE | 19.103|
+
+``` r
 knitr::kable(
  format_numeric_table(boarding_compare, digits = 2),
  caption = "Observed and fitted daily infectious counts in the boarding-school outbreak"
 )
 ```
 
+Table: Observed and fitted daily infectious counts in the boarding-school outbreak
+
+| day| observed_cases| fitted_infectious|
+|---:|--------------:|-----------------:|
+| 1| 1| 2.54|
+| 2| 3| 6.95|
+| 3| 6| 18.70|
+| 4| 25| 47.95|
+| 5| 73| 109.74|
+| 6| 222| 201.50|
+| 7| 294| 272.42|
+| 8| 258| 276.24|
+| 9| 237| 229.92|
+| 10| 191| 170.60|
+| 11| 125| 118.81|
+| 12| 69| 79.92|
+| 13| 27| 52.73|
+| 14| 11| 34.42|
+
 ## Step 5: Draw the real-world SEIR figure
 
-```r
+``` r
 boarding_palette <- c(
  "Exposed" = "#fd8d3c",
  "Infectious (model)" = "#cb181d",
@@ -295,6 +365,8 @@ boarding_plot <- ggplot(boarding_plot_df, aes(x = time, y = value, color = compa
 
 boarding_plot
 ```
+
+![plot of chunk unnamed-chunk-6](/tutorials/rendered-assets/visualization-tools-seir-models/unnamed-chunk-6-1.png)
 
 This real-world figure adds a useful layer that the synthetic example does not have: observed points. The points show the visible epidemic curve, while the model lines show the latent and cumulative compartments that are not directly observed. That is why SEIR plots can be so informative in outbreak communication.
 

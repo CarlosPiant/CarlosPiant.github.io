@@ -88,7 +88,7 @@ The practical distinction is then clear:
 
 ## Step 1: Generate the complete dataset
 
-```r
+``` r
 set.seed(2035)
 
 n <- 4500
@@ -131,11 +131,17 @@ knitr::kable(
 )
 ```
 
+Table: Summary of the complete synthetic dataset before missingness is imposed
+
+| sample_size| mean_age| mean_severity| high_severity_share| mean_income| mean_cost|
+|-----------:|--------:|-------------:|-------------------:|-----------:|---------:|
+| 4500| 58.846| -0.034| 0.491| 52119.73| 2043.925|
+
 The variable `severity` is the one that will become incomplete. Everything else is generated first so that the missingness indicators can depend on a known complete-data structure.
 
 ## Step 2: Generate MCAR, MAR, and MNAR response indicators
 
-```r
+``` r
 missing_mcar <- rbinom(n, size = 1, prob = 0.22)
 
 prob_mar <- plogis(
@@ -176,11 +182,19 @@ knitr::kable(
 )
 ```
 
+Table: Realized missingness rates under the three simulated mechanisms
+
+|mechanism | missing_rate|
+|:---------|------------:|
+|MCAR | 0.228|
+|MAR | 0.396|
+|MNAR | 0.281|
+
 This is the central simulation step. The response indicators are generated before any values are replaced with `NA`. That is good practice because it keeps the mechanism logic explicit.
 
 ## Step 3: Create incomplete datasets from the response indicators
 
-```r
+``` r
 data_mcar <- complete_data
 data_mar <- complete_data
 data_mnar <- complete_data
@@ -215,11 +229,20 @@ knitr::kable(
 )
 ```
 
+Table: Observed severity distribution after imposing each mechanism
+
+|dataset | mean_observed_severity| observed_sample_size|
+|:-------------|----------------------:|--------------------:|
+|Complete | -0.034| 4500|
+|MCAR observed | -0.031| 3476|
+|MAR observed | 0.053| 2716|
+|MNAR observed | -0.280| 3236|
+
 The difference between the complete mean and the observed mean shows how the mechanism reshapes the visible data. Under MCAR the observed severity distribution should stay close to the complete one. Under MNAR it should move more substantially because the chance of missingness depends directly on severity itself.
 
 ## Step 4: Visualize how the missingness rate changes with risk
 
-```r
+``` r
 mechanism_plot_data <- data.frame(
  age = age,
  severity = severity,
@@ -259,13 +282,15 @@ ggplot2::ggplot(
  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 30, hjust = 1))
 ```
 
+![plot of chunk unnamed-chunk-4](/tutorials/rendered-assets/simulation-tools-simulating-missing-data-mechanisms/unnamed-chunk-4-1.png)
+
 This figure is useful because it converts the abstract taxonomy into something visual. MCAR produces a flat relation between missingness and severity. MAR and MNAR produce slope, though for different reasons.
 
 ## Step 5: Fit the missingness models that match the true generating process
 
 Because this is a simulation, we still have access to the complete data. That means we can fit the true response models and compare the estimated missingness coefficients with the values used to generate them.
 
-```r
+``` r
 fit_mcar <- glm(missing_mcar ~ 1, family = binomial, data = mechanism_data)
 fit_mar <- glm(
  missing_mar ~ age + severity_flag + income,
@@ -319,13 +344,25 @@ knitr::kable(
 )
 ```
 
+Table: Recovery of the true missingness-mechanism parameters
+
+|mechanism |term | true_value| estimated_value| bias|
+|:---------|:-------------|----------:|---------------:|------:|
+|MCAR |(Intercept) | -1.266| -1.222| 0.044|
+|MAR |(Intercept) | -2.500| -2.696| -0.196|
+|MAR |age | 0.022| 0.024| 0.002|
+|MAR |severity_flag | -0.600| -0.592| 0.008|
+|MAR |income | 0.000| 0.000| 0.000|
+|MNAR |(Intercept) | -1.050| -1.111| -0.061|
+|MNAR |severity | 1.000| 1.069| 0.069|
+
 This table is the main verification exercise. It checks whether the realized response indicators look like draws from the mechanism we intended to simulate.
 
 ## Step 6: Fit the complete-data outcome model and compare with the truth
 
 To close the loop, fit the outcome model that generated the complete data.
 
-```r
+``` r
 outcome_fit <- lm(
  annual_cost ~ age + severity + income,
  data = complete_data
@@ -355,6 +392,15 @@ knitr::kable(
  row.names = FALSE
 )
 ```
+
+Table: Recovery of the complete-data outcome model
+
+|term | true_value| estimated_value| bias|
+|:-----------|----------:|---------------:|-------:|
+|(Intercept) | 1200.000| 1188.275| -11.725|
+|age | 18.000| 17.341| -0.659|
+|severity | 380.000| 380.766| 0.766|
+|income | -0.004| -0.003| 0.001|
 
 This final table confirms that the complete-data model itself is behaving as intended before missingness is layered on top of it.
 

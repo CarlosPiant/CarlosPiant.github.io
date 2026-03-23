@@ -26,13 +26,61 @@ The main reading rule is simple. Follow the arrows as statements about causal di
 
 We begin with a synthetic hospital readmission example. The research question is whether a post-discharge program reduces 30-day readmission. Age, chronic burden, and neighborhood deprivation are confounders that should be adjusted for. Medication adherence lies on the causal pathway, so it is a mediator. Observed follow-up is a collider because it is affected both by the program and by unmeasured clinician concern. This is a good teaching example because the figure needs to show not only the causal arrows, but also which variables belong to different analytic roles.
 
-```r
+``` r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+## filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+## intersect, setdiff, setequal, union
+```
+
+``` r
 library(ggplot2)
 library(knitr)
 library(dagitty)
 library(ggdag)
+```
+
+```
+## 
+## Attaching package: 'ggdag'
+```
+
+```
+## The following object is masked from 'package:stats':
+## 
+## filter
+```
+
+``` r
 library(MASS)
+```
+
+```
+## 
+## Attaching package: 'MASS'
+```
+
+```
+## The following object is masked from 'package:dplyr':
+## 
+## select
+```
+
+``` r
 library(grid)
 
 format_numeric_table <- function(df, digits = 3) {
@@ -175,7 +223,7 @@ plot_dag <- function(plot_data, title, subtitle) {
 }
 ```
 
-```r
+``` r
 synthetic_dag <- dagitty::dagitty(
  "dag {
  Age -> Program
@@ -247,18 +295,39 @@ knitr::kable(
  synthetic_role_table,
  caption = "Node roles highlighted in the synthetic DAG figure"
 )
+```
 
+Table: Node roles highlighted in the synthetic DAG figure
+
+|node |role |
+|:------------------------------|:---------------------------|
+|Age |Adjust for confounding |
+|Chronic burden |Adjust for confounding |
+|Neighborhood deprivation |Adjust for confounding |
+|Post-discharge program |Exposure |
+|Medication adherence |Mediator |
+|Observed follow-up |Collider / avoid adjustment |
+|Clinician concern (unmeasured) |Unmeasured cause |
+|30-day readmission |Outcome |
+
+``` r
 knitr::kable(
  synthetic_adjustment_table,
  caption = "Minimal measured adjustment set implied by the synthetic DAG"
 )
 ```
 
+Table: Minimal measured adjustment set implied by the synthetic DAG
+
+|set |variables |
+|:-----|:---------------------------------------------|
+|Set 1 |Age, Chronic burden, Neighborhood deprivation |
+
 The two tables make the figure easier to read. The role table tells the reader what the colors mean. The adjustment table makes the design implication explicit: if the target is the total effect of the program on readmission, the graph suggests adjusting for the confounders but not for the mediator or the collider.
 
 ## Step 2: Build the synthetic DAG figure
 
-```r
+``` r
 synthetic_plot_data <- prepare_dag_plot_data(
  dag = synthetic_dag,
  role_map = synthetic_roles,
@@ -271,6 +340,8 @@ plot_dag(
  subtitle = "Synthetic post-discharge program example"
 )
 ```
+
+![plot of chunk unnamed-chunk-3](/tutorials/rendered-assets/visualization-tools-dags/unnamed-chunk-3-1.png)
 
 This is the core figure of the chapter. A good DAG figure should communicate three things at once:
 
@@ -286,7 +357,7 @@ For a real-world example, we use the public `birthwt` data distributed with `MAS
 
 The public data give us observed variables such as maternal age, maternal weight, race, prior premature labor, hypertension, uterine irritability, smoking status, and low birth weight. The DAG will emphasize the variables most relevant for communication: smoking as the exposure, low birth weight as the outcome, three background confounders, and several additional observed causes of the outcome.
 
-```r
+``` r
 data("birthwt", package = "MASS")
 
 birthwt <- birthwt |>
@@ -314,9 +385,16 @@ knitr::kable(
 )
 ```
 
+Table: Observed profile of the public birthwt data by maternal smoking status
+
+|smoke | n| mean_age| mean_maternal_weight| low_birthweight_rate|
+|:-----|---:|--------:|--------------------:|--------------------:|
+|No | 115| 23.43| 130.90| 0.25|
+|Yes | 74| 22.95| 128.14| 0.41|
+
 The table is descriptive, not causal. Its role is to anchor the example in a real dataset before we draw the DAG. The graph itself will summarize the assumed relationships that an analyst might want to communicate in an appendix or methods section.
 
-```r
+``` r
 birthwt_dag <- dagitty::dagitty(
  "dag {
  Age -> Smoking
@@ -388,9 +466,15 @@ knitr::kable(
 )
 ```
 
+Table: Minimal measured adjustment set implied by the smoking and low-birth-weight DAG
+
+|set |variables |
+|:-----|:-----------------------------------|
+|Set 1 |Maternal age, Maternal weight, Race |
+
 ## Step 4: Draw the real-world DAG figure
 
-```r
+``` r
 birthwt_plot_data <- prepare_dag_plot_data(
  dag = birthwt_dag,
  role_map = birthwt_roles,
@@ -403,6 +487,8 @@ plot_dag(
  subtitle = "Public birthwt data used as a real-world smoking and low-birth-weight application"
 )
 ```
+
+![plot of chunk unnamed-chunk-6](/tutorials/rendered-assets/visualization-tools-dags/unnamed-chunk-6-1.png)
 
 This real-world figure does two useful things. First, it places the exposure and outcome at the center of the design question. Second, it separates variables that mainly close back-door paths from variables that are additional predictors of the outcome. That distinction is often lost when all baseline variables are presented as one undifferentiated covariate list.
 

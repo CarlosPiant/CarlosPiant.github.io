@@ -57,7 +57,7 @@ These values imply a clinically sensible pattern. Higher baseline blood pressure
 
 ## Step 1: Generate the synthetic sample
 
-```r
+``` r
 set.seed(2026)
 
 n <- 6000
@@ -117,13 +117,19 @@ knitr::kable(
 )
 ```
 
+Table: Summary of the synthetic linear-model dataset
+
+| sample_size| mean_followup_sbp| mean_baseline_sbp| mean_age| mean_chronic| adherence_rate|
+|-----------:|-----------------:|-----------------:|--------:|------------:|--------------:|
+| 6000| 132.075| 143.158| 63.981| 2.102| 0.634|
+
 That code first builds the predictors, then uses the linear predictor to generate the expected follow-up blood pressure, and finally adds Gaussian noise around that expectation. The `true_mean` column is especially useful because it stores the deterministic part of the generating process before residual error is added.
 
 ## Step 2: Fit the model that matches the truth
 
 Now fit the same linear model used to generate the data:
 
-```r
+``` r
 linear_fit <- lm(
  followup_sbp ~ baseline_sbp + intensive_treatment + age + chronic + adherence,
  data = synthetic_bp
@@ -154,13 +160,24 @@ knitr::kable(
 )
 ```
 
+Table: True and estimated coefficients under the correctly specified linear model
+
+| |term | true_value| estimated_value| bias|
+|:-------------------|:-------------------|----------:|---------------:|------:|
+|(Intercept) |(Intercept) | 35.00| 37.245| 2.245|
+|baseline_sbp |baseline_sbp | 0.62| 0.606| -0.014|
+|intensive_treatment |intensive_treatment | -7.50| -7.502| -0.002|
+|age |age | 0.18| 0.181| 0.001|
+|chronic |chronic | 1.60| 1.530| -0.070|
+|adherence |adherence | -4.50| -4.585| -0.085|
+
 This is the main value of simulation. Because the truth is known, coefficient recovery can be checked directly. Under correct specification and a reasonably large sample, the fitted estimates should be close to the generating values.
 
 ## Step 3: Compare the residual standard deviation with the truth
 
 The error variance is part of the generating process too, so it is worth checking whether the fitted model recovers it.
 
-```r
+``` r
 sigma_table <- data.frame(
  quantity = c(
  "True residual standard deviation",
@@ -186,13 +203,23 @@ knitr::kable(
 )
 ```
 
+Table: Recovery of the residual variation in the synthetic linear model
+
+|quantity | value|
+|:-------------------------------------|------:|
+|True residual standard deviation | 8.000|
+|Estimated residual standard deviation | 8.133|
+|True residual variance | 64.000|
+|Estimated residual variance | 66.146|
+|R-squared | 0.550|
+
 The residual standard deviation should not match the true value exactly in every sample, but it should be close when the sample is large and the model is correctly specified.
 
 ## Step 4: Compare true and fitted conditional means across treatment profiles
 
 Coefficients are useful, but fitted means are easier to interpret. The next block compares the true and fitted follow-up systolic pressure across a range of baseline blood pressure values for the two treatment groups.
 
-```r
+``` r
 profiles <- expand.grid(
  baseline_sbp = seq(120, 180, by = 2),
  intensive_treatment = c(0, 1)
@@ -240,13 +267,15 @@ ggplot2::ggplot(
  ggplot2::theme_minimal(base_size = 12)
 ```
 
+![plot of chunk unnamed-chunk-4](/tutorials/rendered-assets/simulation-tools-simulating-linear-data/unnamed-chunk-4-1.png)
+
 If the dashed lines stay close to the solid lines, the fitted linear model is reproducing the conditional mean function well.
 
 ## Step 5: Compare observed and true means by risk subgroup
 
 One more useful check is to compare average observed outcomes with the true generating means across simple subgroups.
 
-```r
+``` r
 synthetic_bp$risk_group <- cut(
  synthetic_bp$baseline_sbp,
  breaks = c(-Inf, 130, 145, 160, Inf),
@@ -273,6 +302,19 @@ knitr::kable(
  caption = "Observed and generating subgroup means in the synthetic dataset"
 )
 ```
+
+Table: Observed and generating subgroup means in the synthetic dataset
+
+|risk_group |intensive_treatment | followup_sbp| true_mean|
+|:----------|:-------------------|------------:|---------:|
+|<=130 |Standard | 124.36| 123.73|
+|131-145 |Standard | 132.55| 132.79|
+|146-160 |Standard | 141.67| 141.37|
+|>160 |Standard | 150.13| 150.55|
+|<=130 |Intensive | 116.90| 116.24|
+|131-145 |Intensive | 125.00| 124.92|
+|146-160 |Intensive | 133.16| 133.18|
+|>160 |Intensive | 141.83| 142.71|
 
 This table is another reminder that simulation creates two different quantities: the true conditional mean and the realized sample outcome. The observed mean is noisy. The true mean is not.
 

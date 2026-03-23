@@ -68,7 +68,7 @@ $$
 
 ## Step 1: Generate the complete dataset
 
-```r
+``` r
 set.seed(2026)
 
 n <- 5000
@@ -108,9 +108,15 @@ knitr::kable(
 )
 ```
 
+Table: Summary of the complete synthetic dataset before missingness is introduced
+
+| sample_size| mean_age| mean_severity| program_rate| mean_cost|
+|-----------:|--------:|-------------:|------------:|---------:|
+| 5000| 60.904| 0.015| 0.483| 2990.998|
+
 ## Step 2: Impose three missing-data mechanisms
 
-```r
+``` r
 keep_mcar <- rbinom(n, size = 1, prob = 0.75)
 
 keep_mar <- rbinom(
@@ -150,13 +156,21 @@ knitr::kable(
 )
 ```
 
+Table: Missingness rates under the three simulated mechanisms
+
+|mechanism | missing_rate|
+|:---------|------------:|
+|MCAR | 0.256|
+|MAR | 0.330|
+|MNAR | 0.274|
+
 The data all started from the same complete sample. The only difference across the three versions is how the missingness was generated.
 
 ## Step 3: Fit the true regression model before and after missingness
 
 Now fit the same linear model to the complete data and to the complete cases under each missing-data mechanism.
 
-```r
+``` r
 fit_complete <- lm(annual_cost ~ age + severity + program, data = complete_data)
 fit_mcar <- lm(annual_cost ~ age + severity + program, data = data_mcar)
 fit_mar <- lm(annual_cost ~ age + severity + program, data = data_mar)
@@ -203,11 +217,32 @@ knitr::kable(
 )
 ```
 
+Table: Regression estimates under complete data and three missing-data mechanisms
+
+| |mechanism |term | estimate| true_value| bias|
+|:------------|:------------------|:-----------|--------:|----------:|------:|
+|(Intercept) |Complete data |(Intercept) | 1866.32| 1800| 66.32|
+|age |Complete data |age | 20.94| 22| -1.06|
+|severity |Complete data |severity | 431.30| 420| 11.30|
+|program |Complete data |program | -325.83| -350| 24.17|
+|(Intercept)1 |MCAR complete case |(Intercept) | 1916.63| 1800| 116.63|
+|age1 |MCAR complete case |age | 20.35| 22| -1.65|
+|severity1 |MCAR complete case |severity | 423.71| 420| 3.71|
+|program1 |MCAR complete case |program | -325.32| -350| 24.68|
+|(Intercept)2 |MAR complete case |(Intercept) | 1805.21| 1800| 5.21|
+|age2 |MAR complete case |age | 21.15| 22| -0.85|
+|severity2 |MAR complete case |severity | 434.94| 420| 14.94|
+|program2 |MAR complete case |program | -324.53| -350| 25.47|
+|(Intercept)3 |MNAR complete case |(Intercept) | 1865.76| 1800| 65.76|
+|age3 |MNAR complete case |age | 21.19| 22| -0.81|
+|severity3 |MNAR complete case |severity | 440.82| 420| 20.82|
+|program3 |MNAR complete case |program | -340.94| -350| 9.06|
+
 This table is the center of the chapter. It shows what happens when the same substantive model meets different missing-data processes.
 
 ## Step 4: Visualize how the coefficient estimates move
 
-```r
+``` r
 plot_table <- subset(coefficient_table, term != "(Intercept)")
 
 ggplot2::ggplot(
@@ -239,11 +274,13 @@ ggplot2::ggplot(
  ggplot2::theme_minimal(base_size = 12)
 ```
 
+![plot of chunk unnamed-chunk-4](/tutorials/rendered-assets/simulation-tools-simulating-missing-data/unnamed-chunk-4-1.png)
+
 In a simulation like this, the full-data model is the benchmark. The incomplete-data models are not being judged against one another in the abstract. They are being judged against the truth.
 
 ## Step 5: Check how missingness reshapes the observed severity distribution
 
-```r
+``` r
 severity_distribution <- rbind(
  data.frame(source = "Complete", severity = complete_data$severity),
  data.frame(source = "MCAR observed", severity = data_mcar$severity[!is.na(data_mcar$severity)]),
@@ -265,6 +302,8 @@ ggplot2::ggplot(severity_distribution, ggplot2::aes(x = severity, color = source
  ) +
  ggplot2::theme_minimal(base_size = 12)
 ```
+
+![plot of chunk unnamed-chunk-5](/tutorials/rendered-assets/simulation-tools-simulating-missing-data/unnamed-chunk-5-1.png)
 
 This figure helps explain why missing-data mechanisms matter. They do not just remove observations. They can reshape the observed sample itself.
 

@@ -55,7 +55,7 @@ The quantity $t_i$ is important. If one patient is observed for 12 months and an
 
 ## Step 1: Generate the synthetic sample
 
-```r
+``` r
 set.seed(2026)
 
 n <- 7000
@@ -109,13 +109,19 @@ knitr::kable(
 )
 ```
 
+Table: Summary of the synthetic Poisson dataset
+
+| sample_size| mean_visits| mean_age| mean_chronic| mean_followup_months|
+|-----------:|-----------:|--------:|------------:|--------------------:|
+| 7000| 8.403| 59.046| 1.699| 8.987|
+
 This code builds the covariates first, then transforms them into a conditional mean through the exponential link, and finally draws counts from a Poisson distribution. The model therefore has a deterministic part, $\mu_i$, and a stochastic part, the Poisson draw around that mean.
 
 ## Step 2: Fit the Poisson model that matches the truth
 
 Now fit the same log-linear model used to generate the data:
 
-```r
+``` r
 poisson_fit <- glm(
  doctor_visits ~ age + chronic + female + poor_health + offset(log(months_observed)),
  data = synthetic_visits,
@@ -146,13 +152,23 @@ knitr::kable(
 )
 ```
 
+Table: True and estimated coefficients under the correctly specified Poisson model
+
+| |term | true_value| estimated_value| bias|
+|:-----------|:-----------|----------:|---------------:|------:|
+|(Intercept) |(Intercept) | -1.550| -1.552| -0.002|
+|age |age | 0.012| 0.012| 0.000|
+|chronic |chronic | 0.220| 0.221| 0.001|
+|female |female | 0.100| 0.100| 0.000|
+|poor_health |poor_health | 0.550| 0.547| -0.003|
+
 As in the earlier simulation chapters, the key question is whether the fitted model recovers the parameters we used to create the data. Because the model is correctly specified and the sample is fairly large, the answer should be approximately yes.
 
 ## Step 3: Compare expected counts across patient profiles
 
 Coefficients on the log scale are useful, but expected counts are easier to interpret. The next block compares the true and fitted mean number of visits for a sequence of chronic-condition counts under two health-status profiles.
 
-```r
+``` r
 profiles <- expand.grid(
  chronic = 0:6,
  poor_health = c(0, 1)
@@ -197,13 +213,15 @@ ggplot2::ggplot(
  ggplot2::theme_minimal(base_size = 12)
 ```
 
+![plot of chunk unnamed-chunk-3](/tutorials/rendered-assets/simulation-tools-simulating-poisson-data/unnamed-chunk-3-1.png)
+
 When the dashed lines remain close to the solid lines, the fitted model is reproducing the conditional mean structure correctly. That is exactly what we want in a well-behaved Poisson simulation.
 
 ## Step 4: Check the rate ratios
 
 Poisson regression is often interpreted through rate ratios, which are obtained by exponentiating the coefficients.
 
-```r
+``` r
 rate_ratio_table <- data.frame(
  term = comparison_table$term,
  true_rate_ratio = exp(comparison_table$true_value),
@@ -219,13 +237,23 @@ knitr::kable(
 )
 ```
 
+Table: True and estimated rate ratios in the synthetic Poisson dataset
+
+|term | true_rate_ratio| estimated_rate_ratio|
+|:-----------|---------------:|--------------------:|
+|(Intercept) | 0.212| 0.212|
+|age | 1.012| 1.012|
+|chronic | 1.246| 1.247|
+|female | 1.105| 1.105|
+|poor_health | 1.733| 1.728|
+
 For example, the true coefficient on `poor_health` is $0.55$, which corresponds to a rate ratio of about $\exp(0.55) = 1.73$. That means patients in poor health are designed to have about 73% more visits per unit of follow-up time than otherwise similar patients who are not in poor health.
 
 ## Step 5: Compare observed and theoretical count frequencies
 
 One of the simplest diagnostics is to compare the observed distribution of counts for a reference subgroup with the Poisson probabilities implied by that subgroup's mean.
 
-```r
+``` r
 reference_group <- subset(
  synthetic_visits,
  chronic == 1 & poor_health == 0 & female == 1 & months_observed == 12
@@ -255,7 +283,25 @@ knitr::kable(
 )
 ```
 
-```r
+Table: Observed and theoretical count probabilities for a reference subgroup
+
+| count| observed_probability| theoretical_probability|
+|-----:|--------------------:|-----------------------:|
+| 0| 0.000| 0.001|
+| 1| 0.000| 0.005|
+| 2| 0.034| 0.019|
+| 3| 0.042| 0.046|
+| 4| 0.102| 0.083|
+| 5| 0.144| 0.120|
+| 6| 0.136| 0.144|
+| 7| 0.102| 0.149|
+| 8| 0.127| 0.134|
+| 9| 0.127| 0.107|
+| 10| 0.068| 0.077|
+| 11| 0.085| 0.051|
+| 12| 0.034| 0.030|
+
+``` r
 distribution_plot <- rbind(
  data.frame(
  count = count_support,
@@ -281,6 +327,8 @@ ggplot2::ggplot(distribution_plot, ggplot2::aes(x = count, y = probability, fill
  ggplot2::scale_fill_manual(values = c("#6c9bd2", "#d08c42")) +
  ggplot2::theme_minimal(base_size = 12)
 ```
+
+![plot of chunk unnamed-chunk-6](/tutorials/rendered-assets/simulation-tools-simulating-poisson-data/unnamed-chunk-6-1.png)
 
 This comparison is not meant to be exact in a finite subgroup. It is meant to show that the simulated frequencies align reasonably well with the shape implied by the Poisson model.
 

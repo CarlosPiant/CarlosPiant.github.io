@@ -16,7 +16,7 @@ We will fit a logistic regression model in the training data and then evaluate c
 
 ## Step 1: Fit a prediction model and obtain test-set probabilities
 
-```r
+``` r
 data("Pima.tr", package = "MASS")
 data("Pima.te", package = "MASS")
 
@@ -50,11 +50,17 @@ knitr::kable(
 )
 ```
 
+Table: Summary of the prediction sample used for the calibration plot
+
+| sample_size| event_rate| mean_predicted_risk| brier_score|
+|-----------:|----------:|-------------------:|-----------:|
+| 332| 0.328| 0.337| 0.139|
+
 The Brier score is not itself a calibration plot, but it is a useful companion number because it summarizes probabilistic accuracy in a single value.
 
 ## Step 2: Build grouped calibration points
 
-```r
+``` r
 rank_id <- rank(calibration_data$predicted_risk, ties.method = "first")
 calibration_data$bin <- cut(
  rank_id,
@@ -78,11 +84,26 @@ knitr::kable(
 )
 ```
 
+Table: Grouped calibration table by deciles of predicted risk
+
+|bin | predicted_risk| observed_outcome| count|
+|:-----------|--------------:|----------------:|-----:|
+|[1,34.1] | 0.029| 0.000| 34|
+|(34.1,67.2] | 0.057| 0.030| 33|
+|(67.2,100] | 0.094| 0.030| 33|
+|(100,133] | 0.136| 0.182| 33|
+|(133,166] | 0.191| 0.121| 33|
+|(166,200] | 0.276| 0.364| 33|
+|(200,233] | 0.399| 0.424| 33|
+|(233,266] | 0.548| 0.515| 33|
+|(266,299] | 0.733| 0.727| 33|
+|(299,332] | 0.901| 0.882| 34|
+
 Grouped calibration points are easy to explain because they average predictions and outcomes within risk bins. They are simple and intuitive, though they should not be mistaken for the full story.
 
 ## Step 3: Add a smooth calibration curve
 
-```r
+``` r
 smooth_grid <- data.frame(
  predicted_risk = seq(
  min(calibration_data$predicted_risk),
@@ -133,13 +154,15 @@ ggplot2::ggplot +
  ggplot2::theme_minimal(base_size = 12)
 ```
 
+![plot of chunk unnamed-chunk-3](/tutorials/rendered-assets/visualization-tools-calibration-plots/unnamed-chunk-3-1.png)
+
 This is the core figure of the chapter. If the points and the smooth line stay close to the dashed diagonal, the model is well calibrated. If they drift below the line, the model is overpredicting risk. If they drift above the line, it is underpredicting risk.
 
 ## Step 4: Summarize calibration intercept and slope
 
 Two short numerical summaries often accompany the plot. The calibration intercept measures whether predictions are systematically too low or too high overall. The calibration slope measures whether the spread of predictions is too extreme or too conservative.
 
-```r
+``` r
 clipped_risk <- pmin(pmax(calibration_data$predicted_risk, 1e-6), 1 - 1e-6)
 logit_risk <- qlogis(clipped_risk)
 
@@ -170,6 +193,13 @@ knitr::kable(
  caption = "Calibration intercept and slope"
 )
 ```
+
+Table: Calibration intercept and slope
+
+| |metric | estimate|
+|:-----------|:---------------------|--------:|
+|(Intercept) |Calibration intercept | -0.065|
+|logit_risk |Calibration slope | 0.953|
 
 ## How to read the figure carefully
 

@@ -59,7 +59,7 @@ The simulation uses a large enough sample that the fitted model should recover t
 
 ## Step 1: Generate the synthetic sample
 
-```r
+``` r
 set.seed(2026)
 
 n <- 8000
@@ -135,13 +135,19 @@ knitr::kable(
 )
 ```
 
+Table: Summary of the synthetic logistic-regression dataset
+
+| sample_size| event_rate| mean_age| mean_parity|
+|-----------:|----------:|--------:|-----------:|
+| 8000| 0.376| 31.045| 1.802|
+
 That code has done two conceptually different things. First, it created the covariates. Second, it used the logistic formula to map those covariates into probabilities, and then drew a binary outcome from a Bernoulli distribution. The probabilities are the systematic part of the model. The Bernoulli draw is the stochastic part.
 
 ## Step 2: Fit the model that matches the truth
 
 Now estimate the same logistic specification that generated the data:
 
-```r
+``` r
 logit_fit <- glm(
  infertility ~ age + parity + education + spontaneous + induced + smoking,
  data = synthetic_infertility,
@@ -175,6 +181,19 @@ knitr::kable(
 )
 ```
 
+Table: True and estimated coefficients under the correctly specified logistic model
+
+| |term | true_value| estimated_value| bias|
+|:---------------|:---------------|----------:|---------------:|------:|
+|(Intercept) |(Intercept) | -2.300| -2.178| 0.122|
+|age |age | 0.045| 0.050| 0.005|
+|parity |parity | -0.320| -0.324| -0.004|
+|educationmedium |educationmedium | -0.280| -0.349| -0.069|
+|educationhigh |educationhigh | -0.460| -0.373| 0.087|
+|spontaneous |spontaneous | 1.050| 1.044| -0.006|
+|induced |induced | 0.780| 0.797| 0.017|
+|smoking |smoking | 0.420| 0.481| 0.061|
+
 This is the main reason synthetic data are useful. We know the truth because we built it. That means we can ask a sharper question than we usually can with real data: did the fitted model recover the generating parameters?
 
 In a correctly specified model with a reasonably large sample, the answer should be approximately yes. Small discrepancies are expected because the simulated sample still contains random noise. But the fitted coefficients should line up closely with the true values.
@@ -183,7 +202,7 @@ In a correctly specified model with a reasonably large sample, the answer should
 
 Coefficients are useful, but probabilities are often easier to interpret. The next code block compares the true and fitted probabilities across age for two reproductive-history profiles.
 
-```r
+``` r
 profiles <- expand.grid(
  age = seq(22, 42, by = 1),
  spontaneous = c(0, 1),
@@ -235,13 +254,15 @@ ggplot2::ggplot(
  ggplot2::theme_minimal(base_size = 12)
 ```
 
+![plot of chunk unnamed-chunk-3](/tutorials/rendered-assets/simulation-tools-simulating-logistic-data/unnamed-chunk-3-1.png)
+
 This figure is often more informative than a coefficient table alone. If the dashed lines stay close to the solid lines, the fitted model is reproducing the true probability surface well.
 
 ## Step 4: Check odds ratios
 
 Because logistic regression is usually reported in odds-ratio form, it is often useful to compare the true and estimated odds ratios directly.
 
-```r
+``` r
 or_table <- data.frame(
  term = comparison_table$term,
  true_odds_ratio = exp(comparison_table$true_value),
@@ -256,6 +277,19 @@ knitr::kable(
  caption = "True and estimated odds ratios in the synthetic dataset"
 )
 ```
+
+Table: True and estimated odds ratios in the synthetic dataset
+
+|term | true_odds_ratio| estimated_odds_ratio|
+|:---------------|---------------:|--------------------:|
+|(Intercept) | 0.100| 0.113|
+|age | 1.046| 1.051|
+|parity | 0.726| 0.723|
+|educationmedium | 0.756| 0.705|
+|educationhigh | 0.631| 0.689|
+|spontaneous | 2.858| 2.841|
+|induced | 2.181| 2.219|
+|smoking | 1.522| 1.618|
 
 This is a useful final check because many applied papers interpret logistic models through odds ratios rather than through log-odds coefficients.
 

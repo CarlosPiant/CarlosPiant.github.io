@@ -56,7 +56,7 @@ $$
 
 ## Step 1: Generate the survival sample
 
-```r
+``` r
 set.seed(2026)
 
 n <- 6000
@@ -107,13 +107,19 @@ knitr::kable(
 )
 ```
 
+Table: Summary of the synthetic survival dataset
+
+| sample_size| event_rate| median_followup| mean_age| mean_chronic|
+|-----------:|----------:|---------------:|--------:|------------:|
+| 6000| 0.579| 146.586| 65.974| 2|
+
 This code separates the two sources of uncertainty that matter most in survival settings. The event time comes from the hazard model. The censoring time comes from a different process. The observed data are a combination of the two.
 
 ## Step 2: Fit the proportional-hazards model
 
 Now estimate the Cox model that matches the hazard structure used to create the data.
 
-```r
+``` r
 cox_fit <- survival::coxph(
  survival::Surv(time, event) ~ age + chronic + program,
  data = synthetic_survival
@@ -141,13 +147,21 @@ knitr::kable(
 )
 ```
 
+Table: True and estimated log hazard ratios under the Cox model
+
+| |term | true_value| estimated_value| bias|
+|:-------|:-------|----------:|---------------:|------:|
+|age |age | 0.018| 0.019| 0.001|
+|chronic |chronic | 0.300| 0.327| 0.027|
+|program |program | -0.450| -0.476| -0.026|
+
 Because the Cox model leaves the baseline hazard unspecified, the most direct recovery check focuses on the covariate effects. Those are the quantities that define the hazard ratios.
 
 ## Step 3: Compare true and fitted survival curves
 
 To make the simulation more interpretable, compare the true and fitted survival curves for two otherwise similar patient profiles.
 
-```r
+``` r
 profile_data <- data.frame(
  age = c(65, 65),
  chronic = c(2, 2),
@@ -202,13 +216,15 @@ ggplot2::ggplot +
  ggplot2::theme_minimal(base_size = 12)
 ```
 
+![plot of chunk unnamed-chunk-3](/tutorials/rendered-assets/simulation-tools-simulating-survival-data/unnamed-chunk-3-1.png)
+
 If the dashed step curves stay close to the solid curves, the fitted model is reproducing the true survival pattern well.
 
 ## Step 4: Check the hazard ratios
 
 Hazard ratios are often easier to interpret than log hazard ratios.
 
-```r
+``` r
 hazard_ratio_table <- data.frame(
  term = comparison_table$term,
  true_hazard_ratio = exp(comparison_table$true_value),
@@ -223,6 +239,14 @@ knitr::kable(
  caption = "True and estimated hazard ratios in the synthetic survival dataset"
 )
 ```
+
+Table: True and estimated hazard ratios in the synthetic survival dataset
+
+|term | true_hazard_ratio| estimated_hazard_ratio|
+|:-------|-----------------:|----------------------:|
+|age | 1.018| 1.019|
+|chronic | 1.350| 1.387|
+|program | 0.638| 0.621|
 
 ## Main assumptions behind this simulation
 

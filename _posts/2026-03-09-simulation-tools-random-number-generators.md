@@ -100,7 +100,7 @@ where $\Phi^{-1}$ is the inverse standard normal CDF. In R, that function is `qn
 
 We start from uniforms because that is the common input to all later transformations.
 
-```r
+``` r
 set.seed(2026)
 
 n <- 6000
@@ -126,7 +126,16 @@ knitr::kable(
 )
 ```
 
-```r
+Table: Summary of the independent uniform random-number streams
+
+|stream | min_u| mean_u| max_u|
+|:-----------------|-----:|------:|-----:|
+|severity | 0| 0.497| 1|
+|risk_group | 0| 0.501| 1|
+|waiting_days | 0| 0.499| 1|
+|followup_attended | 0| 0.502| 1|
+
+``` r
 uniform_plot <- data.frame(
  stream = rep(c("severity", "risk_group", "waiting_days", "followup_attended"), each = n),
  u = c(u_severity, u_risk, u_waiting, u_followup)
@@ -147,11 +156,13 @@ ggplot2::ggplot(uniform_plot, ggplot2::aes(x = u)) +
  ggplot2::theme_minimal(base_size = 12)
 ```
 
+![plot of chunk unnamed-chunk-2](/tutorials/rendered-assets/simulation-tools-random-number-generators/unnamed-chunk-2-1.png)
+
 ## Step 2: Transform uniforms into the target variables
 
 Now apply the inverse-CDF rule separately to each variable.
 
-```r
+``` r
 severity_score <- qnorm(u_severity, mean = 0, sd = 1)
 
 risk_group <- ifelse(
@@ -192,13 +203,21 @@ knitr::kable(
 )
 ```
 
+Table: Summary of variables created from inverse-CDF transformations
+
+|variable | mean| sd|
+|:-----------------|------:|------:|
+|severity_score | -0.012| 0.987|
+|waiting_days | 12.613| 13.003|
+|followup_attended | 0.714| 0.452|
+
 The transformation step is the heart of the chapter. Each variable began as a draw from `U(0,1)`, but the inverse-CDF mapping changed the shape of the distribution while preserving the stochastic information carried by the uniform draw.
 
 ## Step 3: Check the categorical probabilities
 
 The categorical variable does not use a smooth inverse formula. Instead, it partitions the unit interval into probability regions. The sample proportions should therefore be close to the target probabilities.
 
-```r
+``` r
 risk_check <- data.frame(
  risk_group = c("low", "medium", "high"),
  true_probability = c(0.50, 0.35, 0.15),
@@ -214,6 +233,14 @@ knitr::kable(
 )
 ```
 
+Table: Target and observed probabilities for the categorical variable
+
+|risk_group | true_probability| sample_probability|
+|:----------|----------------:|------------------:|
+|low | 0.50| 0.506|
+|medium | 0.35| 0.337|
+|high | 0.15| 0.157|
+
 ## Step 4: Fit the models that match the generating process
 
 The final step is to check whether standard estimators recover the parameters implied by the generating distributions.
@@ -226,7 +253,7 @@ $$
 
 For the Bernoulli variable, the maximum likelihood estimator of `p` is the sample mean.
 
-```r
+``` r
 normal_check <- data.frame(
  parameter = c("mean", "sd"),
  true_value = c(0, 1),
@@ -259,23 +286,46 @@ knitr::kable(
  normal_check,
  caption = "Recovery of the parameters for the normal generator"
 )
+```
 
+Table: Recovery of the parameters for the normal generator
+
+|parameter | true_value| estimated_value|
+|:---------|----------:|---------------:|
+|mean | 0| -0.012|
+|sd | 1| 0.987|
+
+``` r
 knitr::kable(
  exponential_check,
  caption = "Recovery of the rate parameter for the exponential generator"
 )
+```
 
+Table: Recovery of the rate parameter for the exponential generator
+
+|parameter | true_value| estimated_value|
+|:---------|----------:|---------------:|
+|rate | 0.08| 0.079|
+
+``` r
 knitr::kable(
  bernoulli_check,
  caption = "Recovery of the Bernoulli success probability"
 )
 ```
 
+Table: Recovery of the Bernoulli success probability
+
+|parameter | true_value| estimated_value|
+|:---------|----------:|---------------:|
+|p | 0.72| 0.714|
+
 ## Step 5: Visualize the transformed distributions
 
 The simplest diagnostic is to compare the shape of the generated variables with the shape we expect.
 
-```r
+``` r
 plot_normal <- data.frame(
  x = seq(-4, 4, length.out = 300)
 )
@@ -303,7 +353,17 @@ ggplot2::ggplot(synthetic_rng_data, ggplot2::aes(x = severity_score)) +
  ggplot2::theme_minimal(base_size = 12)
 ```
 
-```r
+```
+## Warning: The dot-dot notation (`..density..`) was deprecated in ggplot2 3.4.0.
+## i Please use `after_stat(density)` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings` to see where this warning was
+## generated.
+```
+
+![plot of chunk unnamed-chunk-6](/tutorials/rendered-assets/simulation-tools-random-number-generators/unnamed-chunk-6-1.png)
+
+``` r
 plot_exponential <- data.frame(
  x = seq(0, quantile(synthetic_rng_data$waiting_days, 0.99), length.out = 300)
 )
@@ -330,6 +390,8 @@ ggplot2::ggplot(synthetic_rng_data, ggplot2::aes(x = waiting_days)) +
  ) +
  ggplot2::theme_minimal(base_size = 12)
 ```
+
+![plot of chunk unnamed-chunk-7](/tutorials/rendered-assets/simulation-tools-random-number-generators/unnamed-chunk-7-1.png)
 
 ## Main assumptions and practical limits
 

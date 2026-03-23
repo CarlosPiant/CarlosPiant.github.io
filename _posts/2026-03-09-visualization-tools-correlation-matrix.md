@@ -20,7 +20,7 @@ The correlation matrix will summarize how these variables relate to each other p
 
 ## Step 1: Load the data and keep the numeric predictors
 
-```r
+``` r
 data("Pima.tr", package = "MASS")
 
 pima_numeric <- Pima.tr[, c("npreg", "glu", "bp", "skin", "bmi", "ped", "age")]
@@ -42,11 +42,17 @@ knitr::kable(
 )
 ```
 
+Table: Summary of the variables used in the correlation heatmap
+
+| sample_size| variables| mean_glucose| mean_bmi| mean_age|
+|-----------:|---------:|------------:|--------:|--------:|
+| 200| 7| 123.97| 32.31| 32.11|
+
 This is a small step, but it matters. Correlation matrices require numeric variables, and it is good practice to be explicit about which variables are going into the figure.
 
 ## Step 2: Compute the correlation matrix
 
-```r
+``` r
 cor_mat <- cor(pima_numeric, use = "pairwise.complete.obs")
 cor_mat <- round(cor_mat, 2)
 
@@ -56,13 +62,25 @@ knitr::kable(
 )
 ```
 
+Table: Correlation matrix for the Pima diabetes predictors
+
+| | npreg| glu| bp| skin| bmi| ped| age|
+|:-----|-----:|----:|-----:|----:|----:|-----:|-----:|
+|npreg | 1.00| 0.17| 0.25| 0.11| 0.06| -0.12| 0.60|
+|glu | 0.17| 1.00| 0.27| 0.22| 0.22| 0.06| 0.34|
+|bp | 0.25| 0.27| 1.00| 0.26| 0.24| -0.05| 0.39|
+|skin | 0.11| 0.22| 0.26| 1.00| 0.66| 0.10| 0.25|
+|bmi | 0.06| 0.22| 0.24| 0.66| 1.00| 0.19| 0.13|
+|ped | -0.12| 0.06| -0.05| 0.10| 0.19| 1.00| -0.07|
+|age | 0.60| 0.34| 0.39| 0.25| 0.13| -0.07| 1.00|
+
 The table is useful, but a table becomes hard to scan once the number of variables grows. That is why the heatmap is valuable. It turns the matrix into a pattern that the eye can read quickly.
 
 ## Step 3: Reorder the variables by similarity
 
 To make the heatmap easier to interpret, we reorder the variables using hierarchical clustering based on correlation similarity. Variables with similar correlation profiles will appear close to each other in the final plot.
 
-```r
+``` r
 distance_mat <- as.dist(1 - abs(cor(pima_numeric, use = "pairwise.complete.obs")))
 cluster_order <- hclust(distance_mat)$order
 ordered_names <- colnames(pima_numeric)[cluster_order]
@@ -80,7 +98,7 @@ This step does not change any correlation values. It only changes the order in w
 
 ## Step 4: Create the heatmap
 
-```r
+``` r
 ggplot2::ggplot(
  cor_long,
  ggplot2::aes(x = var_x, y = var_y, fill = correlation)
@@ -113,13 +131,15 @@ ggplot2::ggplot(
  )
 ```
 
+![plot of chunk unnamed-chunk-4](/tutorials/rendered-assets/visualization-tools-correlation-matrix/unnamed-chunk-4-1.png)
+
 This is the main figure of the chapter. It is academically useful because it combines exact values with visual structure. The color scale tells the reader whether a relationship is weak or strong, and the clustering helps reveal variable groups that share similar association patterns.
 
 ## Step 5: Highlight the strongest pairwise relationships
 
 Sometimes the most useful written companion to a correlation heatmap is a short ranked table of the strongest off-diagonal relationships.
 
-```r
+``` r
 upper_index <- upper.tri(cor_ordered, diag = FALSE)
 
 strong_pairs <- data.frame(
@@ -137,6 +157,17 @@ knitr::kable(
  caption = "Strongest pairwise correlations in the Pima data"
 )
 ```
+
+Table: Strongest pairwise correlations in the Pima data
+
+| |var_1 |var_2 | correlation|
+|:--|:-----|:-----|-----------:|
+|1 |skin |bmi | 0.66|
+|21 |npreg |age | 0.60|
+|19 |bp |age | 0.39|
+|18 |glu |age | 0.34|
+|6 |glu |bp | 0.27|
+|4 |skin |bp | 0.26|
 
 This table is especially helpful in methods sections or appendices where the reader may want a compact summary of the strongest dependencies without reading every tile in the matrix.
 

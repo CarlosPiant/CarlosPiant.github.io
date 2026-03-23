@@ -20,7 +20,7 @@ The parameters will be:
 
 ## Step 1: Define the base-case decision model
 
-```r
+``` r
 wtp <- 50000
 
 base_values <- c(
@@ -69,11 +69,19 @@ knitr::kable(
 )
 ```
 
+Table: Base-case incremental results used for the tornado diagram
+
+|quantity | value|
+|:----------------|-------:|
+|Incremental cost | 108.518|
+|Incremental QALY | 0.001|
+|Incremental NMB | -62.899|
+
 This setup matters because a tornado diagram always depends on a specific target quantity. In this chapter the target is incremental NMB, not incremental cost or incremental effect alone.
 
 ## Step 2: Run the one-way sensitivity analysis
 
-```r
+``` r
 tornado_results <- do.call(
  rbind,
  lapply(seq_len(nrow(parameter_ranges)), function(i) {
@@ -110,11 +118,22 @@ knitr::kable(
 )
 ```
 
+Table: One-way sensitivity analysis results ranked by impact on incremental net monetary benefit
+
+| |parameter | low_nmb| high_nmb| range_width|
+|:--------------|:-------------|-------:|--------:|-----------:|
+|baseline_risk3 |relative_risk | 78.62| -215.31| 293.93|
+|baseline_risk |program_cost | 52.30| -206.90| 259.20|
+|baseline_risk2 |baseline_risk | -142.73| 30.24| 172.97|
+|baseline_risk1 |hospital_cost | -108.52| -5.88| 102.64|
+|baseline_risk4 |qaly_loss | -82.86| -37.24| 45.62|
+|baseline_risk5 |uptake | -48.05| -78.62| 30.58|
+
 The table already contains the full information needed for the plot. The figure simply turns that ranking into something faster to read.
 
 ## Step 3: Reshape the data for the tornado figure
 
-```r
+``` r
 tornado_plot_data <- rbind(
  data.frame(
  parameter = tornado_results$parameter,
@@ -139,7 +158,7 @@ The only real trick in a tornado diagram is that we want horizontal ranges, not 
 
 ## Step 4: Build the tornado diagram
 
-```r
+``` r
 ggplot2::ggplot +
  ggplot2::geom_vline(
  xintercept = base_nmb,
@@ -178,13 +197,15 @@ ggplot2::ggplot +
  )
 ```
 
+![plot of chunk unnamed-chunk-4](/tutorials/rendered-assets/visualization-tools-tornado-diagram/unnamed-chunk-4-1.png)
+
 This figure works because the ranking is built into the vertical order. The top bars represent the assumptions with the greatest influence on the decision result. The dashed vertical line marks the base-case NMB, so the reader can see not only the width of the change but also whether a parameter pushes the result above or below that benchmark.
 
 ## Step 5: Label the direction of influence
 
 The plot becomes even more useful when paired with a short table clarifying which side corresponds to the low value and which side corresponds to the high value.
 
-```r
+``` r
 direction_table <- data.frame(
  parameter = as.character(tornado_results$parameter),
  lower_nmb_scenario = ifelse(tornado_results$low_nmb < tornado_results$high_nmb, "Low value", "High value"),
@@ -196,6 +217,17 @@ knitr::kable(
  caption = "Direction of influence for each parameter in the tornado diagram"
 )
 ```
+
+Table: Direction of influence for each parameter in the tornado diagram
+
+|parameter |lower_nmb_scenario |higher_nmb_scenario |
+|:-------------|:------------------|:-------------------|
+|relative_risk |High value |Low value |
+|program_cost |High value |Low value |
+|baseline_risk |Low value |High value |
+|hospital_cost |Low value |High value |
+|qaly_loss |Low value |High value |
+|uptake |High value |Low value |
 
 This small companion table helps prevent a common reading mistake. A wide bar tells us a parameter matters, but it does not by itself tell us whether increasing the parameter makes the intervention look better or worse.
 

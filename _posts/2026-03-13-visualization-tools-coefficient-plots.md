@@ -25,8 +25,28 @@ When the coefficients are shown on the original model scale, the null value is u
 
 We will start with a synthetic logistic regression for 30-day hospital readmission. The purpose is not to make a substantive claim. It is to create a realistic model object from which we can build a polished coefficient plot.
 
-```r
+``` r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+## filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+## intersect, setdiff, setequal, union
+```
+
+``` r
 library(ggplot2)
 library(knitr)
 
@@ -111,13 +131,23 @@ knitr::kable(
 )
 ```
 
+Table: Synthetic logistic regression estimates used in the coefficient plot
+
+|predictor | log_odds_coefficient| lower_95_ci| upper_95_ci| odds_ratio|
+|:----------------------|--------------------:|-----------:|-----------:|----------:|
+|Discharge intervention | -0.439| -0.733| -0.145| 0.64|
+|Age (per 10 years) | 0.351| 0.212| 0.490| 1.42|
+|Prior admissions | 0.339| 0.204| 0.473| 1.40|
+|Comorbidity score | 0.242| 0.087| 0.397| 1.27|
+|Social risk index | 0.176| 0.027| 0.325| 1.19|
+
 This table is exactly the type of result that often appears in appendices. The coefficient plot will present the same information more directly.
 
 ## Step 2: Build a reusable coefficient-plot function
 
 The function below creates a coefficient plot on the original coefficient scale. It uses a vertical line at 0, horizontal intervals, and colored points that distinguish positive from negative associations.
 
-```r
+``` r
 build_coefficient_plot <- function(data, title, subtitle, x_label) {
  plot_data <- data |>
  dplyr::mutate(
@@ -177,7 +207,7 @@ The moment extra decoration becomes dominant, the plot stops doing its job.
 
 ## Step 3: Draw the synthetic coefficient plot
 
-```r
+``` r
 synthetic_coefficient_plot <- build_coefficient_plot(
  synthetic_coef,
  title = "Coefficient plot for a synthetic readmission model",
@@ -188,6 +218,8 @@ synthetic_coefficient_plot <- build_coefficient_plot(
 synthetic_coefficient_plot
 ```
 
+![plot of chunk unnamed-chunk-3](/tutorials/rendered-assets/visualization-tools-coefficient-plots/unnamed-chunk-3-1.png)
+
 This figure can be read much faster than the regression table. The discharge intervention is clearly protective because its coefficient is negative and its interval stays below 0. Age, prior admissions, comorbidity, and social risk all move in the opposite direction.
 
 ## Step 4: Create a real-world coefficient plot from a public clinical trial dataset
@@ -196,7 +228,7 @@ For a real-world example, we can use the public `colon` dataset from the `surviv
 
 This is a transparent partial replication. The original trial papers were not published with exactly this plot, and the covariate specification below is a modern teaching adaptation rather than a reconstruction of the original printed model table.
 
-```r
+``` r
 library(survival)
 
 colon_os <- survival::colon |>
@@ -262,9 +294,20 @@ knitr::kable(
 )
 ```
 
+Table: Adjusted Cox model estimates from the public colon cancer trial data
+
+|predictor | log_hazard_ratio| lower_95_ci| upper_95_ci| hazard_ratio|
+|:--------------------------|----------------:|-----------:|-----------:|------------:|
+|Levamisole + 5FU treatment | -0.388| -0.625| -0.151| 0.68|
+|Age (per 10 years) | 0.023| -0.074| 0.121| 1.02|
+|Male sex | -0.114| -0.347| 0.119| 0.89|
+|More than 4 positive nodes | 0.962| 0.718| 1.205| 2.62|
+|Obstruction present | 0.153| -0.139| 0.446| 1.17|
+|Adherent to protocol | 0.289| -0.023| 0.601| 1.34|
+
 The coefficient table is now built from a real fitted model. The plot uses exactly the same visual grammar as the synthetic example, but the estimates come from an applied clinical dataset.
 
-```r
+``` r
 colon_coefficient_plot <- build_coefficient_plot(
  colon_coef,
  title = "Coefficient plot for an adjusted Cox model in the colon trial data",
@@ -274,6 +317,8 @@ colon_coefficient_plot <- build_coefficient_plot(
 
 colon_coefficient_plot
 ```
+
+![plot of chunk unnamed-chunk-5](/tutorials/rendered-assets/visualization-tools-coefficient-plots/unnamed-chunk-5-1.png)
 
 This figure highlights the strongest associations immediately. The treatment term is clearly protective, with a negative adjusted log hazard ratio. Having more than 4 positive nodes is strongly associated with worse survival. Other terms, such as age or obstruction, are more uncertain in this particular specification.
 

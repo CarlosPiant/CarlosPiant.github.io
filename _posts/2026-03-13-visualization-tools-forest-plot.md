@@ -25,8 +25,28 @@ When the estimate is a hazard ratio or odds ratio, the null value is 1. Confiden
 
 We will begin with a synthetic subgroup analysis for a hospital discharge intervention. The values are made up, but they mimic the structure of a typical trial appendix.
 
-```r
+``` r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+## filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+## intersect, setdiff, setequal, union
+```
+
+``` r
 library(ggplot2)
 library(knitr)
 
@@ -69,13 +89,25 @@ knitr::kable(
 )
 ```
 
+Table: Synthetic subgroup estimates that will be plotted in the forest plot
+
+|subgroup | hazard_ratio| lower_95_ci| upper_95_ci|
+|:------------------|------------:|-----------:|-----------:|
+|Overall | 0.82| 0.72| 0.93|
+|Age < 65 | 0.78| 0.63| 0.97|
+|Age >= 65 | 0.87| 0.71| 1.07|
+|Women | 0.91| 0.73| 1.14|
+|Men | 0.74| 0.60| 0.92|
+|No prior admission | 0.80| 0.66| 0.98|
+|Prior admission | 0.86| 0.70| 1.05|
+
 The table is the raw material for the figure. Each row is an effect estimate with its confidence interval. The only extra variables we add are a relative weight used to size the plotting symbols and a row type that tells the plot which estimate should be shown as the overall summary.
 
 ## Step 2: Build a reusable forest-plot function
 
 The plotting function below is designed for ratio measures such as odds ratios or hazard ratios, so it uses a log-scaled x-axis. That makes confidence intervals visually symmetric around the point estimate on the multiplicative scale.
 
-```r
+``` r
 build_forest_plot <- function(data, title, subtitle) {
  plot_data <- data |>
  dplyr::mutate(
@@ -145,7 +177,7 @@ That is the standard grammar of a forest plot. Readers familiar with trials and 
 
 ## Step 3: Draw the synthetic forest plot
 
-```r
+``` r
 synthetic_forest_plot <- build_forest_plot(
  synthetic_forest,
  title = "Forest plot for a synthetic readmission subgroup analysis",
@@ -154,6 +186,8 @@ synthetic_forest_plot <- build_forest_plot(
 
 synthetic_forest_plot
 ```
+
+![plot of chunk unnamed-chunk-3](/tutorials/rendered-assets/visualization-tools-forest-plot/unnamed-chunk-3-1.png)
 
 This figure works because it lets the reader answer three questions quickly:
 
@@ -169,7 +203,7 @@ To move from a synthetic example to a real one, we can use the public `colon` da
 
 The original trial publications did not include exactly this modern subgroup forest plot. The figure below is therefore a transparent partial replication: it uses the public paper-linked dataset to estimate subgroup treatment hazard ratios for overall survival and then presents them in forest-plot form.
 
-```r
+``` r
 library(survival)
 
 colon_os <- survival::colon |>
@@ -230,9 +264,23 @@ knitr::kable(
 )
 ```
 
+Table: Subgroup hazard ratios estimated from the public colon cancer trial dataset
+
+|subgroup | sample_size| events| hazard_ratio| lower_95_ci| upper_95_ci|
+|:--------------|-----------:|------:|------------:|-----------:|-----------:|
+|Overall | 619| 291| 0.69| 0.55| 0.87|
+|Age < 65 | 376| 173| 0.70| 0.52| 0.95|
+|Age >= 65 | 243| 118| 0.66| 0.46| 0.95|
+|Female | 312| 152| 0.86| 0.63| 1.19|
+|Male | 307| 139| 0.52| 0.37| 0.74|
+|No obstruction | 502| 231| 0.69| 0.53| 0.90|
+|Obstruction | 117| 60| 0.71| 0.42| 1.19|
+|Adherent | 86| 49| 0.76| 0.43| 1.35|
+|Non-adherent | 533| 242| 0.68| 0.53| 0.88|
+
 This table now contains real model outputs rather than hand-entered values. The next step is simply to hand that results table to the same plotting function.
 
-```r
+``` r
 colon_forest_plot <- build_forest_plot(
  colon_forest,
  title = "Forest plot of subgroup treatment effects in the public colon trial data",
@@ -241,6 +289,8 @@ colon_forest_plot <- build_forest_plot(
 
 colon_forest_plot
 ```
+
+![plot of chunk unnamed-chunk-5](/tutorials/rendered-assets/visualization-tools-forest-plot/unnamed-chunk-5-1.png)
 
 The real-world figure follows the same design rules as the synthetic one, but now the rows come from a fitted Cox model in each subgroup. That is a common workflow in applied papers: estimate the model first, then construct a clean forest plot for reporting.
 

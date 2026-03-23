@@ -16,7 +16,7 @@ The ROC curve plots true positive rate against false positive rate. The precisio
 
 ## Step 1: Fit the prediction model and create test-set probabilities
 
-```r
+``` r
 data("Pima.tr", package = "MASS")
 data("Pima.te", package = "MASS")
 
@@ -37,7 +37,7 @@ performance_data <- data.frame(
 
 ## Step 2: Compute performance across thresholds
 
-```r
+``` r
 thresholds <- sort(unique(c(1, performance_data$predicted_risk, 0)), decreasing = TRUE)
 
 curve_points <- lapply(thresholds, function(threshold) {
@@ -89,11 +89,19 @@ knitr::kable(
 )
 ```
 
+Table: Summary performance metrics for the diabetes prediction model
+
+|metric | value|
+|:-----------------|-----:|
+|Event prevalence | 0.328|
+|ROC AUC | 0.866|
+|Average precision | 0.718|
+
 The AUC summarizes the ROC curve in one number, while average precision summarizes the precision-recall curve. Neither replaces the plot, but both are useful anchors.
 
 ## Step 3: Build the ROC curve
 
-```r
+``` r
 ggplot2::ggplot(roc_data, ggplot2::aes(x = fpr, y = tpr)) +
  ggplot2::geom_line(color = "#3d5a80", linewidth = 1) +
  ggplot2::geom_abline(
@@ -113,11 +121,13 @@ ggplot2::ggplot(roc_data, ggplot2::aes(x = fpr, y = tpr)) +
  ggplot2::theme_minimal(base_size = 12)
 ```
 
+![plot of chunk unnamed-chunk-3](/tutorials/rendered-assets/visualization-tools-roc-precision-recall-curves/unnamed-chunk-3-1.png)
+
 The diagonal line represents random guessing. The further the curve bows toward the upper-left corner, the better the model discriminates between cases and non-cases.
 
 ## Step 4: Build the precision-recall curve
 
-```r
+``` r
 baseline_precision <- mean(performance_data$observed_outcome)
 
 ggplot2::ggplot(pr_data_unique, ggplot2::aes(x = recall, y = precision)) +
@@ -138,13 +148,15 @@ ggplot2::ggplot(pr_data_unique, ggplot2::aes(x = recall, y = precision)) +
  ggplot2::theme_minimal(base_size = 12)
 ```
 
+![plot of chunk unnamed-chunk-4](/tutorials/rendered-assets/visualization-tools-roc-precision-recall-curves/unnamed-chunk-4-1.png)
+
 The dashed horizontal line marks the event prevalence. A good precision-recall curve should stay well above that baseline across a meaningful range of recall values.
 
 ## Step 5: Compare threshold-specific operating points
 
 Sometimes readers also need a few concrete threshold examples rather than a full curve alone.
 
-```r
+``` r
 selected_thresholds <- c(0.20, 0.40, 0.60)
 
 operating_points <- do.call(
@@ -174,6 +186,14 @@ knitr::kable(
  caption = "Selected threshold-specific operating characteristics"
 )
 ```
+
+Table: Selected threshold-specific operating characteristics
+
+| threshold| sensitivity| specificity| precision|
+|---------:|-----------:|-----------:|---------:|
+| 0.2| 0.917| 0.646| 0.559|
+| 0.4| 0.716| 0.825| 0.667|
+| 0.6| 0.550| 0.928| 0.789|
 
 ## How to read the figures carefully
 

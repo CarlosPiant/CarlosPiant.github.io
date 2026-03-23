@@ -29,8 +29,28 @@ The key reading rule is simple. Follow the tree from left to right for initial b
 
 We begin with a synthetic hospital-discharge decision problem. The acute decision is whether to use usual discharge planning or an enhanced follow-up pathway. Short-run outcomes are readmission or no readmission, and the enhanced pathway then feeds into a simple long-run recovery model.
 
-```r
+``` r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+## filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+## intersect, setdiff, setequal, union
+```
+
+``` r
 library(ggplot2)
 library(knitr)
 library(patchwork)
@@ -138,7 +158,7 @@ draw_markov_diagram <- function(states, transitions, title, subtitle = NULL) {
 }
 ```
 
-```r
+``` r
 synthetic_tree_nodes <- data.frame(
  x = c(0, 2, 2, 4.2, 4.2, 4.2, 4.2),
  y = c(2.5, 4.3, 0.9, 5.2, 3.4, 1.8, 0.0),
@@ -182,9 +202,18 @@ knitr::kable(
 )
 ```
 
+Table: Short-run branches used in the synthetic decision tree
+
+|branch | probability| short_run_cost|
+|:--------------------------------|-----------:|--------------:|
+|Usual care -> Readmit | 0.22| 14000|
+|Usual care -> No readmit | 0.78| 4200|
+|Enhanced follow-up -> Readmit | 0.12| 13500|
+|Enhanced follow-up -> No readmit | 0.88| 5100|
+
 ## Step 2: Draw the synthetic decision tree panel
 
-```r
+``` r
 synthetic_tree_plot <- draw_decision_tree(
  synthetic_tree_nodes,
  synthetic_tree_edges,
@@ -195,13 +224,15 @@ synthetic_tree_plot <- draw_decision_tree(
 synthetic_tree_plot
 ```
 
+![plot of chunk unnamed-chunk-3](/tutorials/rendered-assets/visualization-tools-decision-trees-and-markov-models/unnamed-chunk-3-1.png)
+
 This is the first half of the figure. The reader can already see the initial decision, the branching structure, and the immediate outcomes. But if the model also includes recurring long-run outcomes, a tree alone is not enough.
 
 ## Step 3: Build the synthetic Markov state diagram
 
 Now we add a simple Markov state diagram for long-run follow-up after discharge. The states are stable recovery, post-readmission, and death.
 
-```r
+``` r
 synthetic_markov_states <- data.frame(
  x = c(1.1, 3.2, 3.2),
  y = c(2.0, 3.2, 0.8),
@@ -233,9 +264,19 @@ knitr::kable(
 )
 ```
 
+Table: Illustrative transition structure for the synthetic Markov panel
+
+|from |to | example_transition_probability|
+|:----------------|:----------------|------------------------------:|
+|Stable recovery |Post-readmission | 0.15|
+|Stable recovery |Death | 0.03|
+|Post-readmission |Stable recovery | 0.55|
+|Post-readmission |Death | 0.08|
+|Death |Death | 1.00|
+
 ## Step 4: Draw the full synthetic decision-analytic schematic
 
-```r
+``` r
 synthetic_markov_plot <- draw_markov_diagram(
  synthetic_markov_states,
  synthetic_markov_transitions,
@@ -253,6 +294,8 @@ synthetic_schematic <- synthetic_tree_plot + synthetic_markov_plot +
 synthetic_schematic
 ```
 
+![plot of chunk unnamed-chunk-5](/tutorials/rendered-assets/visualization-tools-decision-trees-and-markov-models/unnamed-chunk-5-1.png)
+
 This is the core visualization pattern. The left panel clarifies the one-time branching logic. The right panel clarifies what happens afterward over repeated cycles. Together they tell the reader much more than either panel could alone.
 
 ## Step 5: Create a real-world decision-analytic schematic from a published health-economic application
@@ -261,7 +304,7 @@ For a real-world example, we build a partial published-inspired schematic based 
 
 This replication is therefore partial. It reconstructs the decision-model structure from the published problem description rather than reproducing the full original analysis or all underlying parameters.
 
-```r
+``` r
 hip_tree_nodes <- data.frame(
  x = c(0, 2, 2, 4.2, 4.2, 4.2, 4.2),
  y = c(2.5, 4.3, 0.9, 5.2, 3.4, 1.8, 0.0),
@@ -328,7 +371,16 @@ knitr::kable(
 )
 ```
 
-```r
+Table: Published-inspired model components in the hip-replacement schematic
+
+|component |published_inspired_structure |
+|:---------------------------|:----------------------------------------------------|
+|Initial decision |Choice between prosthesis strategies |
+|Short-run terminal branch |Perioperative death versus entry to follow-up cohort |
+|Long-run Markov states |Primary THR, Revision, Post-revision, Death |
+|Recurring event of interest |Revision surgery and subsequent survival states |
+
+``` r
 hip_tree_plot <- draw_decision_tree(
  hip_tree_nodes,
  hip_tree_edges,
@@ -352,6 +404,8 @@ hip_schematic <- hip_tree_plot + hip_markov_plot +
 
 hip_schematic
 ```
+
+![plot of chunk unnamed-chunk-7](/tutorials/rendered-assets/visualization-tools-decision-trees-and-markov-models/unnamed-chunk-7-1.png)
 
 The real-world figure demonstrates the practical point of this chapter. Decision-analytic models are often easier to trust when their architecture is visible. A reader can see where the initial one-off decision ends and where recurrent long-run states begin.
 

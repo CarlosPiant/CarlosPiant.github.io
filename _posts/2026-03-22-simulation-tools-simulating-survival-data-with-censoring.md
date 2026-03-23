@@ -95,7 +95,7 @@ This structure is the heart of the chapter. The event process and the censoring 
 
 ## Step 1: Generate baseline covariates
 
-```r
+``` r
 set.seed(2032)
 
 n <- 5000
@@ -126,11 +126,17 @@ knitr::kable(
 )
 ```
 
+Table: Baseline characteristics of the synthetic survival cohort
+
+| sample_size| mean_age| node_positive_rate| chemo_rate|
+|-----------:|--------:|------------------:|----------:|
+| 5000| 63.06| 0.414| 0.554|
+
 The covariates are simple, but they create heterogeneity in recurrence risk. Older patients and those with positive nodes have higher hazards, while chemotherapy lowers the hazard.
 
 ## Step 2: Generate event times and censoring times
 
-```r
+``` r
 lambda0 <- 0.00045
 dropout_rate <- 0.00022
 admin_time <- 1825
@@ -173,7 +179,7 @@ At this point the dataset contains the latent event process, the censoring proce
 
 ## Step 3: Summarize the observed follow-up and censoring composition
 
-```r
+``` r
 followup_summary <- data.frame(
  quantity = c(
  "Observed event rate",
@@ -198,7 +204,19 @@ knitr::kable(
  caption = "Observed follow-up and censoring composition in the simulated dataset",
  row.names = FALSE
 )
+```
 
+Table: Observed follow-up and censoring composition in the simulated dataset
+
+|quantity | value|
+|:--------------------------------|--------:|
+|Observed event rate | 0.470|
+|Overall censoring rate | 0.530|
+|Administrative censoring share | 0.294|
+|Dropout censoring share | 0.236|
+|Median observed follow-up (days) | 1006.925|
+
+``` r
 censoring_by_group <- aggregate(
  event ~ chemo + observation_type,
  data = transform(
@@ -221,11 +239,22 @@ knitr::kable(
 )
 ```
 
+Table: Counts of events and censoring outcomes by treatment group
+
+|chemo |observation_type | count|
+|:--------|:------------------------|-----:|
+|No chemo |Observed event | 1265|
+|Chemo |Observed event | 1085|
+|No chemo |Administrative censoring | 515|
+|Chemo |Administrative censoring | 955|
+|No chemo |Dropout censoring | 451|
+|Chemo |Dropout censoring | 729|
+
 These tables do two jobs. They confirm that the censoring process is materially present, and they show how the observed dataset is a mixture of three endpoints: recurrence, dropout, and administrative study closure.
 
 ## Step 4: Visualize how censoring truncates observation
 
-```r
+``` r
 plot_index <- sample(seq_len(nrow(synthetic_survival_censoring)), size = 1200)
 
 plot_data <- synthetic_survival_censoring[plot_index, ]
@@ -259,13 +288,15 @@ ggplot2::ggplot(
  ggplot2::theme_minimal(base_size = 12)
 ```
 
+![plot of chunk unnamed-chunk-4](/tutorials/rendered-assets/simulation-tools-simulating-survival-data-with-censoring/unnamed-chunk-4-1.png)
+
 This figure is a compact way to understand censoring. An event is observed only when the event time falls below the censoring time. The diagonal line is the decision boundary. Administrative censoring creates a visible horizontal edge because the study closes at a common fixed horizon.
 
 ## Step 5: Fit the model that matches the true generating process
 
 Now estimate the Cox proportional-hazards model implied by the data-generating process.
 
-```r
+``` r
 cox_fit <- survival::coxph(
  survival::Surv(time, event) ~ age + node_positive + chemo,
  data = synthetic_survival_censoring
@@ -293,7 +324,17 @@ knitr::kable(
  caption = "Recovery of the true log hazard ratios under the fitted Cox model",
  row.names = FALSE
 )
+```
 
+Table: Recovery of the true log hazard ratios under the fitted Cox model
+
+|term | true_value| estimated_value| bias|
+|:-------------|----------:|---------------:|------:|
+|age | 0.015| 0.017| 0.002|
+|node_positive | 0.550| 0.530| -0.020|
+|chemo | -0.500| -0.560| -0.060|
+
+``` r
 hazard_ratio_table <- data.frame(
  term = comparison_table$term,
  true_hazard_ratio = exp(comparison_table$true_value),
@@ -309,6 +350,14 @@ knitr::kable(
  row.names = FALSE
 )
 ```
+
+Table: True and estimated hazard ratios in the simulated censored survival dataset
+
+|term | true_hazard_ratio| estimated_hazard_ratio|
+|:-------------|-----------------:|----------------------:|
+|age | 1.015| 1.017|
+|node_positive | 1.733| 1.699|
+|chemo | 0.607| 0.571|
 
 This is the core recovery check. Because the event times were generated from a proportional-hazards structure and the censoring process was generated independently, the Cox model should recover the true covariate effects reasonably well in a large sample.
 

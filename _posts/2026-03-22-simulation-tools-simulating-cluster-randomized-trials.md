@@ -83,7 +83,7 @@ That is the inflation factor that explains why cluster randomized trials often r
 
 ## Step 1: Generate the clinic structure and randomization
 
-```r
+``` r
 set.seed(2034)
 
 n_clinics <- 24
@@ -114,7 +114,15 @@ knitr::kable(
  design_summary,
  caption = "Design summary for the synthetic cluster randomized trial"
 )
+```
 
+Table: Design summary for the synthetic cluster randomized trial
+
+| clinics| patients| mean_cluster_size| true_icc| design_effect|
+|-------:|--------:|-----------------:|--------:|-------------:|
+| 24| 766| 31.917| 0.131| 5.061|
+
+``` r
 randomization_table <- data.frame(
  arm = c("Control clinics", "Intervention clinics"),
  number_of_clusters = c(
@@ -136,11 +144,18 @@ knitr::kable(
 )
 ```
 
+Table: Cluster allocation across treatment arms
+
+|arm | number_of_clusters| mean_cluster_size|
+|:--------------------|------------------:|-----------------:|
+|Control clinics | 12| 32.250|
+|Intervention clinics | 12| 31.583|
+
 The randomization happens only once per clinic. Every patient inside the same clinic inherits that treatment assignment. That is the feature that distinguishes this design from ordinary patient-level randomization.
 
 ## Step 2: Generate patient-level covariates and outcomes
 
-```r
+``` r
 clinic_intercepts <- rnorm(n_clinics, mean = 0, sd = true_tau)
 
 age <- pmin(pmax(round(rnorm(n, mean = 62, sd = 10)), 30), 85)
@@ -187,11 +202,20 @@ knitr::kable(
 )
 ```
 
+Table: Patient-level summary of the simulated cluster trial
+
+|quantity | value|
+|:--------------------|------:|
+|Mean age | 62.274|
+|Mean baseline HbA1c | 8.020|
+|Mean follow-up HbA1c | 7.459|
+|Treatment share | 0.495|
+
 This code generates two distinct sources of variation. The patient-level covariates create ordinary within-clinic heterogeneity, while the clinic intercept creates dependence between patients from the same site.
 
 ## Step 3: Visualize the cluster-level outcome distribution by treatment arm
 
-```r
+``` r
 cluster_means <- aggregate(
  cbind(followup_hba1c, baseline_hba1c) ~ clinic + treatment,
  data = synthetic_crt,
@@ -228,13 +252,15 @@ ggplot2::ggplot(
  ggplot2::theme_minimal(base_size = 12)
 ```
 
+![plot of chunk unnamed-chunk-3](/tutorials/rendered-assets/simulation-tools-simulating-cluster-randomized-trials/unnamed-chunk-3-1.png)
+
 This figure makes the unit of randomization visible. The real trial comparison is not just patient versus patient. It is intervention clinic versus control clinic, with many patients nested inside each cluster.
 
 ## Step 4: Compare a naive patient-level regression with the mixed model
 
 Because the treatment is assigned at the clinic level, it is informative to see what happens if the analyst ignores the clustering.
 
-```r
+``` r
 naive_fit <- lm(
  followup_hba1c ~ treatment + age + baseline_hba1c,
  data = synthetic_crt
@@ -271,11 +297,19 @@ knitr::kable(
 )
 ```
 
+Table: Treatment-effect comparison with and without accounting for clustering
+
+|model | estimate| standard_error|
+|:----------------------|--------:|--------------:|
+|True treatment effect | -0.350| NA|
+|Naive OLS | -0.362| 0.055|
+|Random-intercept model | -0.363| 0.107|
+
 The naive regression can still estimate the treatment contrast itself reasonably well in a randomized design, but it treats patients as more independent than they really are. The mixed model is the one that matches the generating process.
 
 ## Step 5: Fit the model that matches the true generating process and compare estimates with truth
 
-```r
+``` r
 true_fixed_effects <- c(
  "(Intercept)" = 1.8,
  treatment = -0.35,
@@ -299,7 +333,18 @@ knitr::kable(
  caption = "True and estimated fixed effects in the cluster randomized trial simulation",
  row.names = FALSE
 )
+```
 
+Table: True and estimated fixed effects in the cluster randomized trial simulation
+
+|term | true_value| estimated_value| bias|
+|:--------------|----------:|---------------:|------:|
+|(Intercept) | 1.80| 2.033| 0.233|
+|treatment | -0.35| -0.363| -0.013|
+|age | 0.01| 0.011| 0.001|
+|baseline_hba1c | 0.65| 0.610| -0.040|
+
+``` r
 variance_components <- nlme::VarCorr(mixed_fit)
 
 estimated_tau <- as.numeric(variance_components[1, "StdDev"])^2
@@ -329,6 +374,14 @@ knitr::kable(
  row.names = FALSE
 )
 ```
+
+Table: True and estimated variance structure in the simulated cluster trial
+
+|component | true_value| estimated_value|
+|:-----------------|----------:|---------------:|
+|clinic_variance | 0.078| 0.052|
+|residual_variance | 0.518| 0.531|
+|ICC | 0.131| 0.089|
 
 These two tables are the main recovery check. The first confirms whether the mixed model recovers the fixed effects used in the data-generating process. The second checks whether the same model recovers the cluster-level variance, the patient-level variance, and the resulting intracluster correlation.
 

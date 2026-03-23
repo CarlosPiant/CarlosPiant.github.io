@@ -52,7 +52,7 @@ The random intercept $b_j$ makes patients from the same clinic more similar than
 
 ## Step 1: Generate the clinic structure and patient-level data
 
-```r
+``` r
 set.seed(2026)
 
 n_clinics <- 80
@@ -104,11 +104,17 @@ knitr::kable(
 )
 ```
 
+Table: Summary of the synthetic multilevel dataset
+
+| clinics| patients| mean_cluster_size| mean_hba1c| sd_hba1c|
+|-------:|--------:|-----------------:|----------:|--------:|
+| 80| 4749| 59.362| 7.147| 1.174|
+
 The key step is the clinic-specific intercept. That single latent term introduces within-clinic correlation across all patients from the same site.
 
 ## Step 2: Fit the mixed-effects model that matches the truth
 
-```r
+``` r
 multilevel_fit <- nlme::lme(
  fixed = followup_hba1c ~ age + severity + program,
  random = ~ 1 | clinic,
@@ -137,11 +143,20 @@ knitr::kable(
 )
 ```
 
+Table: True and estimated fixed effects in the random-intercept model
+
+| |term | true_value| estimated_value| bias|
+|:-----------|:-----------|----------:|---------------:|------:|
+|(Intercept) |(Intercept) | 6.500| 6.559| 0.059|
+|age |age | 0.015| 0.013| -0.002|
+|severity |severity | 0.550| 0.555| 0.005|
+|program |program | -0.400| -0.387| 0.013|
+
 The intercept is $6.5$ in the fitted model because the generating equation was written with centered age, $0.015(age - 60)$. Once age enters the fitted model in raw units, the implied intercept becomes $7.4 - 0.015 \times 60 = 6.5$.
 
 ## Step 3: Compare the variance components and the intraclass correlation
 
-```r
+``` r
 variance_components <- nlme::VarCorr(multilevel_fit)
 
 estimated_tau <- as.numeric(variance_components[1, "StdDev"])^2
@@ -170,11 +185,19 @@ knitr::kable(
 )
 ```
 
+Table: True and estimated variance components in the multilevel simulation
+
+|component | true_value| estimated_value|
+|:-----------------|----------:|---------------:|
+|clinic_variance | 0.36| 0.385|
+|residual_variance | 0.64| 0.630|
+|ICC | 0.36| 0.379|
+
 The intraclass correlation coefficient, or ICC, is especially useful because it tells us what share of total variation is attributable to between-clinic differences.
 
 ## Step 4: Compare true and estimated clinic effects
 
-```r
+``` r
 clinic_effects <- data.frame(
  clinic = rownames(nlme::ranef(multilevel_fit)),
  estimated_intercept = as.numeric(nlme::ranef(multilevel_fit)[, 1]),
@@ -195,6 +218,8 @@ ggplot2::ggplot(
  ) +
  ggplot2::theme_minimal(base_size = 12)
 ```
+
+![plot of chunk unnamed-chunk-4](/tutorials/rendered-assets/simulation-tools-simulating-multilevel-data/unnamed-chunk-4-1.png)
 
 The points should cluster around the 45-degree line, although the estimated clinic effects will be shrunk toward zero. That shrinkage is part of the model, not a mistake.
 
