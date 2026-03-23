@@ -94,38 +94,52 @@ layout: default
   </article>
 
   {% comment %}<!-- only show related on a post page when not disabled -->{% endcomment %}
-  {% assign tutorial_related_posts = site.related_posts | where_exp: "related_post", "related_post.url != page.url and related_post.categories contains 'tutorials'" %}
-  {% if page.id and page.related and page.categories contains 'tutorials' and tutorial_related_posts.size > 0 %}
-    <div class="page__related page__related--tutorials">
-      {% if site.data.ui-text[site.locale].related_label %}
-        <h4 class="page__related-title">{{ site.data.ui-text[site.locale].related_label | default: "You May Also Enjoy" }}</h4>
-      {% endif %}
-      <div class="tutorial-related-grid">
-        {% for post in tutorial_related_posts limit:4 %}
-          {% assign first_paragraph = post.content | split: '</p>' | first | append: '</p>' %}
-          {% assign first_paragraph_text = first_paragraph | strip_html | strip_newlines | strip %}
-          {% if first_paragraph_text == blank %}
-            {% assign first_paragraph_text = post.summary | default: post.excerpt | strip_html | strip_newlines | strip %}
+  {% if page.id and page.related %}
+    {% if page.categories contains 'tutorials' %}
+      {% assign tutorial_related_count = 0 %}
+      {% capture tutorial_related_cards %}
+        {% for post in site.related_posts %}
+          {% if post.url != page.url %}
+            {% if post.categories contains 'tutorials' %}
+              {% if tutorial_related_count < 4 %}
+                {% assign first_paragraph = post.content | split: '</p>' | first | append: '</p>' %}
+                {% assign first_paragraph_text = first_paragraph | strip_html | strip_newlines | strip %}
+                {% if first_paragraph_text == blank %}
+                  {% assign first_paragraph_text = post.summary | default: post.excerpt | strip_html | strip_newlines | strip %}
+                {% endif %}
+                <article class="tutorial-related-card">
+                  <h5 class="tutorial-related-card__title">
+                    <a href="{{ base_path }}{{ post.url }}" rel="permalink">{{ post.title }}</a>
+                  </h5>
+                  <p class="tutorial-related-card__summary">{{ first_paragraph_text }}</p>
+                </article>
+                {% assign tutorial_related_count = tutorial_related_count | plus: 1 %}
+              {% endif %}
+            {% endif %}
           {% endif %}
-          <article class="tutorial-related-card">
-            <h5 class="tutorial-related-card__title">
-              <a href="{{ base_path }}{{ post.url }}" rel="permalink">{{ post.title }}</a>
-            </h5>
-            <p class="tutorial-related-card__summary">{{ first_paragraph_text }}</p>
-          </article>
         {% endfor %}
-      </div>
-    </div>
-  {% elsif page.id and page.related and site.related_posts.size > 0 %}
-    <div class="page__related">
-      {% if site.data.ui-text[site.locale].related_label %}
-        <h4 class="page__related-title">{{ site.data.ui-text[site.locale].related_label | default: "You May Also Enjoy" }}</h4>
+      {% endcapture %}
+      {% if tutorial_related_count > 0 %}
+        <div class="page__related page__related--tutorials">
+          {% if site.data.ui-text[site.locale].related_label %}
+            <h4 class="page__related-title">{{ site.data.ui-text[site.locale].related_label | default: "You May Also Enjoy" }}</h4>
+          {% endif %}
+          <div class="tutorial-related-grid">
+            {{ tutorial_related_cards }}
+          </div>
+        </div>
       {% endif %}
-      <div class="grid__wrapper">
-        {% for post in site.related_posts limit:4 %}
-          {% include archive-single.html type="grid" %}
-        {% endfor %}
+    {% elsif site.related_posts.size > 0 %}
+      <div class="page__related">
+        {% if site.data.ui-text[site.locale].related_label %}
+          <h4 class="page__related-title">{{ site.data.ui-text[site.locale].related_label | default: "You May Also Enjoy" }}</h4>
+        {% endif %}
+        <div class="grid__wrapper">
+          {% for post in site.related_posts limit:4 %}
+            {% include archive-single.html type="grid" %}
+          {% endfor %}
+        </div>
       </div>
-    </div>
+    {% endif %}
   {% endif %}
 </div>
