@@ -1,0 +1,357 @@
+/* ==========================================================================
+   MEDIUM-INSPIRED OVERRIDES
+   ========================================================================== */
+
+:root {
+  --cp-paper: #fffefb;
+  --cp-ink: #242424;
+  --cp-muted: #6b6b6b;
+  --cp-border: #e8e0d3;
+  --cp-accent: #1a8917;
+  --cp-accent-soft: #edf7ec;
+  --cp-shadow: 0 14px 36px rgba(36, 36, 36, 0.05);
+}
+
+html,
+body {
+  background: #f7f4ed;
+}
+
+body {
+  color: var(--cp-ink);
+  font-family: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+#theme-toggle {
+  display: none;
+}
+
+.greedy-nav,
+.masthead {
+  background: rgba(247, 244, 237, 0.92);
+}
+
+.masthead {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  border-bottom: 1px solid var(--cp-border);
+  backdrop-filter: blur(14px);
+  box-shadow: none;
+}
+
+.masthead__inner-wrap {
+  max-width: 1240px;
+}
+
+.greedy-nav a {
+  color: var(--cp-ink);
+  font-family: "Manrope", "Avenir Next", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.greedy-nav .visible-links a:hover,
+.greedy-nav .visible-links a:focus {
+  color: var(--cp-accent);
+}
+
+.masthead__menu-item--lg a {
+  font-size: 1.08rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+#main {
+  max-width: 1280px;
+  margin-top: 2.75rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.page .page__inner-wrap,
+.archive {
+  background: transparent;
+}
+
+.page .page__inner-wrap {
+  max-width: 780px;
+}
+
+.page__title,
+.archive__item-title,
+.page__lead,
+.author__bio,
+.archive__item-excerpt,
+.tutorial-summary,
+.page__content p,
+.page__content li,
+.page__content dd,
+.page__content blockquote,
+.page__content figcaption {
+  font-family: "Source Serif 4", Georgia, serif;
+}
+
+.page__title {
+  font-size: clamp(2.7rem, 4vw, 4.6rem);
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+  margin-bottom: 1.2rem;
+}
+
+.page__lead {
+  color: #3f3f3f;
+  font-size: 1.35rem;
+  line-height: 1.55;
+}
+
+.page__meta,
+.archive .page__meta,
+.page__footer-copyright,
+.page__footer-follow,
+.author__urls,
+.author__urls a {
+  font-family: "Manrope", "Avenir Next", sans-serif;
+}
+
+.page__content {
+  color: var(--cp-ink);
+}
+
+.page__content h2,
+.page__content h3,
+.page__content h4,
+.page__content h5,
+.page__content h6 {
+  border-bottom: 0;
+  font-family: "Manrope", "Avenir Next", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.page__content h2 {
+  margin-top: 2.9rem;
+  margin-bottom: 1rem;
+  font-size: clamp(1.7rem, 2.3vw, 2.4rem);
+}
+
+.page__content h3 {
+  font-size: 1.35rem;
+}
+
+.page__content p,
+.page__content li,
+.page__content dd {
+  font-size: 1.13rem;
+  line-height: 1.9;
+}
+
+.page__content ul,
+.page__content ol {
+  padding-left: 1.2rem;
+}
+
+.page__content a,
+.archive a,
+.author__urls a,
+.page__footer a {
+  color: var(--cp-accent);
+  text-decoration-color: rgba(26, 137, 23, 0.32);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.12em;
+}
+
+.page__content a:hover,
+.archive a:hover,
+.author__urls a:hover,
+.page__footer a:hover {
+  color: #156d13;
+}
+
+.page__content blockquote {
+  margin: 2rem 0;
+  padding: 1.1rem 1.4rem;
+  border-left: 4px solid #cedfbf;
+  background: rgba(255, 255, 255, 0.78);
+  border-radius: 0 18px 18px 0;
+  color: #454545;
+}
+
+.page__content figure img,
+.archive__item,
+.page__related--tutorials .tutorial-related-card,
+.page__content iframe,
+.page__content table {
+  box-shadow: var(--cp-shadow);
+}
+
+.page__content figure img,
+.page__content iframe {
+  border-radius: 22px;
+  border: 1px solid var(--cp-border);
+  background: #fff;
+}
+
+.page__content table {
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid var(--cp-border);
+  background: #fff;
+}
+
+.archive {
+  max-width: 900px;
+}
+
+.list__item {
+  padding-right: 0 !important;
+  margin-bottom: 1.35rem;
+}
+
+.archive__item {
+  padding: 1.8rem 2rem;
+  border: 1px solid var(--cp-border);
+  border-radius: 28px;
+  background: var(--cp-paper);
+  box-shadow: var(--cp-shadow);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.archive__item:hover {
+  transform: translateY(-2px);
+  border-color: #d8cfbf;
+  box-shadow: 0 18px 42px rgba(36, 36, 36, 0.08);
+}
+
+.archive__item-title {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-size: clamp(1.6rem, 2vw, 2rem);
+  line-height: 1.08;
+}
+
+.archive__item-title a {
+  color: var(--cp-ink);
+  text-decoration: none;
+}
+
+.archive__item-excerpt {
+  color: #4f4f4f;
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
+.sidebar {
+  @include breakpoint($large) {
+    padding-top: calc(#{$masthead-height} + 2rem);
+  }
+}
+
+.sidebar > div {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid var(--cp-border);
+  border-radius: 28px;
+  padding: 1.4rem 1.25rem;
+  box-shadow: var(--cp-shadow);
+}
+
+.author__avatar img {
+  border: 0;
+  border-radius: 24px;
+  padding: 0;
+}
+
+.author__content {
+  padding-right: 0;
+}
+
+.sidebar .author__name {
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.author__bio {
+  color: #4b4b4b;
+  line-height: 1.75;
+}
+
+.author__urls-wrapper .btn {
+  display: none !important;
+}
+
+.author__urls a {
+  margin-bottom: 0.25rem;
+  padding: 0.25rem 0;
+  color: #4b4b4b;
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
+.author__urls a:hover {
+  color: var(--cp-accent);
+}
+
+.btn,
+.btn--inverse {
+  border-radius: 999px;
+  border: 1px solid #1f1f1f;
+  background: #1f1f1f;
+  color: #fff;
+  box-shadow: none;
+}
+
+.btn:hover,
+.btn--inverse:hover {
+  background: var(--cp-accent);
+  border-color: var(--cp-accent);
+  color: #fff;
+}
+
+.page__footer {
+  margin-top: 4rem;
+  border-top: 1px solid var(--cp-border);
+  background: transparent;
+}
+
+.page__footer-follow {
+  display: none;
+}
+
+.page__footer-copyright {
+  color: var(--cp-muted);
+  font-size: 0.85rem;
+}
+
+.greedy-nav .hidden-links {
+  border: 1px solid var(--cp-border);
+  border-radius: 18px;
+  box-shadow: var(--cp-shadow);
+}
+
+@include breakpoint(max-width $medium) {
+  #main {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .archive__item,
+  .sidebar > div {
+    border-radius: 22px;
+    padding: 1.25rem;
+  }
+
+  .page__title {
+    font-size: 2.4rem;
+  }
+
+  .page__content p,
+  .page__content li,
+  .page__content dd,
+  .archive__item-excerpt {
+    font-size: 1.03rem;
+  }
+}
