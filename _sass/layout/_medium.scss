@@ -10,11 +10,14 @@
   --cp-accent: #1d4e89;
   --cp-accent-soft: #f3f7fb;
   --cp-shadow: none;
+  --cp-page-bg: #ffffff;
+  --cp-nav-bg: rgba(255, 255, 255, 0.96);
+  --cp-footer-bg: #ffffff;
 }
 
 html,
 body {
-  background: #f8f9fb;
+  background: var(--cp-page-bg);
 }
 
 body {
@@ -24,13 +27,25 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+html[data-theme="dark"] {
+  --cp-paper: #161a20;
+  --cp-ink: #e7edf3;
+  --cp-muted: #a8b3bf;
+  --cp-border: #2b3440;
+  --cp-accent: #7cb3ff;
+  --cp-accent-soft: #1a2330;
+  --cp-page-bg: #0f1318;
+  --cp-nav-bg: rgba(15, 19, 24, 0.94);
+  --cp-footer-bg: #11161c;
+}
+
 #theme-toggle {
-  display: none;
+  display: block;
 }
 
 .greedy-nav,
 .masthead {
-  background: rgba(248, 249, 251, 0.96);
+  background: var(--cp-nav-bg);
 }
 
 .masthead {
@@ -111,6 +126,10 @@ body {
   line-height: 1.75;
 }
 
+html[data-theme="dark"] .page__lead {
+  color: #c2ccd7;
+}
+
 .page__meta,
 .archive .page__meta,
 .page__footer-copyright,
@@ -189,6 +208,11 @@ body {
   color: #454545;
 }
 
+html[data-theme="dark"] .page__content blockquote {
+  border-left-color: #40556e;
+  color: #d1d8e0;
+}
+
 .page__content figure img,
 .archive__item,
 .page__related--tutorials .tutorial-related-card,
@@ -201,14 +225,14 @@ body {
 .page__content iframe {
   border-radius: 4px;
   border: 1px solid var(--cp-border);
-  background: #fff;
+  background: var(--cp-paper);
 }
 
 .page__content table {
   overflow: hidden;
   border-radius: 4px;
   border: 1px solid var(--cp-border);
-  background: #fff;
+  background: var(--cp-paper);
 }
 
 .archive {
@@ -259,6 +283,12 @@ body {
   line-height: 1.6;
 }
 
+html[data-theme="dark"] .archive__item-excerpt,
+html[data-theme="dark"] .author__bio,
+html[data-theme="dark"] .author__urls a {
+  color: #b7c1cb;
+}
+
 .sidebar {
   @include breakpoint($large) {
     padding-top: calc(#{$masthead-height} + 2rem);
@@ -266,7 +296,7 @@ body {
 }
 
 .sidebar > div {
-  background: #ffffff;
+  background: var(--cp-paper);
   border: 1px solid var(--cp-border);
   border-radius: 6px;
   padding: 1.15rem 1rem;
@@ -342,7 +372,7 @@ body {
 .page__footer {
   margin-top: 4rem;
   border-top: 1px solid var(--cp-border);
-  background: #f8f9fb;
+  background: var(--cp-footer-bg);
 }
 
 .page__footer-follow {
