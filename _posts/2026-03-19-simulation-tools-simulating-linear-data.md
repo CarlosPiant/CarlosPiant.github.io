@@ -303,3 +303,7 @@ In practice, this is often the most useful way to learn what ordinary least squa
 ## Further reading
 
 The linear-model framework remains a central entry point for applied regression analysis, and blood-pressure trials such as SPRINT provide a useful substantive anchor for continuous clinical outcomes. A natural next step after this chapter is to extend the simulation by adding heteroskedasticity, treatment-effect heterogeneity, or clustering and then studying how coefficient recovery changes under misspecification.
+
+## References
+
+- SPRINT Research Group (2015). "A Randomized Trial of Intensive versus Standard Blood-Pressure Control." *New England Journal of Medicine*, 373(22), 2103--2116. DOI: <https://doi.org/10.1056/NEJMoa1511939>.

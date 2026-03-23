@@ -208,3 +208,8 @@ The ranges also matter. A tornado diagram can be made to look dramatic or trivia
 ## Further reading
 
 Briggs, Claxton, and Sculpher provide one of the most useful practical discussions of deterministic sensitivity analysis in health-economic modeling. Fenwick and coauthors are a natural companion reading when the next step is to move from one-way sensitivity analysis to broader uncertainty representation and decision-focused summaries.
+
+## References
+
+- Briggs, Andrew; Claxton, Karl; Sculpher, Mark (2006). "Decision Modelling for Health Economic Evaluation." Oxford University Press, Oxford.
+- Fenwick, Elisabeth; Claxton, Karl; Sculpher, Mark (2001). "Representing Uncertainty: The Role of Cost-Effectiveness Acceptability Curves." *Health Economics*, 10(8), 779--787. DOI: <https://doi.org/10.1002/hec.635>.

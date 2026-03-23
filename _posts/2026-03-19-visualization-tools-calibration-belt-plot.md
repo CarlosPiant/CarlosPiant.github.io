@@ -335,3 +335,10 @@ Finally, a calibration belt complements rather than replaces other calibration s
 ## Further reading
 
 Finazzi and colleagues introduced the calibration belt as a confidence-band approach to calibration assessment for dichotomous outcomes. Nattino and colleagues refined the associated testing framework and clarified the role of polynomial degree selection. Van Calster and colleagues provide a broader modern discussion of why calibration deserves more attention in prediction research.
+
+## References
+
+- Finazzi, Stefano; Poole, Daniele; Luciani, Davide; Cogo, Paola E.; Bertolini, Guido (2011). "Calibration Belt for Quality-of-Care Assessment Based on Dichotomous Outcomes." *PLOS ONE*, 6(2), e16110. DOI: <https://doi.org/10.1371/journal.pone.0016110>.
+- Nattino, Giovanni; Finazzi, Stefano; Bertolini, Guido (2014). "A New Calibration Test and a Reappraisal of the Calibration Belt for the Assessment of Prediction Models Based on Dichotomous Outcomes." *Statistics in Medicine*, 33(14), 2390--2407. DOI: <https://doi.org/10.1002/sim.6100>.
+- Smith, J. W.; Everhart, J. E.; Dickson, W. C.; Knowler, W. C.; Johannes, R. S. (1988). "Using the ADAP Learning Algorithm to Forecast the Onset of Diabetes Mellitus." *Proceedings of the Symposium on Computer Applications in Medical Care*, 261--265.
+- Van Calster, Ben; McLernon, David J.; van Smeden, Maarten; Wynants, Laure; Steyerberg, Ewout W. (2019). "Calibration: The Achilles Heel of Predictive Analytics." *BMC Medicine*, 17(1), 230. DOI: <https://doi.org/10.1186/s12916-019-1466-7>.

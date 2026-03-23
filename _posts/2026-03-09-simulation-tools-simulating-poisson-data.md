@@ -299,3 +299,8 @@ The chapter also assumes that the log-linear mean model is correctly specified a
 ## Further reading
 
 Cameron and Trivedi remain a foundational applied reference for count-data econometrics and are especially helpful for connecting Poisson models to real utilization outcomes. Nelder and Wedderburn are the classic reference for the generalized linear model framework that makes Poisson regression natural in the first place. Together, they provide a strong bridge between the mechanics of simulation and the broader modeling tradition used in applied health economics.
+
+## References
+
+- Cameron, A. Colin; Trivedi, Pravin K. (1986). "Econometric Models Based on Count Data: Comparisons and Applications of Some Estimators and Tests." *Journal of Applied Econometrics*, 1(1), 29--53. DOI: <https://doi.org/10.1002/jae.3950010104>.
+- Nelder, J. A.; Wedderburn, R. W. M. (1972). "Generalized Linear Models." *Journal of the Royal Statistical Society. Series A (General)*, 135(3), 370--384. DOI: <https://doi.org/10.2307/2344614>.

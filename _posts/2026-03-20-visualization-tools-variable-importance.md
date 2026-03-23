@@ -275,3 +275,9 @@ They are also useful outside machine learning. A health-services model predictin
 ## Further reading
 
 Breiman's random forest article remains a central reference for importance measures in tree-based models. Greenwell and Boehmke provide an accessible overview of importance plotting choices and why they matter for interpretation. For the public health-prediction problem used here, Smith and colleagues remain the original source behind the Pima diabetes application.
+
+## References
+
+- Greenwell, Brandon M.; Boehmke, Bradley C. (2020). "Variable Importance Plots---An Introduction to the vip Package." *The R Journal*, 12(1), 343--366. DOI: <https://doi.org/10.32614/RJ-2020-013>.
+- Breiman, Leo (2001). "Random Forests." *Machine Learning*, 45(1), 5--32. DOI: <https://doi.org/10.1023/A:1010933404324>.
+- Smith, J. W.; Everhart, J. E.; Dickson, W. C.; Knowler, W. C.; Johannes, R. S. (1988). "Using the ADAP Learning Algorithm to Forecast the Onset of Diabetes Mellitus." *Proceedings of the Symposium on Computer Applications in Medical Care*, 261--265.

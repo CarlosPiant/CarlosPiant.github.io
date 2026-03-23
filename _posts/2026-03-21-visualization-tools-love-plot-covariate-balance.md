@@ -409,3 +409,12 @@ In practice, the Love plot is strongest when paired with overlap checks, sample-
 ## Further reading
 
 For broader guidance on causal design with propensity scores, Stuart's review remains a strong conceptual reference. Austin gives a practical discussion of propensity-score implementation and diagnostics, including standardized differences and the role of balance assessment in applied work. For the preprocessing perspective on matching, Ho and colleagues provide the foundational `MatchIt` reference.
+
+## References
+
+- Stuart, Elizabeth A. (2010). "Matching Methods for Causal Inference: A Review and a Look Forward." *Statistical Science*, 25(1), 1--21. DOI: <https://doi.org/10.1214/09-STS313>.
+- Austin, Peter C. (2009). "Balance Diagnostics for Comparing the Distribution of Baseline Covariates between Treatment Groups in Propensity-Score Matched Samples." *Statistics in Medicine*, 28(25), 3083--3107. DOI: <https://doi.org/10.1002/sim.3697>.
+- LaLonde, Robert J. (1986). "Evaluating the Econometric Evaluations of Training Programs with Experimental Data." *The American Economic Review*, 76(4), 604--620. <https://www.jstor.org/stable/1806062>.
+- Dehejia, Rajeev H.; Wahba, Sadek (1999). "Causal Effects in Nonexperimental Studies: Reevaluating the Evaluation of Training Programs." *Journal of the American Statistical Association*, 94(448), 1053--1062. DOI: <https://doi.org/10.1080/01621459.1999.10473858>.
+- Ho, Daniel E.; Imai, Kosuke; King, Gary; Stuart, Elizabeth A. (2011). "MatchIt: Nonparametric Preprocessing for Parametric Causal Inference." *Journal of Statistical Software*, 42(8), 1--28. DOI: <https://doi.org/10.18637/jss.v042.i08>.
+- Austin, Peter C. (2011). "An Introduction to Propensity Score Methods for Reducing the Effects of Confounding in Observational Studies." *Multivariate Behavioral Research*, 46(3), 399--424. DOI: <https://doi.org/10.1080/00273171.2011.568786>.

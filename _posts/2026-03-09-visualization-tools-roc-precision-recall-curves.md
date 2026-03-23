@@ -184,3 +184,9 @@ Neither curve says whether the predicted probabilities are well calibrated. A mo
 ## Further reading
 
 Fawcett gives a clear introduction to the logic and interpretation of ROC analysis. Saito and Rehmsmeier explain why precision-recall curves deserve more attention in imbalanced settings. Smith and coauthors provide the original applied context for the diabetes dataset used in this example.
+
+## References
+
+- Fawcett, Tom (2006). "An Introduction to ROC Analysis." *Pattern Recognition Letters*, 27(8), 861--874. DOI: <https://doi.org/10.1016/j.patrec.2005.10.010>.
+- Saito, Takaya; Rehmsmeier, Marc (2015). "The Precision-Recall Plot Is More Informative than the ROC Plot When Evaluating Binary Classifiers on Imbalanced Datasets." *PLOS ONE*, 10(3), e0118432. DOI: <https://doi.org/10.1371/journal.pone.0118432>.
+- Smith, J. W.; Everhart, J. E.; Dickson, W. C.; Knowler, W. C.; Johannes, R. S. (1988). "Using the ADAP Learning Algorithm to Forecast the Onset of Diabetes Mellitus." *Proceedings of the Symposium on Computer Applications in Medical Care*, 261--265.

@@ -303,3 +303,10 @@ That simplification is deliberate. Real IV settings may involve heterogeneous tr
 ## Further reading
 
 Imbens and Angrist remain the central reference for the local causal interpretation of IV estimates. Staiger and Stock are essential for understanding how weak instruments distort finite-sample IV performance, and Stock, Wright, and Yogo provide a broader weak-identification perspective that is useful when building simulation benchmarks. The empirical illustration by Angrist and Evans remains a classic example of instrument-based identification through quasi-random encouragement-like variation.
+
+## References
+
+- Imbens, Guido W.; Angrist, Joshua D. (1994). "Identification and Estimation of Local Average Treatment Effects." *Econometrica*, 62(2), 467--475. DOI: <https://doi.org/10.2307/2951620>.
+- Staiger, Douglas; Stock, James H. (1997). "Instrumental Variables Regression with Weak Instruments." *Econometrica*, 65(3), 557--586. DOI: <https://doi.org/10.2307/2171753>.
+- Stock, James H.; Wright, Jonathan H.; Yogo, Motohiro (2002). "A Survey of Weak Instruments and Weak Identification in Generalized Method of Moments." *Journal of Business \& Economic Statistics*, 20(4), 518--529. DOI: <https://doi.org/10.1198/073500102288618658>.
+- Angrist, Joshua D.; Evans, William N. (1998). "Children and Their Parents' Labor Supply: Evidence from Exogenous Variation in Family Size." *The American Economic Review*, 88(3), 450--477. <https://www.jstor.org/stable/116844>.

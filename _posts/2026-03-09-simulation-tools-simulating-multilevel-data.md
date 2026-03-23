@@ -207,3 +207,7 @@ This chapter includes only a random intercept. Real multilevel health data may a
 ## Further reading
 
 Laird and Ware remain a classic entry point for the logic of random-effects models and repeated clustered data. Their framework still underpins a large share of modern multilevel modeling in applied biostatistics, outcomes research, and health-services analysis.
+
+## References
+
+- Laird, Nan M.; Ware, James H. (1982). "Random-Effects Models for Longitudinal Data." *Biometrics*, 38(4), 963--974. DOI: <https://doi.org/10.2307/2529876>.

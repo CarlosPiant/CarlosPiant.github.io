@@ -150,3 +150,9 @@ The curve also becomes less precise later in follow-up, especially when few pati
 ## Further reading
 
 Kaplan and Meier provide the classic foundation for this plot type. Cox is the natural next step when the goal shifts from descriptive curves to adjusted hazard modeling. The `survival` package documentation is also useful when moving from introductory figures to more complex survival displays.
+
+## References
+
+- Kaplan, E. L.; Meier, Paul (1958). "Nonparametric Estimation from Incomplete Observations." *Journal of the American Statistical Association*, 53(282), 457--481. DOI: <https://doi.org/10.1080/01621459.1958.10501452>.
+- Cox, D. R. (1972). "Regression Models and Life-Tables." *Journal of the Royal Statistical Society. Series B (Methodological)*, 34(2), 187--202. DOI: <https://doi.org/10.1111/j.2517-6161.1972.tb00899.x>.
+- Therneau, Terry M. (2024). "A Package for Survival Analysis in R." CRAN. <https://CRAN.R-project.org/package=survival>.

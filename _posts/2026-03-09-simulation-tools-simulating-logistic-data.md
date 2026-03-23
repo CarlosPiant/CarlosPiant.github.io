@@ -276,3 +276,8 @@ In practice, simulation becomes especially useful when you want to know how an e
 ## Further reading
 
 For the underlying binary-regression framework, Cox remains a foundational reference. For the applied reproductive-health problem that inspired the synthetic structure here, Trichopoulos and coauthors provide the substantive example. A natural next step after this chapter is to extend the simulation by adding interactions, nonlinear effects, or clustered observations and then studying how the fitted logistic model changes under misspecification.
+
+## References
+
+- Trichopoulos, Dimitrios; Handanos, Nikos; Danezis, John; Kalandidi, Andromachi; Kalapothaki, Vassiliki (1976). "Induced Abortion and Secondary Infertility." *British Journal of Obstetrics and Gynaecology*, 83(8), 645--650. DOI: <https://doi.org/10.1111/j.1471-0528.1976.tb00904.x>.
+- Cox, D. R. (1958). "The Regression Analysis of Binary Sequences." *Journal of the Royal Statistical Society. Series B (Methodological)*, 20(2), 215--232. DOI: <https://doi.org/10.1111/j.2517-6161.1958.tb00292.x>.

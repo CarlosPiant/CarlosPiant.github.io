@@ -157,3 +157,7 @@ Once the template is clear, it can be adapted easily. You can switch from Pearso
 ## Further reading
 
 For the real-world prediction problem underlying the dataset used here, Smith and coauthors provide the original diabetes application. A natural next step after this chapter is to compare Pearson and Spearman correlation heatmaps on the same data, or to build a clustered correlation matrix for one of the larger clinical or claims-based datasets used elsewhere in the book.
+
+## References
+
+- Smith, J. W.; Everhart, J. E.; Dickson, W. C.; Knowler, W. C.; Johannes, R. S. (1988). "Using the ADAP Learning Algorithm to Forecast the Onset of Diabetes Mellitus." *Proceedings of the Symposium on Computer Applications in Medical Care*, 261--265.

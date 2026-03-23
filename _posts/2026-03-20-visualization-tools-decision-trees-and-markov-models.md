@@ -366,3 +366,10 @@ A third point is that these figures should be honest about simplification. If a 
 ## Further reading
 
 Sonnenberg and Beck remain a foundational guide to why Markov models became important in medical decision making. Briggs and Sculpher provide a classic health-economic introduction to state-transition models. For a concrete applied setting, Briggs and colleagues' hip-replacement analysis is a useful reminder that decision-analytic diagrams are often the fastest way to explain a cost-effectiveness model before turning to its results.
+
+## References
+
+- Sonnenberg, Frank A.; Beck, J. Robert (1993). "Markov Models in Medical Decision Making: A Practical Guide." *Medical Decision Making*, 13(4), 322--338. DOI: <https://doi.org/10.1177/0272989X9301300409>.
+- Briggs, Andrew; Sculpher, Mark (1998). "An Introduction to Markov Modelling for Economic Evaluation." *Pharmacoeconomics*, 13(4), 397--409. DOI: <https://doi.org/10.2165/00019053-199813040-00003>.
+- Briggs, Andrew; Sculpher, Mark; Britton, Andrew; Murray, David; Fitzpatrick, Ray (1998). "The Costs and Benefits of Primary Total Hip Replacement: How Likely Are New Prostheses to Be Cost-Effective?." *International Journal of Technology Assessment in Health Care*, 14(4), 743--761. DOI: <https://doi.org/10.1017/S0266462300012058>.
+- Hunink, M. G. Myriam; Weinstein, Milton C.; Wittenberg, Eve; Drummond, Michael F.; Pliskin, Joseph S.; Wong, John B.; Glasziou, Paul P. (2014). "Decision Making in Health and Medicine: Integrating Evidence and Values." Cambridge University Press, Cambridge.

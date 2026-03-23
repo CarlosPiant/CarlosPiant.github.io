@@ -202,3 +202,7 @@ The interpretation also depends on the outcome scale. Here the x-axis is QALYs, 
 ## Further reading
 
 Fenwick, Claxton, and Sculpher provide one of the clearest discussions of how uncertainty should be represented in cost-effectiveness analysis and why visual tools such as the cost-effectiveness plane matter. A natural next step after this chapter is to extend the same bootstrap results into a cost-effectiveness acceptability curve.
+
+## References
+
+- Fenwick, Elisabeth; Claxton, Karl; Sculpher, Mark (2001). "Representing Uncertainty: The Role of Cost-Effectiveness Acceptability Curves." *Health Economics*, 10(8), 779--787. DOI: <https://doi.org/10.1002/hec.635>.

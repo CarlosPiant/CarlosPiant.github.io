@@ -367,3 +367,8 @@ The MAR mechanism here uses only observed variables by construction, while the M
 ## Further reading
 
 Rubin's original paper remains the foundational conceptual statement of MCAR, MAR, and MNAR. Little and Rubin provide the standard book-length treatment that connects those ideas to modeling and inference in practical data analysis.
+
+## References
+
+- Rubin, Donald B. (1976). "Inference and Missing Data." *Biometrika*, 63(3), 581--592. DOI: <https://doi.org/10.1093/biomet/63.3.581>.
+- Little, Roderick J. A.; Rubin, Donald B. (2019). "Statistical Analysis with Missing Data." Wiley, Hoboken, NJ. DOI: <https://doi.org/10.1002/9781119482260>.

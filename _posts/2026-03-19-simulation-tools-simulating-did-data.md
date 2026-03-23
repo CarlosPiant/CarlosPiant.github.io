@@ -299,3 +299,8 @@ This is often the best way to build intuition for DiD. The method is simple in n
 ## Further reading
 
 Card and Krueger remain a classic empirical example of policy-induced comparison over time. Bertrand, Duflo, and Mullainathan remain essential for understanding inference and serial correlation in DiD panels. Goodman-Bacon shows why treatment timing matters so much once adoption becomes staggered.
+
+## References
+
+- Bertrand, Marianne; Duflo, Esther; Mullainathan, Sendhil (2004). "How Much Should We Trust Differences-in-Differences Estimates?." *The Quarterly Journal of Economics*, 119(1), 249--275. DOI: <https://doi.org/10.1162/003355304772839588>.
+- Goodman-Bacon, Andrew (2021). "Difference-in-Differences with Variation in Treatment Timing." *Journal of Econometrics*, 225(2), 254--277. DOI: <https://doi.org/10.1016/j.jeconom.2021.03.014>.

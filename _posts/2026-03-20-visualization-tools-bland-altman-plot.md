@@ -288,3 +288,9 @@ When those patterns appear, the analyst may need a transformation, a different c
 ## Further reading
 
 Bland and Altman's original papers remain the essential starting point because they explain both the logic of the plot and the difference between agreement and correlation. The Pima diabetes dataset comes from the work of Smith and colleagues and provides a convenient public setting for illustrating agreement between quantitative prediction methods.
+
+## References
+
+- Bland, J. Martin; Altman, Douglas G. (1986). "Statistical Methods for Assessing Agreement Between Two Methods of Clinical Measurement." *The Lancet*, 327(8476), 307--310. DOI: <https://doi.org/10.1016/S0140-6736(86)90837-8>.
+- Bland, J. Martin; Altman, Douglas G. (1999). "Measuring Agreement in Method Comparison Studies." *Statistical Methods in Medical Research*, 8(2), 135--160. DOI: <https://doi.org/10.1177/096228029900800204>.
+- Smith, J. W.; Everhart, J. E.; Dickson, W. C.; Knowler, W. C.; Johannes, R. S. (1988). "Using the ADAP Learning Algorithm to Forecast the Onset of Diabetes Mellitus." *Proceedings of the Symposium on Computer Applications in Medical Care*, 261--265.

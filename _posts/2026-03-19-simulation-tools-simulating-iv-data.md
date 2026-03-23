@@ -304,3 +304,9 @@ In practice, these are some of the best ways to build intuition for IV. The meth
 ## Further reading
 
 Angrist and Evans provide one of the classic empirical examples of encouragement-type IV logic in applied economics. Imbens and Angrist explain the local causal interpretation that made modern IV reasoning more precise. Staiger and Stock remain essential for understanding why first-stage strength matters so much for IV performance.
+
+## References
+
+- Angrist, Joshua D.; Evans, William N. (1998). "Children and Their Parents' Labor Supply: Evidence from Exogenous Variation in Family Size." *The American Economic Review*, 88(3), 450--477. <https://www.jstor.org/stable/116844>.
+- Imbens, Guido W.; Angrist, Joshua D. (1994). "Identification and Estimation of Local Average Treatment Effects." *Econometrica*, 62(2), 467--475. DOI: <https://doi.org/10.2307/2951620>.
+- Staiger, Douglas; Stock, James H. (1997). "Instrumental Variables Regression with Weak Instruments." *Econometrica*, 65(3), 557--586. DOI: <https://doi.org/10.2307/2171753>.

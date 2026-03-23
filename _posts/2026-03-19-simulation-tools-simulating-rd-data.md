@@ -362,3 +362,9 @@ This is often the best way to build intuition for RD. The method is usually taug
 ## Further reading
 
 Lee's close-election design remains one of the clearest motivating examples of RD logic in practice. Imbens and Lemieux provide a widely used guide to implementation and interpretation. Calonico, Cattaneo, and Titiunik explain why robust bias-corrected inference became standard in modern RD work.
+
+## References
+
+- Lee, David S. (2008). "Randomized Experiments from Non-random Selection in U.S. House Elections." *Journal of Econometrics*, 142(2), 675--697. DOI: <https://doi.org/10.1016/j.jeconom.2007.05.004>.
+- Imbens, Guido W.; Lemieux, Thomas (2008). "Regression Discontinuity Designs: A Guide to Practice." *Journal of Econometrics*, 142(2), 615--635. DOI: <https://doi.org/10.1016/j.jeconom.2007.05.001>.
+- Calonico, Sebastian; Cattaneo, Matias D.; Titiunik, Rocio (2014). "Robust Nonparametric Confidence Intervals for Regression-Discontinuity Designs." *Econometrica*, 82(6), 2295--2326. DOI: <https://doi.org/10.3982/ECTA11757>.

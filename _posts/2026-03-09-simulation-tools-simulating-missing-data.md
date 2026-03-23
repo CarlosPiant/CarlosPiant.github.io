@@ -277,3 +277,7 @@ The complete-case analysis used here is deliberately simple. It is not presented
 ## Further reading
 
 Rubin's paper remains the standard conceptual starting point for understanding why the mechanism of missingness matters for inference. It is still the cleanest bridge between practical missing-data problems and the statistical logic needed to think about them rigorously.
+
+## References
+
+- Rubin, Donald B. (1976). "Inference and Missing Data." *Biometrika*, 63(3), 581--592. DOI: <https://doi.org/10.1093/biomet/63.3.581>.

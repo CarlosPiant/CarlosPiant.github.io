@@ -342,3 +342,9 @@ This chapter also treats the four variables as independent. That is useful for l
 ## Further reading
 
 Devroye remains one of the classic references on non-uniform random variate generation and is especially useful for readers who want to understand the computational details behind simulation algorithms. Von Neumann's early discussion of random digits is part of the historical foundation of Monte Carlo methods. For readers working in health economics, Stout and Goldie provide an applied bridge from random-number generation to patient-level disease simulation and decision modeling.
+
+## References
+
+- von Neumann, John (1951). "Various Techniques Used in Connection with Random Digits." *Monte Carlo Method*, 36--38.
+- Devroye, Luc (1986). "Non-Uniform Random Variate Generation." Springer-Verlag, New York.
+- Stout, Natasha K.; Goldie, Sue J. (2008). "Keeping the Noise Down: Common Random Numbers for Disease Simulation Modeling." *Health Care Management Science*, 11(4), 399--406. DOI: <https://doi.org/10.1007/s10729-008-9067-6>.

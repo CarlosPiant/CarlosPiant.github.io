@@ -417,3 +417,11 @@ Finally, a DAG figure should not try to encode every possible variable in a stud
 ## Further reading
 
 For the theory behind DAGs, the classic starting points are Pearl and the epidemiologic synthesis by Greenland, Pearl, and Robins. For practical computation of adjustment sets and implied independencies, `dagitty` remains the most useful entry point. For readers who want a polished plotting workflow in R, `ggdag` provides a convenient bridge from causal diagrams to publication-ready graphics.
+
+## References
+
+- Greenland, Sander; Pearl, Judea; Robins, James M. (1999). "Causal Diagrams for Epidemiologic Research." *Epidemiology*, 10(1), 37--48. DOI: <https://doi.org/10.1097/00001648-199901000-00008>.
+- Pearl, Judea (1995). "Causal Diagrams for Empirical Research." *Biometrika*, 82(4), 669--688. DOI: <https://doi.org/10.1093/biomet/82.4.669>.
+- Textor, Johannes; van der Zander, Benito; Gilthorpe, Mark S.; Li\'skiewicz, Maciej; Ellison, George T. H. (2016). "Robust Causal Inference Using Directed Acyclic Graphs: The R Package dagitty." *International Journal of Epidemiology*, 45(6), 1887--1894. DOI: <https://doi.org/10.1093/ije/dyw341>.
+- Barrett, Malcolm (2024). "ggdag: Analyze and Create Elegant Directed Acyclic Graphs." <https://CRAN.R-project.org/package=ggdag>.
+- Venables, W. N.; Ripley, B. D. (2002). "Modern Applied Statistics with S." Springer, New York. <https://www.stats.ox.ac.uk/pub/MASS4/>.

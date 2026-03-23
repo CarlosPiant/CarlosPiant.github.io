@@ -203,3 +203,10 @@ Third, the choice of color scale matters. Sequential palettes work well for stri
 ## Further reading
 
 For a broad treatment of areal data and mapping practice in R, Bivand, Pebesma, and Gomez-Rubio remain the core reference. Pebesma's article on simple features is the key reference for modern spatial workflows in R. For readers who want to move from descriptive maps to formal spatial analysis, the spatial-association and areal-data references already used elsewhere in the book are natural next steps.
+
+## References
+
+- Bivand, Roger; Pebesma, Edzer; G\'omez-Rubio, Virgilio (2013). "Applied Spatial Data Analysis with R." Springer, New York. <https://asdar-book.org/>.
+- Pebesma, Edzer (2018). "Simple Features for R: Standardized Support for Spatial Vector Data." *The R Journal*, 10(1), 439--446. DOI: <https://doi.org/10.32614/RJ-2018-009>.
+- Bivand, Roger; Wong, David (2018). "Comparing Implementations of Global and Local Indicators of Spatial Association." *TEST*, 27(3), 716--748. DOI: <https://doi.org/10.1007/s11749-018-0599-x>.
+- Bivand, Roger (2022). "R Packages for Analyzing Spatial Data: A Comparative Case Study with Areal Data." *Geographical Analysis*, 54(3), 488--518. DOI: <https://doi.org/10.1111/gean.12319>.

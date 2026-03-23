@@ -226,3 +226,8 @@ The key lesson is that heat maps are not just attractive graphics. They are comp
 ## Further reading
 
 Wilkinson and Friendly provide a concise historical discussion of the heat map as a scientific display and explain how clustered heat maps emerged from older matrix-shading traditions. For the real-world prediction setting used here, Smith and colleagues provide the original diabetes-classification application behind the public Pima data. A natural next step after this chapter is to compare a simple descriptive heat map like this one with a model-based prediction surface built from logistic regression or another flexible model.
+
+## References
+
+- Wilkinson, Leland; Friendly, Michael (2009). "The History of the Cluster Heat Map." *The American Statistician*, 63(2), 179--184. DOI: <https://doi.org/10.1198/tas.2009.0033>.
+- Smith, J. W.; Everhart, J. E.; Dickson, W. C.; Knowler, W. C.; Johannes, R. S. (1988). "Using the ADAP Learning Algorithm to Forecast the Onset of Diabetes Mellitus." *Proceedings of the Symposium on Computer Applications in Medical Care*, 261--265.

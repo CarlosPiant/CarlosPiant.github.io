@@ -462,3 +462,10 @@ Third, the figure is strongest when the stages are genuinely sequential. A Sanke
 ## Further reading
 
 For the general layered-graphics logic behind static figures of this kind, Wickham remains the core reference. For alluvial and Sankey-style categorical flow graphics in R, Brunson's formulation is a useful conceptual reference even when the figure is built manually rather than through a dedicated package. For the underlying colon trial data used in the real-world example, see Laurie and colleagues and Moertel and colleagues.
+
+## References
+
+- Wickham, Hadley (2016). "ggplot2: Elegant Graphics for Data Analysis." Springer, New York.
+- Brunson, Jason Cory (2020). "ggalluvial: Layered Grammar for Alluvial Plots." *Journal of Open Source Software*, 5(49), 2017. DOI: <https://doi.org/10.21105/joss.02017>.
+- Laurie, John A.; Moertel, Charles G.; Fleming, Thomas R.; Wieand, H. S.; Leigh, James E.; Rubin, Joseph; McCormack, G. W.; Gerstner, J. B.; Krook, J. E.; Mailliard, James A. (1989). "Surgical Adjuvant Therapy of Large-Bowel Carcinoma: An Evaluation of Levamisole and the Combination of Levamisole and Fluorouracil." *Journal of Clinical Oncology*, 7(10), 1447--1456. DOI: <https://doi.org/10.1200/JCO.1989.7.10.1447>.
+- Moertel, Charles G.; Fleming, Thomas R.; Macdonald, John S.; Haller, Daniel G.; Laurie, John A.; Goodman, Phyllis J.; Ungerleider, James S.; Emerson, William A.; Tormey, Douglas C.; Glick, John H.; Veeder, Michael H.; Mailliard, James A. (1990). "Levamisole and Fluorouracil for Adjuvant Therapy of Resected Colon Carcinoma." *New England Journal of Medicine*, 322(6), 352--358. DOI: <https://doi.org/10.1056/NEJM199002083220602>.

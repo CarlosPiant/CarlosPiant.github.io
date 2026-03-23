@@ -341,3 +341,8 @@ Real cluster trials can be more complex. They may use stratified or blocked rand
 ## Further reading
 
 Donner and Klar remain a central reference for the design and analysis of cluster randomized trials in health research. For a concrete diabetes-related example of cluster-level randomization in provider settings, see Slingerland and colleagues' cluster-randomized trial of patient-centered diabetes care across hospitals.
+
+## References
+
+- Slingerland, Annabelle S.; Herman, William H.; Redekop, W. K.; Dijkstra, Rob F.; Jukema, J. Wouter; Niessen, Louis W. (2013). "Stratified Patient-Centered Care in Type 2 Diabetes: A Cluster-Randomized, Controlled Clinical Trial of Effectiveness and Cost-Effectiveness." *Diabetes Care*, 36(10), 3054--3061. DOI: <https://doi.org/10.2337/dc12-1865>.
+- Donner, Allan; Klar, Neil (2000). "Design and Analysis of Cluster Randomization Trials in Health Research." Arnold, London.

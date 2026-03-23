@@ -321,3 +321,10 @@ The simulation also assumes a constant baseline hazard. That is a simplification
 ## Further reading
 
 Bender, Augustin, and Blettner provide a foundational practical treatment of generating survival times under proportional-hazards models. Cox remains the central reference for the proportional-hazards model itself. For the kind of finite follow-up oncology setting that motivates this chapter, the adjuvant colon cancer trials by Laurie and colleagues and by Moertel and colleagues are useful substantive anchors.
+
+## References
+
+- Laurie, John A.; Moertel, Charles G.; Fleming, Thomas R.; Wieand, H. S.; Leigh, James E.; Rubin, Joseph; McCormack, G. W.; Gerstner, J. B.; Krook, J. E.; Mailliard, James A. (1989). "Surgical Adjuvant Therapy of Large-Bowel Carcinoma: An Evaluation of Levamisole and the Combination of Levamisole and Fluorouracil." *Journal of Clinical Oncology*, 7(10), 1447--1456. DOI: <https://doi.org/10.1200/JCO.1989.7.10.1447>.
+- Moertel, Charles G.; Fleming, Thomas R.; Macdonald, John S.; Haller, Daniel G.; Laurie, John A.; Goodman, Phyllis J.; Ungerleider, James S.; Emerson, William A.; Tormey, Douglas C.; Glick, John H.; Veeder, Michael H.; Mailliard, James A. (1990). "Levamisole and Fluorouracil for Adjuvant Therapy of Resected Colon Carcinoma." *New England Journal of Medicine*, 322(6), 352--358. DOI: <https://doi.org/10.1056/NEJM199002083220602>.
+- Bender, Ralf; Augustin, Thomas; Blettner, Maria (2005). "Generating Survival Times to Simulate Cox Proportional Hazards Models." *Statistics in Medicine*, 24(11), 1713--1723. DOI: <https://doi.org/10.1002/sim.2059>.
+- Cox, D. R. (1972). "Regression Models and Life-Tables." *Journal of the Royal Statistical Society. Series B (Methodological)*, 34(2), 187--202. DOI: <https://doi.org/10.1111/j.2517-6161.1972.tb00899.x>.

@@ -213,3 +213,8 @@ Finally, the graph should preserve enough of the raw series for the reader to se
 ## Further reading
 
 Diggle provides a concise health-oriented introduction to time-series data and is a natural reference for the UK lung-deaths series used here. Wickham's treatment of layered graphics is useful for readers who want to extend this figure design with annotations, faceting, or additional model-based overlays.
+
+## References
+
+- Diggle, Peter J. (1990). "Time Series: A Biostatistical Introduction." Oxford University Press, Oxford.
+- Wickham, Hadley (2016). "ggplot2: Elegant Graphics for Data Analysis." Springer, New York.

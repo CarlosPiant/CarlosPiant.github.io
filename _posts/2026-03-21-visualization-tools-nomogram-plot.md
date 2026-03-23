@@ -432,3 +432,8 @@ In practice, a nomogram is most useful when it is paired with calibration, discr
 ## Further reading
 
 Iasonos and colleagues provide one of the clearest practical discussions of how to build and interpret nomograms in prognostic research. For the broader graphics framework behind manually built static figures, Wickham remains the core reference. Readers who want to connect a nomogram to the wider evaluation of prediction models should read it together with the calibration material already included elsewhere in the book.
+
+## References
+
+- Iasonos, Alexia; Schrag, Deborah; Raj, Gopa; Panageas, Katherine S. (2008). "How To Build and Interpret a Nomogram for Cancer Prognosis." *Journal of Clinical Oncology*, 26(8), 1364--1370. DOI: <https://doi.org/10.1200/JCO.2007.12.9791>.
+- Wickham, Hadley (2016). "ggplot2: Elegant Graphics for Data Analysis." Springer, New York.

@@ -233,3 +233,8 @@ Because the event times were generated from an exponential baseline hazard, the 
 ## Further reading
 
 Cox introduced the proportional-hazards model that still anchors much of applied survival analysis. Kaplan and Meier provide the classic nonparametric survival estimator that underlies most descriptive survival work. Together, they form a strong conceptual bridge between simulated event times and the models used on real health-outcomes data.
+
+## References
+
+- Cox, D. R. (1972). "Regression Models and Life-Tables." *Journal of the Royal Statistical Society. Series B (Methodological)*, 34(2), 187--202. DOI: <https://doi.org/10.1111/j.2517-6161.1972.tb00899.x>.
+- Kaplan, E. L.; Meier, Paul (1958). "Nonparametric Estimation from Incomplete Observations." *Journal of the American Statistical Association*, 53(282), 457--481. DOI: <https://doi.org/10.1080/01621459.1958.10501452>.

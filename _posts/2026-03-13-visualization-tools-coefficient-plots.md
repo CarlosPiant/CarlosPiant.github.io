@@ -288,3 +288,9 @@ Finally, coefficient plots are most useful when they are selective. If a model h
 ## Further reading
 
 Kastellec and Leoni provide a clear argument for replacing dense regression tables with figures that foreground estimates and uncertainty. The colon cancer trial papers by Laurie and colleagues and Moertel and colleagues provide a real clinical setting in which multivariable treatment-effect reporting is useful.
+
+## References
+
+- Kastellec, Jonathan P.; Leoni, Eduardo L. (2007). "Using Graphs Instead of Tables in Political Science." *Perspectives on Politics*, 5(4), 755--771. DOI: <https://doi.org/10.1017/S1537592707072209>.
+- Laurie, John A.; Moertel, Charles G.; Fleming, Thomas R.; Wieand, H. S.; Leigh, James E.; Rubin, Joseph; McCormack, G. W.; Gerstner, J. B.; Krook, J. E.; Mailliard, James A. (1989). "Surgical Adjuvant Therapy of Large-Bowel Carcinoma: An Evaluation of Levamisole and the Combination of Levamisole and Fluorouracil." *Journal of Clinical Oncology*, 7(10), 1447--1456. DOI: <https://doi.org/10.1200/JCO.1989.7.10.1447>.
+- Moertel, Charles G.; Fleming, Thomas R.; Macdonald, John S.; Haller, Daniel G.; Laurie, John A.; Goodman, Phyllis J.; Ungerleider, James S.; Emerson, William A.; Tormey, Douglas C.; Glick, John H.; Veeder, Michael H.; Mailliard, James A. (1990). "Levamisole and Fluorouracil for Adjuvant Therapy of Resected Colon Carcinoma." *New England Journal of Medicine*, 322(6), 352--358. DOI: <https://doi.org/10.1056/NEJM199002083220602>.

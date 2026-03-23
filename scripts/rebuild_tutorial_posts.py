@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 POSTS_DIR = ROOT / "_posts"
 TUTORIALS_DIR = ROOT / "tutorials"
 INTRO_INCLUDE = ROOT / "_includes" / "tutorials-index-intro.md"
+REFERENCES_BIB = TUTORIALS_DIR / "references.bib"
 
 SECTION_TAGS = {
     "simulation-tools": "Simulation Tools",
@@ -77,12 +78,153 @@ def normalize_code_fences(text: str) -> str:
     return text
 
 
+def find_citation_keys(text: str) -> list[str]:
+    keys = re.findall(r"@([-A-Za-z0-9_:]+)", text)
+    unique_keys = []
+    seen = set()
+    for key in keys:
+        if key not in seen:
+            seen.add(key)
+            unique_keys.append(key)
+    return unique_keys
+
+
 def clean_body(text: str) -> str:
     text = normalize_text(text)
     text = strip_citations(text)
     text = normalize_code_fences(text)
     text = re.sub(r"\n{3,}", "\n\n", text).strip()
     return text + "\n"
+
+
+def split_top_level_fields(text: str) -> list[str]:
+    fields = []
+    current = []
+    depth = 0
+    in_quotes = False
+    for char in text:
+        if char == '"' and (not current or current[-1] != "\\"):
+            in_quotes = not in_quotes
+        elif not in_quotes:
+            if char == "{":
+                depth += 1
+            elif char == "}":
+                depth = max(0, depth - 1)
+            elif char == "," and depth == 0:
+                field = "".join(current).strip()
+                if field:
+                    fields.append(field)
+                current = []
+                continue
+        current.append(char)
+    tail = "".join(current).strip()
+    if tail:
+        fields.append(tail)
+    return fields
+
+
+def parse_bibtex_entries() -> dict[str, dict[str, str]]:
+    text = REFERENCES_BIB.read_text(encoding="utf-8")
+    entries = {}
+    i = 0
+    while i < len(text):
+        if text[i] != "@":
+            i += 1
+            continue
+        entry_start = i
+        brace_open = text.find("{", entry_start)
+        if brace_open == -1:
+            break
+        entry_type = text[entry_start + 1:brace_open].strip().lower()
+        depth = 1
+        j = brace_open + 1
+        while j < len(text) and depth > 0:
+            if text[j] == "{":
+                depth += 1
+            elif text[j] == "}":
+                depth -= 1
+            j += 1
+        raw_entry = text[brace_open + 1:j - 1].strip()
+        if "," not in raw_entry:
+            i = j
+            continue
+        key, raw_fields = raw_entry.split(",", 1)
+        fields = {"entry_type": entry_type}
+        for field in split_top_level_fields(raw_fields):
+            if "=" not in field:
+                continue
+            name, value = field.split("=", 1)
+            value = value.strip().strip(",").strip()
+            if value.startswith("{") and value.endswith("}"):
+                value = value[1:-1]
+            elif value.startswith('"') and value.endswith('"'):
+                value = value[1:-1]
+            value = value.replace("{", "").replace("}", "")
+            fields[name.strip().lower()] = normalize_text(value.strip())
+        entries[key.strip()] = fields
+        i = j
+    return entries
+
+
+def format_authors(author_text: str) -> str:
+    if not author_text:
+        return ""
+    authors = [author.strip() for author in author_text.split(" and ") if author.strip()]
+    return "; ".join(authors)
+
+
+def format_reference(entry: dict[str, str]) -> str:
+    parts = []
+    authors = format_authors(entry.get("author", ""))
+    if authors:
+        parts.append(authors)
+    if entry.get("year"):
+        parts.append(f"({entry['year']}).")
+    if entry.get("title"):
+        parts.append(f"\"{entry['title']}.\"")
+
+    source = entry.get("journal") or entry.get("booktitle")
+    if source:
+        source_text = f"*{source}*"
+        volume = entry.get("volume", "")
+        number = entry.get("number", "")
+        pages = entry.get("pages", "")
+        if volume and number:
+            source_text += f", {volume}({number})"
+        elif volume:
+            source_text += f", {volume}"
+        if pages:
+            source_text += f", {pages}"
+        source_text += "."
+        parts.append(source_text)
+    elif entry.get("publisher"):
+        publisher_text = entry["publisher"]
+        if entry.get("address"):
+            publisher_text += f", {entry['address']}"
+        publisher_text += "."
+        parts.append(publisher_text)
+
+    if entry.get("doi"):
+        parts.append(f"DOI: <https://doi.org/{entry['doi']}>.")
+    elif entry.get("url"):
+        parts.append(f"<{entry['url']}>.")
+
+    return " ".join(parts).strip()
+
+
+def build_references_section(citation_keys: list[str], bibliography: dict[str, dict[str, str]]) -> str:
+    references = []
+    for key in citation_keys:
+        entry = bibliography.get(key)
+        if not entry:
+            continue
+        references.append(f"- {format_reference(entry)}")
+    if not references:
+        return ""
+    return "\n## References\n\n" + "\n".join(references) + "\n"
+
+
+BIB_ENTRIES = parse_bibtex_entries()
 
 
 def extract_summary(text: str) -> str:
@@ -134,7 +276,9 @@ def render_post(source_qmd: Path) -> str:
     front_matter, raw_body = parse_front_matter(source_qmd.read_text(encoding="utf-8"))
     title = normalize_text(front_matter.get("title", source_qmd.stem.replace("-", " ").title()))
     subtitle = normalize_text(front_matter.get("subtitle", ""))
+    citation_keys = find_citation_keys(raw_body)
     body = clean_body(raw_body)
+    body += build_references_section(citation_keys, BIB_ENTRIES)
     summary = extract_summary(body).replace('"', '\\"')
     tag = SECTION_TAGS.get(section, section.replace("-", " ").title())
     date = datetime.fromtimestamp(source_qmd.stat().st_mtime).date().isoformat()

@@ -180,3 +180,9 @@ Grouped points can also be visually helpful but statistically unstable in small 
 ## Further reading
 
 Van Calster and coauthors provide one of the clearest modern discussions of why calibration deserves more attention in predictive analytics. Smith and coauthors provide the real-world diabetes-prediction setting that motivates the example dataset used here. Brier's classic paper is still useful for understanding why probability forecasts should be judged as probabilities rather than as hard classifications.
+
+## References
+
+- Van Calster, Ben; McLernon, David J.; van Smeden, Maarten; Wynants, Laure; Steyerberg, Ewout W. (2019). "Calibration: The Achilles Heel of Predictive Analytics." *BMC Medicine*, 17(1), 230. DOI: <https://doi.org/10.1186/s12916-019-1466-7>.
+- Smith, J. W.; Everhart, J. E.; Dickson, W. C.; Knowler, W. C.; Johannes, R. S. (1988). "Using the ADAP Learning Algorithm to Forecast the Onset of Diabetes Mellitus." *Proceedings of the Symposium on Computer Applications in Medical Care*, 261--265.
+- Brier, Glenn W. (1950). "Verification of Forecasts Expressed in Terms of Probability." *Monthly Weather Review*, 78(1), 1--3. DOI: <https://doi.org/10.1175/1520-0493(1950)078<0001:VOFEIT>2.0.CO;2>.

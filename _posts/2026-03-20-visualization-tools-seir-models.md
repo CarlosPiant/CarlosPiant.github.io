@@ -309,3 +309,12 @@ Finally, these figures work best when they are not overloaded. Adding too many c
 ## Further reading
 
 Kermack and McKendrick remain the foundational reference for compartmental epidemic thinking. Hethcote provides a broad mathematical overview of infectious-disease compartment models. Wearing, Rohani, and Keeling explain why latent periods and distributional assumptions matter in epidemic modeling, which is directly relevant to SEIR interpretation. For the real-world outbreak used here, see the original *British Medical Journal* report and the modern revisit by Avilov and colleagues.
+
+## References
+
+- Kermack, W. O.; McKendrick, A. G. (1927). "A Contribution to the Mathematical Theory of Epidemics." *Proceedings of the Royal Society A*, 115(772), 700--721. DOI: <https://doi.org/10.1098/rspa.1927.0118>.
+- Hethcote, Herbert W. (2000). "The Mathematics of Infectious Diseases." *SIAM Review*, 42(4), 599--653. DOI: <https://doi.org/10.1137/S0036144500371907>.
+- Anderson, Roy M.; May, Robert M. (1991). "Infectious Diseases of Humans: Dynamics and Control." Oxford University Press, Oxford.
+- Anonymous (1978). "Influenza in a Boarding School." *British Medical Journal*, 1, 587. <https://pmc.ncbi.nlm.nih.gov/articles/PMC1602702/>.
+- Avilov, Nikita; van Dorp, Lucy; Hall, Ian; Wearing, Helen; O'Neill, Philip; Keeling, Matt (2024). "The 1978 English Boarding School Influenza Outbreak: Insights from a Simple Model." *Journal of Biological Dynamics*. <https://pubmed.ncbi.nlm.nih.gov/38837377/>.
+- Wearing, Helen J.; Rohani, Pejman; Keeling, Matt J. (2005). "Appropriate Models for the Management of Infectious Diseases." *PLoS Medicine*, 2(7), e174. DOI: <https://doi.org/10.1371/journal.pmed.0020174>.

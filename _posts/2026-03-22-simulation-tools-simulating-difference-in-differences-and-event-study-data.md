@@ -338,3 +338,9 @@ The design is intentionally simpler than many empirical applications. Real stagg
 ## Further reading
 
 Sun and Abraham provide an essential treatment of event-study estimation under heterogeneous treatment timing. Callaway and Sant'Anna provide a related modern framework for DiD with multiple periods and staggered adoption. Bertrand, Duflo, and Mullainathan remain central for understanding inference issues in panel DiD settings.
+
+## References
+
+- Sun, Liyang; Abraham, Sarah (2021). "Estimating Dynamic Treatment Effects in Event Studies with Heterogeneous Treatment Effects." *Journal of Econometrics*, 225(2), 175--199. DOI: <https://doi.org/10.1016/j.jeconom.2020.09.006>.
+- Callaway, Brantly; Sant'Anna, Pedro H. C. (2021). "Difference-in-Differences with Multiple Time Periods." *Journal of Econometrics*, 225(2), 200--230. DOI: <https://doi.org/10.1016/j.jeconom.2020.12.001>.
+- Bertrand, Marianne; Duflo, Esther; Mullainathan, Sendhil (2004). "How Much Should We Trust Differences-in-Differences Estimates?." *The Quarterly Journal of Economics*, 119(1), 249--275. DOI: <https://doi.org/10.1162/003355304772839588>.
