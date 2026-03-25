@@ -11,7 +11,7 @@
   --cp-accent-soft: #f3f7fb;
   --cp-shadow: none;
   --cp-page-bg: #ffffff;
-  --cp-nav-bg: rgba(255, 255, 255, 0.96);
+  --cp-nav-bg: #ffffff;
   --cp-footer-bg: #ffffff;
 }
 
@@ -35,7 +35,7 @@ html[data-theme="dark"] {
   --cp-accent: #7cb3ff;
   --cp-accent-soft: #1a2330;
   --cp-page-bg: #0f1318;
-  --cp-nav-bg: rgba(15, 19, 24, 0.94);
+  --cp-nav-bg: #0f1318;
   --cp-footer-bg: #11161c;
 }
 
@@ -53,7 +53,7 @@ html[data-theme="dark"] {
   top: 0;
   z-index: 30;
   border-bottom: 1px solid var(--cp-border);
-  backdrop-filter: blur(10px);
+  backdrop-filter: none;
   box-shadow: none;
 }
 
