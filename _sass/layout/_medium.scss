@@ -59,8 +59,6 @@ html[data-theme="dark"] {
 
 .masthead__inner-wrap {
   max-width: 1240px;
-  padding-top: 0.95rem;
-  padding-bottom: 0.95rem;
 }
 
 .greedy-nav a {
@@ -68,13 +66,7 @@ html[data-theme="dark"] {
   font-family: "Manrope", "Avenir Next", sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
-  padding-top: 0.95rem;
-  padding-bottom: 0.95rem;
   text-decoration: none;
-}
-
-.greedy-nav button {
-  height: 3.4rem;
 }
 
 .greedy-nav .visible-links a:hover,
