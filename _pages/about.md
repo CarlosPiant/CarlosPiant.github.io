@@ -35,5 +35,5 @@ Carlos Pineda-Antunez is a PhD student at the Comparative Health Outcomes, Polic
 - [Talks](/talks/)
 - [Teaching](/teaching/)
 - [Tutorials & Codes](/tutorials/)
-- [Didactic Apps](/apps/)
+- [Software Development](/apps/)
 - [CV](/cv/)

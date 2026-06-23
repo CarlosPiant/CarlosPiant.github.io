@@ -38,3 +38,22 @@
 .app-link:hover {
   text-decoration: underline;
 }
+
+.software-work-grid {
+  margin-bottom: 2rem;
+}
+
+.software-work-card {
+  border-radius: 6px;
+}
+
+.software-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-top: 0.75rem;
+}
+
+.software-links .app-link {
+  border-bottom: 1px solid currentColor;
+}

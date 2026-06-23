@@ -132,7 +132,7 @@ Tips:
 - The `/tutorials/` landing page intro is generated from `tutorials/simulation-tools/index.qmd`.
 - If a tutorial generates plots, keep the source code inside executable chunks so the rebuild script can regenerate the images automatically.
 
-## Didactic Apps
+## Software Development
 
 Apps are stored in two places:
 
@@ -161,7 +161,16 @@ app_url: "https://your-deployed-app-url"
 - Local run instructions
 - A code section (copy `app.R` into a fenced code block)
 
-The app will appear automatically in the "Didactic Apps" tab.
+The app will appear automatically in the "Software Development" tab under Educational Apps.
+
+Published software-related work is listed directly in:
+`/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/_pages/apps.md`
+
+To add a new published software item, add another card under the "Published Work" section with:
+- Title
+- Short description
+- Link to the publication or package page
+- Link to the repository or project website
 
 ## CV Page
 
