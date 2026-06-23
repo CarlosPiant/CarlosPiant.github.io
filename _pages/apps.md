@@ -21,6 +21,16 @@ This section brings together software, reproducible tools, and educational appli
   </div>
 
   <div class="app-card software-work-card">
+    <h2 class="app-title">BayCANN for the CISNET colorectal cancer models</h2>
+    <div class="app-subtitle">Code for emulator-based Bayesian calibration</div>
+    <p class="app-description">This repository provides code to perform BayCANN for the three Colorectal Cancer CISNET models. The work supports emulator-based Bayesian calibration, helping researchers calibrate complex cancer simulation models more efficiently while preserving transparent and reproducible workflows.</p>
+    <div class="software-links">
+      <a class="app-link" href="https://journals.sagepub.com/doi/10.1177/0272989X241255618">Published article</a>
+      <a class="app-link" href="https://github.com/NCI-CISNET-Colorectal/baycann_cisnet_crc">GitHub repository</a>
+    </div>
+  </div>
+
+  <div class="app-card software-work-card">
     <h2 class="app-title">ggpop</h2>
     <div class="app-subtitle">R package for icon-based population charts</div>
     <p class="app-description">ggpop is an R package built on top of ggplot2 that simplifies the creation of icon-based population charts. It helps users communicate population proportions and group comparisons with intuitive visual displays while staying within the familiar ggplot2 grammar.</p>

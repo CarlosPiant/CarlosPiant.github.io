@@ -184,6 +184,16 @@ Update these sections directly:
 
 Publications, Talks, and Teaching on the CV are generated from their folders above, so keep those updated.
 
+Downloadable PDF CV:
+- Source file: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/files/cv/carlos-pineda-academic-cv.md`
+- PDF file: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/files/cv/carlos-pineda-academic-cv.pdf`
+
+After editing the PDF CV source, rebuild it with:
+
+```bash
+pandoc /Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/files/cv/carlos-pineda-academic-cv.md --pdf-engine=pdflatex -o /Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/files/cv/carlos-pineda-academic-cv.pdf
+```
+
 ## Profile Sidebar (Contact + Bio)
 
 Location: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/_config.yml`

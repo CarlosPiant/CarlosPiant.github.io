@@ -9,6 +9,8 @@ redirect_from:
 
 {% include base_path %}
 
+<p><a class="btn" href="/files/cv/carlos-pineda-academic-cv.pdf">Download academic CV (PDF)</a></p>
+
 Education
 ======
 * Ph.D in Health Economics & Outcomes Research, University of Washington, 2027
@@ -17,6 +19,12 @@ Education
 
 Professional Experience
 ======
+
+2025 - current: Stanford University, California, US 
+Decision Modeler, Department of Health Policy, School of Medicine.
+
+2025-2026: University of Washington, Washington, US 
+Teaching assistant at the Data Science in Health and Outcomes Research Certificate Program, The Comparative Health Outcomes, Policy, and Economics Institute, School of Pharmacy.
 
 2024-2025: University of Minnesota, Minneapolis, US 
 Health Economist, Division of Health Policy and Management, School of Public Health.
@@ -105,4 +113,3 @@ Awards
 2013, Mexico's CONACyT Graduate Fellowship for Masters Studies.
 
 2009, Acknowledge of academic excellence in undergraduate studies in biomedical engineering.
-
