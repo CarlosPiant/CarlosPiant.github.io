@@ -19,6 +19,8 @@ Carlos Pineda-Antunez is a PhD student at the Comparative Health Outcomes, Polic
 
 ## Recent Positions
 
+- 2025 - current: Decision Modeler, Department of Health Policy, School of Medicine, Stanford University (California, USA)
+- 2025-2026: Teaching assistant, Data Science in Health and Outcomes Research Certificate Program, CHOICE Institute, School of Pharmacy, University of Washington (Seattle, USA)
 - 2024-2025: Health Economist, Division of Health Policy and Management, School of Public Health, University of Minnesota (Minneapolis, USA)
 - 2024-2025: Health Economist, CHOICE Institute, School of Pharmacy, University of Washington (Seattle, USA)
 - 2024 (Jun-Sep): Decision Modeler, Department of Health Policy, School of Medicine, Stanford University (California, USA)
