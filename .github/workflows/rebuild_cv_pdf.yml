@@ -1,0 +1,42 @@
+name: Rebuild PDF CV
+
+on:
+  push:
+    paths:
+      - '_pages/cv.md'
+      - '_publications/**'
+      - '_talks/**'
+      - '_teaching/**'
+      - 'scripts/rebuild_cv_pdf.py'
+      - '.github/workflows/rebuild_cv_pdf.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild-cv:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PDF dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
+
+      - name: Rebuild generated PDF CV
+        run: python3 scripts/rebuild_cv_pdf.py
+
+      - name: Commit updated PDF CV
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add files/cv/carlos-pineda-academic-cv.md files/cv/carlos-pineda-academic-cv.pdf
+          git commit -m "Automated update of PDF CV" || echo "No CV changes to commit"
+          git push

@@ -185,14 +185,23 @@ Update these sections directly:
 Publications, Talks, and Teaching on the CV are generated from their folders above, so keep those updated.
 
 Downloadable PDF CV:
-- Source file: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/files/cv/carlos-pineda-academic-cv.md`
+- Generated source file: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/files/cv/carlos-pineda-academic-cv.md`
 - PDF file: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/files/cv/carlos-pineda-academic-cv.pdf`
+- Generator script: `/Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/scripts/rebuild_cv_pdf.py`
 
-After editing the PDF CV source, rebuild it with:
+The PDF CV is generated from:
+- Static CV sections in `_pages/cv.md`
+- Publications in `_publications/`
+- Talks in `_talks/`
+- Teaching activities in `_teaching/`
+
+After updating the site locally, rebuild the PDF CV with:
 
 ```bash
-pandoc /Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/files/cv/carlos-pineda-academic-cv.md --pdf-engine=pdflatex -o /Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/files/cv/carlos-pineda-academic-cv.pdf
+python3 /Users/carlospineda/Documents/GitHub/CarlosPiant.github.io/scripts/rebuild_cv_pdf.py
 ```
+
+On GitHub, the "Rebuild PDF CV" workflow automatically regenerates and commits the PDF after pushes that change `_pages/cv.md`, `_publications/`, `_talks/`, `_teaching/`, or the generator script.
 
 ## Profile Sidebar (Contact + Bio)
 

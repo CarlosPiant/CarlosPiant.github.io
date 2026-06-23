@@ -41,40 +41,35 @@ Health economist and decision scientist focused on health economics, outcomes re
 
 ## Education
 
-**University of Washington**, Seattle, WA, USA  
-PhD in Health Economics and Outcomes Research, expected 2027
-
-**National Institute of Public Health**, Morelos, Mexico  
-MS in Health Economics, 2015
-
-**National Polytechnic Institute**, Mexico City, Mexico  
-BS in Biomedical Engineering, 2011
+* Ph.D in Health Economics & Outcomes Research, University of Washington, 2027
+* M.S. in Health Economics, National Institutes of Public Health, 2015
+* B.S. in Biomedical Engineering , National Polytechnic Institute, 2011
 
 ## Professional Experience
 
-**Stanford University**, California, USA  
-Decision Modeler, Department of Health Policy, School of Medicine, 2025-current
+2025 - current: Stanford University, California, US 
+Decision Modeler, Department of Health Policy, School of Medicine.
 
-**University of Washington**, Seattle, WA, USA  
-Teaching Assistant, Data Science in Health and Outcomes Research Certificate Program, Comparative Health Outcomes, Policy, and Economics Institute, School of Pharmacy, 2025-2026
+2025-2026: University of Washington, Washington, US 
+Teaching assistant at the Data Science in Health and Outcomes Research Certificate Program, The Comparative Health Outcomes, Policy, and Economics Institute, School of Pharmacy.
 
-**University of Minnesota**, Minneapolis, MN, USA  
-Health Economist, Division of Health Policy and Management, School of Public Health, 2024-2025
+2024-2025: University of Minnesota, Minneapolis, US 
+Health Economist, Division of Health Policy and Management, School of Public Health.
 
-**University of Washington**, Seattle, WA, USA  
-Health Economist, Comparative Health Outcomes, Policy, and Economics Institute, School of Pharmacy, 2024-2025
+2024-2025: University of Washington, Washington, US 
+Health Economist, The Comparative Health Outcomes, Policy, and Economics Institute, School of Pharmacy.
 
-**Stanford University**, California, USA  
-Decision Modeler, Department of Health Policy, School of Medicine, June-September 2024
+2024 (June - September): Stanford University, California, US 
+Decision Modeler, Department of Health Policy, School of Medicine.
 
-**Health Research Consortium (CISIDAT)**, Morelos, Mexico  
-Decision Scientist, Division of Quantitative Methods, 2022-2024
+2022 – 2024: Health Research Consortium (CISIDAT), Morelos, Mexico 
+Decision scientist, Division of quantitative methods
 
-**Center for Research and Teaching in Economics (CIDE)**, Mexico City, Mexico  
-Decision Modeler, Division of Public Administration, 2021-2022
+2021 – 2022: Center for Research and Teaching in Economics (CIDE) Mexico City, Mexico 
+Decision Modeler, Division of Public Administration
 
-**National Institute of Public Health (INSP)**, Morelos, Mexico  
-Health Economist, Division of Health Economics and Health Systems Innovations, 2015-2021
+2015 – 2021: National Institute of Public Health (INSP), Morelos, Mexico 
+Health economist, Division of Health Economics and Health Systems Innovations
 
 ## Software Development and Published Tools
 
@@ -93,21 +88,21 @@ R package built on top of ggplot2 to simplify the creation of icon-based populat
 - Pi S, Rutter CM, **Pineda-Antunez C**, Chen JH, Goldhaber-Fiebert JD, Alarid-Escudero F. (2026). Discrete-Event Simulation Modeling Framework for Cancer Interventions and Population Health in R (DESCIPHR): An Open-Source Pipeline. *PharmacoEconomics*. 1-19.
 - Cerecero-Garcia D, Gomez-Dantes O, Hone T, **Pineda-Antunez C**, Mohar-Betancourt A, Flamand L, Servan-Mori E. (2026). Catastrophic and impoverishing health expenditures in fragmented public health systems: lessons from Mexico, 2000-2022. *Health Economics Review*.
 - **Pineda-Antunez C**, Seguin C, van Duuren LA, et al. (2024). Emulator-Based Bayesian Calibration of the CISNET Colorectal Cancer Models. *Medical Decision Making*. 44(5):543-553.
-- Servan-Mori E, Quezada-Sanchez AD, Fuentes-Rivera E, **Pineda-Antunez C**, Hernandez-Chavez M del C, Garcia-Martinez A, Garcia-Feregrino R, Madrigal A, Guerrero B, Medrano G, Schnaas L (2023). Proximal determinants of suboptimal early child development during the first three years of life in socially deprived Mexican contexts. *PLoS ONE*. 18(11).
+- Serván-Mori E, Quezada-Sánchez AD, Fuentes-Rivera E, **Pineda-Antunez C**, Hernández-Chávez M del C, García-Martínez A, García-Feregrino R, Madrigal A, Guerrero B, Medrano G, Schnaas L (2023). Proximal determinants of suboptimal early child development during the first three years of life in socially deprived Mexican contexts. *PLoS ONE*. 18(11).
 - **Pineda-Antunez C**, Seguin C, van Duuren L, Knudsen AB, Davidi B, Nascimento De Lima P, Rutter C, Kuntz KM, Lansdorp-Vogelaar I, Collier N, Ozik J, Alarid-Escudero F (2023). Emulator-based Bayesian calibration of the CISNET colorectal cancer models. *Preprint*.
-- Servan-Mori E, Fuentes-Rivera E, Quezada AD, **Pineda-Antunez C**, Hernandez-Chavez M del C, Garcia-Martinez A, Madrigal A, Garcia-Feregrino R, Santiago-Angelino T, Hernandez-Serrato M, Schnaas L (2022). Early neurological development and nutritional status in Mexican socially deprived contexts. *PLoS ONE*. 17(6).
-- Quezada-Sanchez AD, Fuentes-Rivera E, Garcia-Martinez A, Hernandez-Chavez M del C, **Pineda-Antunez C**, Servan-Mori E (2022). Assessing the effect of an educational intervention on early childhood development among Mexican preschool children in the state of Oaxaca: a study protocol of a cluster randomized stepped-wedge trial. *Trials*. 23(1):126.
-- Servan-Mori E, **Pineda-Antunez C**, Bravo-Ruiz ML, Molina M, Ramirez-Baca MI, Garcia-Martinez A, Quezada-Sanchez AD, Orozco-Nunez E (2022). A behavioral economics analysis of the participation in early childhood development social programs promoted by civil societies in Mexico. *PLoS ONE*. 17(3):e0265389.
+- Quezada-Sánchez AD, Fuentes-Rivera E, García-Martínez A, Hernández-Chávez M del C, **Pineda-Antúnez C**, Serván-Mori E (2022). Assessing the effect of an educational intervention on early childhood development among Mexican preschool children in the state of Oaxaca: a study protocol of a cluster randomized stepped-wedge trial. *Trials*. 23(1):126.
+- Serván-Mori E, **Pineda-Antúnez C**, Bravo-Ruiz ML, Molina M, Ramírez-Baca MI, García-Martínez A, Quezada-Sánchez AD, Orozco-Núñez E (2022). A behavioral economics analysis of the participation in early childhood development social programs promoted by civil societies in Mexico. *PLoS ONE*. 17(3):e0265389.
+- Serván-Mori E, Fuentes-Rivera E, Quezada AD, **Pineda-Antunez C**, Hernández-Chávez M del C, García-Martínez A, Madrigal A, García-Feregrino R, Santiago-Angelino T, Hernández-Serrato M, Schnaas L (2022). Early neurological development and nutritional status in Mexican socially deprived contexts. *PLoS ONE*. 17(6).
+- Colchero MA, Gómez R, ****Pineda-Antúnez C**J**, Bautista-Arredondo S (2021). Health care utilization during the Covid-19 pandemic in Mexico: the cascade of care. *Salud Pública de México*. 63(6):743-750.
 - Bautista-Arredondo S, **Pineda-Antunez C**, Cerecero-Garcia D, Cameron DB, Alexander L, Chiwevu C, Levin C (2021). Moving away from the "unit cost": Predicting country-specific average cost curves of VMMC services accounting for variations in service delivery platforms in sub-Saharan Africa. *PLoS ONE*. 16(4).
 - Diaz-Castro L, Cabello-Rangel H, **Pineda-Antunez C**, Perez de Leon A (2021). Incidence of catastrophic healthcare expenditure and its main determinants in Mexican households caring for a person with a mental disorder. *Global Mental Health*. 8.
-- Colchero MA, Gomez R, Pineda-Antunez CJ, Bautista-Arredondo S (2021). Health care utilization during the Covid-19 pandemic in Mexico: the cascade of care. *Salud Publica de Mexico*. 63(6):743-750.
 - **Pineda-Antunez C**, Contreras-Loya D, Rodriguez-Atristain A, Opuni M, Bautista-Arredondo S (2021). Characterizing health care provider knowledge: Evidence from HIV services in Kenya, Rwanda, South Africa, and Zambia. *PLoS ONE*. 16(12).
 - Siapka M, Vassall A, Cunnama L, **Pineda-Antunez C**, Cerecero D, Sweeney S, Gomez GB (2020). Cost of tuberculosis treatment in low- and middle-income countries: Systematic review and meta-regression. *International Journal of Tuberculosis and Lung Disease*. 24(8):802-810.
 - Cabello-Rangel H, Diaz-Castro L, **Pineda-Antunez C** (2020). Cost-Effectiveness Analysis of Interventions to Achieve Universal Health Coverage for Schizophrenia in Mexico. *Salud Mental*. 43(2):249-255.
-- Cameron DB, Mustafa Diab M, Carroll LN, Bollinger LA, DeCormier Plosky P, **Pineda-Antunez C**, Levin C, Kahn JG (2019). The state of costing research for HIV interventions in sub-Saharan Africa. *African Journal of AIDS Research*. 18(4):277-288.
-- **Pineda-Antunez C**, Martinez-Silva G, Cerecero-Garcia D, Alexander L, Cameron DB, Chiwevu C, Bautista-Arredondo S (2019). Meta-analysis of average costs of HIV testing and counselling and voluntary medical male circumcision across thirteen countries. *African Journal of AIDS Research*.
-- Servan-Mori E, Cerecero-Garcia D, Heredia-Pi IB, **Pineda-Antunez C**, Sosa-Rubi SG, Nigenda G (2019). Improving the effective maternal-child health care coverage through synergies between supply and demand-side interventions: Evidence from Mexico. *Journal of Global Health*. 9(2):1-12.
 - Servan-Mori E, Mendoza MA, Chivardi C, **Pineda-Antunez C**, Rodriguez-Franco R, Nigenda G (2019). A spatio-temporal cluster analysis of technical efficiency in the production of outpatient maternal health services and its structural correlates in Mexico. *International Journal of Health Planning and Management*. 34(4):e1417-e1436.
+- Servan-Mori E, Cerecero-Garcia D, Heredia-Pi IB, **Pineda-Antunez C**, Sosa-Rubi SG, Nigenda G (2019). Improving the effective maternal-child health care coverage through synergies between supply and demand-side interventions: Evidence from Mexico. *Journal of Global Health*. 9(2):1-12.
+- **Pineda-Antunez C**, Martinez-Silva G, Cerecero-Garcia D, Alexander L, Cameron DB, Chiwevu C, Bautista-Arredondo S (2019). Meta-analysis of average costs of HIV testing and counselling and voluntary medical male circumcision across thirteen countries. *African Journal of AIDS Research*.
+- Cameron DB, Mustafa Diab M, Carroll LN, Bollinger LA, DeCormier Plosky P, **Pineda-Antunez C**, Levin C, Kahn JG (2019). The state of costing research for HIV interventions in sub-Saharan Africa. *African Journal of AIDS Research*. 18(4):277-288.
 - Cerecero-Garcia D, **Pineda-Antunez C**, Alexander L, Cameron D, Martinez-Silva G, Obure CD, Bautista-Arredondo S (2019). A meta-analysis approach for estimating average unit costs for ART using pooled facility-level primary data from African countries. *African Journal of AIDS Research*.
 - Rodriguez-Franco R, Servan-Mori E, Gomez-Dantes O, Contreras-Loya D, **Pineda-Antunez C** (2018). Old principles, persisting challenges: Maternal health care market alignment in Mexico in the search for UHC. *PLoS ONE*. 13(7):1-14.
 - Diaz-Castro L, Cabello-Rangel H, Arredondo A, Madrigal de Leon E, **Pineda-Antunez C** (2017). Cost-effectiveness of therapeutic interventions in schizophrenia. *The European Journal of Psychiatry*. 31(1):11-16.
@@ -121,38 +116,61 @@ R package built on top of ggplot2 to simplify the creation of icon-based populat
 - 2021. The Economic Impact of COVID-19 Non-Pharmaceutical Interventions and the influence of Poverty and Inequality. Oral presentation, International Health Economics Association, Virtual congress.
 - 2020. Policy, poverty, and politics: How public health, inequality and political leadership interacted in the COVID-19 pandemic. Conference presentation, IAS COVID-19 Conference, San Francisco, CA, USA.
 - 2019. Exploring the intervention costs of PMTCT and HTC: explaining and predicting unit costs for implementation scenarios using pooled data from several studies. Conference presentation, International Health Economics Association, Basel, Switzerland.
-- 2018. Filling in the gaps: Analysis of VMMC unit costs using aggregated facility-level primary data from several studies. Conference presentation, International AIDS Conference, Amsterdam, Netherlands.
+- 2018. Filling in the gaps: Analysis of VMMC unit costs using aggregated (facility-level) primary data from several studies. Conference presentation, International AIDS Conference, Amsterdam, Netherlands.
 
 ## Teaching
 
-**University of Washington**, CHOICE Grad Seminar  
-Course Master, March-June 2026
-
-**University of Washington**, Advanced Methods in Economic and Outcomes Evaluation in Health and Medicine  
-Guest Lecturer, February 2026
-
-**University of Washington**, Data Science in Health Economics and Outcomes Research Certificate Program  
-Teaching Assistant, September 2025-June 2026
-
-**National Institute of Public Health**, Health Economics and Economic Evaluation courses  
-Teaching Assistant and committee service, 2016-2021
+- 2026. **Course Master, CHOICE Grad Seminar**. University of Washington, Seattle, WA, USA. Service period: March 2026-June 2026.
+- 2026. **Guest lecturer, Advanced Methods in Economic and Outcomes Evaluation in Health and Medicine**. University of Washington, Seattle, WA, USA. Guest lecture delivered in February 2026.
+- 2025. **Teaching assistant, Data Science in Health Economics and Outcomes Research Certificate Program**. University of Washington, Seattle, WA, USA. Service period: September 2025-June 2026.
+- 2021. **Teaching assistant, Health economics, Master of Health Policy and Health Systems**. National Institute of Public Health, Morelos, Mexico.
+- 2020. **Teaching assistant, Economic evaluation of health programs, Master of Health Economics**. National Institute of Public Health, Morelos, Mexico.
+- 2019. **Teaching assistant, Workshop on Transparency and Reproducible Research**. National Institute of Public Health, Morelos, Mexico.
+- 2016. **Member of the health economics faculty master's program committee**. National Institute of Public Health, Morelos, Mexico. Service period: 2016-2021.
 
 ## Awards
 
-2023, Rubenstein Endowed Memorial Scholarship, University of Washington
+2023, Rubenstein  Endowed Memorial Scholarship,  University of Washington.
 
-2023, Graduate School Top Scholar Fellowship, University of Washington
+2023, Graduate School Top Scholar Fellowship, University of Washington.
 
-2023, CONACyT Graduate Fellowship for pursuing a PhD program abroad
+2023, Mexico's CONACyT Graduate Fellowship for pursuing a PhD program abroad.
 
-2022, SMDM Lee B. Lusted Student Prize finalist in Quantitative Methods and Theoretical Developments
+2022, SMDM Lee B. Lusted Student Prize finalist in Quantitative Methods and Theoretical Developments for an outstanding presentation.
 
-2015, Thesis honorable mention, National Institute of Public Health
+2015, Thesis honorable mention by the academic department of the INSP.
 
-2013, CONACyT Graduate Fellowship for master's studies
+2013, Mexico's CONACyT Graduate Fellowship for Masters Studies.
 
-2009, Academic excellence recognition in undergraduate studies in biomedical engineering
+2009, Acknowledge of academic excellence in undergraduate studies in biomedical engineering.
 
 ## Skills
 
-Economic evaluation; cost-effectiveness analysis; budget impact analysis; value of information analysis; probabilistic sensitivity analysis; health decision modeling; Markov models; microsimulation; discrete-event simulation; dynamic transmission models; causal inference; impact evaluation; machine learning for impact evaluation; cost analysis; systematic reviews; meta-analysis; R; reproducible research workflows.
+* Cost-effectiveness analysis
+  * Incremental cost-effectiveness ratio
+  * Value of information analysis
+  * Budget impact analysis
+  * Probabilistic sensitivity analysis
+* Health Decision models
+  * Markov models
+  * Microsimulation models
+  * Dynamic transmission models
+  * Discrete event simulation
+  * Decision trees
+  * Partitioned survival models
+  * Meta-modeling
+* Impact evaluation
+  * Causal inference
+  * Quasi-experimental methods
+  * Machine learning for impact evaluation
+* Cost analysis
+  * Microcosting
+  * Cost estimation
+  * Impact budgeting
+* Evidence synthesis
+  * Systematic reviews
+  * Meta-analysis
+  * Network meta-analysis
+* Artificial Intelligence
+  * Deep learning
+  * Generative AI
