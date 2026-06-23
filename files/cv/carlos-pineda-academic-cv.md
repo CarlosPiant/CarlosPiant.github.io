@@ -15,6 +15,8 @@ header-includes: |
   \sectionfont{\large\color{uwblue}}
   \let\oldsection\section
   \renewcommand{\section}[1]{\oldsection{#1}\vspace{-0.55em}{\color{gray}\noindent\rule{\linewidth}{0.4pt}}\vspace{0.35em}}
+  \let\oldsubsection\subsection
+  \renewcommand{\subsection}[1]{\oldsubsection{#1}\vspace{-0.55em}{\color{gray}\noindent\rule{\linewidth}{0.4pt}}\vspace{0.35em}}
   \setlength{\parindent}{0pt}
   \setlength{\parskip}{0.35em}
 ---
