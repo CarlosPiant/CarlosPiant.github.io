@@ -1,7 +1,7 @@
 ---
 title: "Carlos Pineda-Antunez"
 subtitle: "Curriculum Vitae"
-date: "Updated June 2026"
+date: "Updated September 2026"
 documentclass: article
 fontsize: 10.5pt
 geometry: margin=0.75in
@@ -109,6 +109,7 @@ R package built on top of ggplot2 to simplify the creation of icon-based populat
 
 ## Talks
 
+- 2026. Calibration for Health Decision Models via Deep Generative Models. Conference presentation, Society for Medical Decision Making Annual Meeting, Oslo, Norway.
 - 2024. Quantifying the value of a potential new diagnostic test in the context of imperfect adherence. Conference presentation, Society for Medical Decision Making Annual Meeting, Boston, MA, USA.
 - 2024. Fragmentation of health systems and maternal mortality transition in Mexico, 2000-2021. Conference presentation, Health Systems Global, Mexico City, Mexico.
 - 2023. Optimizing a natural history simulation model of colorectal cancer using GPUs. Conference presentation, Society for Medical Decision Making Annual Meeting, Philadelphia, PA, USA.
